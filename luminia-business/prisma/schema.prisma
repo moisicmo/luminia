@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SystemAssignment {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  systemId   String   @map("system_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy  String   @map("created_by")
+  updatedBy  String?  @map("updated_by")
+  business   Business @relation(fields: [businessId], references: [id])
+
+  @@unique([businessId, systemId])
+  @@map("system_assignments")
+}
+
+model Business {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ownerId      String       @map("owner_id") @db.Uuid
+  name         String       @db.VarChar
+  businessType BusinessType @default(TIENDA) @map("business_type")
+  url          String?      @db.VarChar
+  taxId        String?      @map("tax_id") @db.VarChar
+  logo         String?      @db.VarChar
+  active       Boolean      @default(true)
+
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @default(now()) @updatedAt @map("updated_at")
+  createdBy         String             @map("created_by") @db.Uuid
+  updatedBy         String?            @map("updated_by") @db.Uuid
+  branches          Branch[]
+  systemAssignments SystemAssignment[]
+  members           BusinessMember[]
+
+  @@map("businesses")
+}
+
+model BusinessMember {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String     @map("business_id") @db.Uuid
+  userId     String     @map("user_id") @db.Uuid   // personId from luminia-users
+  role       MemberRole @default(SELLER)
+  active     Boolean    @default(true)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy String   @map("created_by") @db.Uuid
+  updatedBy String?  @map("updated_by") @db.Uuid
+
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@unique([businessId, userId])
+  @@index([userId])
+  @@map("business_members")
+}
+
+model Branch {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String  @map("business_id") @db.Uuid
+  code         String? @db.VarChar
+  name         String  @db.VarChar
+  region       String  @db.VarChar
+  address      String? @db.VarChar
+  municipality String? @db.VarChar
+  phone        String? @db.VarChar
+  latitude     Float?
+  longitude    Float?
+  openingHours String? @map("opening_hours") @db.VarChar
+  active       Boolean @default(true)
+
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdBy    String        @map("created_by")
+  updatedBy    String?       @map("updated_by")
+  business     Business      @relation(fields: [businessId], references: [id])
+  pointsOfSale PointOfSale[]
+
+  @@map("branches")
+}
+
+model PointOfSale {
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  branchId String  @map("branch_id") @db.Uuid
+  code     String? @db.VarChar
+  name     String  @db.VarChar
+  active   Boolean @default(true)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy String   @map("created_by")
+  updatedBy String?  @map("updated_by")
+  branch    Branch   @relation(fields: [branchId], references: [id])
+
+  @@map("points_of_sale")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum MemberRole {
+  OWNER      // Dueño (asignado automáticamente al crear el negocio)
+  ADMIN      // Administrador total excepto eliminar el negocio
+  MANAGER    // Gestiona productos, órdenes y reportes
+  SELLER     // Solo crea y gestiona ventas/órdenes
+  INVENTORY  // Solo gestiona stock, entradas y salidas
+  VIEWER     // Solo lectura
+}
+
+enum BusinessType {
+  ADMINISTRACION
+  SERVICIO
+  TIENDA
+  RESTAURANT
+  HOTEL
+  CAPACITACION
+  INSTITUTO
+  COLEGIO
+  TRANSPORTE
+  SALUD
+  ENTRETENIMIENTO
+  ECOMMERCE
+  CONSULTORIA
+}

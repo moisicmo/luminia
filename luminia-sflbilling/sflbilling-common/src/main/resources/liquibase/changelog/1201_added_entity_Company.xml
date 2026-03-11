@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1201-1" author="jhipster">
+        <createSequence sequenceName="company_seq" startValue="1050" incrementBy="50"/>
+        <createTable tableName="company">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="business_code" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="nit" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="business_name" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="city" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="phone" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="address" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="system_code" type="varchar(50)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="package_send" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_send" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_notification" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="token" type="varchar(500)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="environment_siat" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modality_siat" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="logo" type="bytea">
+                <constraints nullable="true"/>
+            </column>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <addUniqueConstraint columnNames="nit, modality_siat" tableName="company"/>
+    </changeSet>
+</databaseChangeLog>

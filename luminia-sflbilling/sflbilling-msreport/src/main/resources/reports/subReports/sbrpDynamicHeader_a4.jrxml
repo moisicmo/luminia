@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sbrpDynamicHeader" pageWidth="554" pageHeight="842" columnWidth="554" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="c4063bf1-300a-47e0-9386-0d4bfed5dad7">
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="351"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="640"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Test"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="keyR" class="java.lang.String"/>
+	<field name="valueR" class="java.lang.String"/>
+	<field name="keyL" class="java.lang.String"/>
+	<field name="valueL" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" isPrintRepeatedValues="false" x="100" y="0" width="180" height="11" isRemoveLineWhenBlank="true" uuid="19aa2c3f-f324-4a7b-a0fc-872b32799ee6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+					<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+					<printWhenExpression><![CDATA[($F{valueL} != null || $F{valueL} != "")]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Top" markup="styled">
+					<font size="8"/>
+					<paragraph lineSpacingSize="1.0" spacingBefore="0" spacingAfter="0"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valueL}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" isPrintRepeatedValues="false" x="404" y="0" width="65" height="11" isRemoveLineWhenBlank="true" uuid="2fb2a113-a02f-457a-badf-daf45a1bebfe">
+					<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<printWhenExpression><![CDATA[($F{valueR} != null || $F{valueR} != "")]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Top" markup="styled">
+					<font size="8"/>
+					<paragraph lineSpacingSize="1.0" spacingBefore="0" spacingAfter="0"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valueR}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" isPrintRepeatedValues="false" x="0" y="0" width="99" height="11" isRemoveLineWhenBlank="true" uuid="62e735d1-fdfd-4d35-8f03-d9db980f3880">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="styled">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{keyL} + ":"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+				<reportElement stretchType="ElementGroupHeight" isPrintRepeatedValues="false" x="312" y="0" width="91" height="11" isRemoveLineWhenBlank="true" uuid="bfcb3de2-daf7-4451-9078-8fa91127bd39">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="styled">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{keyR} + ":"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

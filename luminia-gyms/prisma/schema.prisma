@@ -1,0 +1,425 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Gyms ─────────────────────────────────────────────────────────────────────
+// Vertical específico de gimnasios. Complementa luminia-business sin duplicar.
+//
+// Lo que YA está en otros servicios (solo referenciado por ID):
+//   businessId → luminia-business (Business)    nombre, logo, taxId, etc.
+//   branchId   → luminia-business (Branch)      dirección, coords, horarios
+//   memberId   → luminia-users   (Person)       datos de identidad del cliente
+//
+// Lo que vive AQUÍ:
+//   GymProfile        → perfil extendido del gym para descubrimiento (tipo Uber)
+//   GymBranchProfile  → perfil extendido por sucursal (amenidades, fotos, aforo)
+//   Equipment         → máquinas disponibles por sucursal
+//   GymClass          → tipos de clases que ofrece el gym
+//   ClassSchedule     → ocurrencias de esas clases (día/hora/instructor)
+//   ClassBooking      → reservas de miembros en un horario
+//   Exercise          → catálogo de ejercicios del gym
+//   Routine           → plantilla de rutina de entrenamiento
+//   RoutineExercise   → ejercicios dentro de una rutina
+//   MemberRoutine     → asignación de rutina a un miembro
+//   MemberPhysical    → historial de datos físicos (peso, talla, medidas)
+//   Habit             → hábito configurable (beber agua, dormir 8h, etc.)
+//   UserHabit         → hábito asignado/adoptado por un usuario
+//   HabitLog          → registro diario de cumplimiento de hábito
+
+// ─── Perfil del gimnasio (descubrimiento) ─────────────────────────────────────
+// Extiende luminia-business/Business con info relevante para la app de búsqueda.
+// Un negocio de tipo GYM tiene exactamente un GymProfile.
+
+model GymProfile {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String   @unique @map("business_id") @db.Uuid  // ref Business
+  description   String?  @db.Text
+  coverImage    String?  @map("cover_image") @db.VarChar(1000)
+  amenities     String[] // ["Duchas", "Estacionamiento", "WiFi", "Cafetería"]
+  rating        Decimal  @default(0) @db.Decimal(3, 2)         // 0.00 – 5.00
+  reviewCount   Int      @default(0) @map("review_count")
+  discoverable  Boolean  @default(true)                        // aparece en búsqueda
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy     String   @map("created_by") @db.Uuid
+
+  branchProfiles GymBranchProfile[]
+  reviews        GymReview[]
+
+  @@map("gym_profiles")
+}
+
+// Perfil extendido por sucursal — cada sucursal del gym puede tener su propia
+// descripción, fotos, aforo y amenidades específicas.
+model GymBranchProfile {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  gymProfileId String     @map("gym_profile_id") @db.Uuid
+  branchId     String     @unique @map("branch_id") @db.Uuid  // ref Branch
+  description  String?    @db.Text
+  capacity     Int?                                            // aforo máximo
+  photos       String[]                                        // URLs de fotos
+  amenities    String[]                                        // puede diferir del gym padre
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at")
+  createdBy    String     @map("created_by") @db.Uuid
+
+  gymProfile GymProfile  @relation(fields: [gymProfileId], references: [id])
+  equipment  Equipment[]
+  classes    GymClass[]
+
+  @@map("gym_branch_profiles")
+}
+
+// Reseña de un miembro sobre el gym (para el rating)
+model GymReview {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  gymProfileId String    @map("gym_profile_id") @db.Uuid
+  memberId     String    @map("member_id") @db.Uuid   // personId
+  rating       Int                                     // 1–5
+  comment      String?   @db.Text
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  gymProfile GymProfile @relation(fields: [gymProfileId], references: [id])
+
+  @@unique([gymProfileId, memberId])
+  @@map("gym_reviews")
+}
+
+// ─── Equipamiento ─────────────────────────────────────────────────────────────
+
+model Equipment {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  branchProfileId  String          @map("branch_profile_id") @db.Uuid
+  name             String          @db.VarChar(150)    // "Caminadora NordicTrack"
+  category         EquipmentCategory
+  brand            String?         @db.VarChar(100)
+  quantity         Int             @default(1)
+  status           EquipmentStatus @default(ACTIVE)
+  imageUrl         String?         @map("image_url") @db.VarChar(1000)
+  notes            String?         @db.VarChar
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at")
+  createdBy        String          @map("created_by") @db.Uuid
+
+  branchProfile GymBranchProfile @relation(fields: [branchProfileId], references: [id])
+
+  @@map("equipment")
+}
+
+// ─── Clases y horarios ────────────────────────────────────────────────────────
+
+model GymClass {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  branchProfileId String   @map("branch_profile_id") @db.Uuid
+  name            String   @db.VarChar(100)    // "Spinning", "Yoga", "CrossFit"
+  description     String?  @db.Text
+  durationMin     Int      @map("duration_min") // duración en minutos
+  capacity        Int?                          // null = sin límite
+  imageUrl        String?  @map("image_url") @db.VarChar(1000)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy       String   @map("created_by") @db.Uuid
+
+  branchProfile GymBranchProfile @relation(fields: [branchProfileId], references: [id])
+  schedules     ClassSchedule[]
+
+  @@map("gym_classes")
+}
+
+// Ocurrencia específica de una clase (día + hora + instructor)
+model ClassSchedule {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  gymClassId   String         @map("gym_class_id") @db.Uuid
+  instructorId String?        @map("instructor_id") @db.Uuid  // personId
+  startAt      DateTime       @map("start_at")
+  endAt        DateTime       @map("end_at")
+  location     String?        @db.VarChar(100)  // "Sala A", "Área funcional"
+  status       ScheduleStatus @default(SCHEDULED)
+  cancelReason String?        @map("cancel_reason") @db.VarChar
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at")
+  createdBy    String         @map("created_by") @db.Uuid
+
+  gymClass GymClass       @relation(fields: [gymClassId], references: [id])
+  bookings ClassBooking[]
+
+  @@index([gymClassId, startAt])
+  @@map("class_schedules")
+}
+
+// Reserva de un miembro en un horario
+model ClassBooking {
+  id         String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  scheduleId String        @map("schedule_id") @db.Uuid
+  memberId   String        @map("member_id") @db.Uuid   // personId
+  status     BookingStatus @default(RESERVED)
+  attendedAt DateTime?     @map("attended_at")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @default(now()) @updatedAt @map("updated_at")
+
+  schedule ClassSchedule @relation(fields: [scheduleId], references: [id])
+
+  @@unique([scheduleId, memberId])
+  @@index([memberId])
+  @@map("class_bookings")
+}
+
+// ─── Ejercicios y rutinas ─────────────────────────────────────────────────────
+
+// Catálogo de ejercicios por negocio (o globales si businessId = null)
+model Exercise {
+  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String?       @map("business_id") @db.Uuid  // null = ejercicio global Luminia
+  name        String        @db.VarChar(150)   // "Sentadilla", "Press banca"
+  muscleGroup MuscleGroup   @map("muscle_group")
+  equipment   String?       @db.VarChar(100)   // "Barra", "Mancuernas", "Peso corporal"
+  description String?       @db.Text
+  videoUrl    String?       @map("video_url") @db.VarChar(1000)
+  imageUrl    String?       @map("image_url") @db.VarChar(1000)
+  active      Boolean       @default(true)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdBy   String        @map("created_by") @db.Uuid
+
+  routineExercises RoutineExercise[]
+
+  @@map("exercises")
+}
+
+// Plantilla de rutina de entrenamiento
+model Routine {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String   @map("business_id") @db.Uuid
+  name          String   @db.VarChar(150)   // "Rutina full body 3 días"
+  goal          String?  @db.VarChar(100)   // "Hipertrofia", "Pérdida de peso", "Fuerza"
+  level         FitnessLevel @default(BEGINNER)
+  durationWeeks Int?     @map("duration_weeks")
+  description   String?  @db.Text
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy     String   @map("created_by") @db.Uuid
+
+  exercises   RoutineExercise[]
+  assignments MemberRoutine[]
+
+  @@map("routines")
+}
+
+// Ejercicio dentro de una rutina con su configuración
+model RoutineExercise {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routineId    String   @map("routine_id") @db.Uuid
+  exerciseId   String   @map("exercise_id") @db.Uuid
+  dayNumber    Int      @map("day_number")     // día de la rutina (1, 2, 3...)
+  order        Int                              // orden dentro del día
+  sets         Int?                             // series
+  reps         String?  @db.VarChar(20)        // "8-12", "Al fallo", "20"
+  restSeconds  Int?     @map("rest_seconds")
+  notes        String?  @db.VarChar
+
+  routine  Routine  @relation(fields: [routineId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+
+  @@unique([routineId, exerciseId, dayNumber, order])
+  @@map("routine_exercises")
+}
+
+// Asignación de rutina a un miembro específico
+model MemberRoutine {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  memberId   String    @map("member_id") @db.Uuid   // personId
+  businessId String    @map("business_id") @db.Uuid
+  routineId  String    @map("routine_id") @db.Uuid
+  assignedBy String    @map("assigned_by") @db.Uuid  // personId del entrenador
+  startDate  DateTime  @map("start_date") @db.Date
+  endDate    DateTime? @map("end_date") @db.Date
+  active     Boolean   @default(true)
+  notes      String?   @db.VarChar
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  routine Routine @relation(fields: [routineId], references: [id])
+
+  @@index([memberId, active])
+  @@map("member_routines")
+}
+
+// ─── Datos físicos del miembro ────────────────────────────────────────────────
+// Historial de evolución física. Cada visita/medición es una fila.
+
+model MemberPhysical {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  memberId     String   @map("member_id") @db.Uuid   // personId
+  businessId   String   @map("business_id") @db.Uuid
+  recordedAt   DateTime @map("recorded_at") @db.Date
+  weightKg     Decimal? @map("weight_kg") @db.Decimal(5, 2)
+  heightCm     Decimal? @map("height_cm") @db.Decimal(5, 2)
+  bodyFatPct   Decimal? @map("body_fat_pct") @db.Decimal(5, 2)
+  muscleKg     Decimal? @map("muscle_kg") @db.Decimal(5, 2)
+  bmi          Decimal? @db.Decimal(5, 2)   // calculado: peso / (talla^2)
+  notes        String?  @db.VarChar
+  createdAt    DateTime @default(now()) @map("created_at")
+  createdBy    String   @map("created_by") @db.Uuid
+
+  measurements BodyMeasurement[]
+
+  @@index([memberId, recordedAt])
+  @@map("member_physicals")
+}
+
+// Medidas corporales detalladas (opcionales, parte de MemberPhysical)
+model BodyMeasurement {
+  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  memberPhysicalId String        @map("member_physical_id") @db.Uuid
+  part             BodyPart
+  valueCm          Decimal       @map("value_cm") @db.Decimal(5, 2)
+
+  memberPhysical MemberPhysical @relation(fields: [memberPhysicalId], references: [id])
+
+  @@unique([memberPhysicalId, part])
+  @@map("body_measurements")
+}
+
+// ─── Hábitos ──────────────────────────────────────────────────────────────────
+// Sistema de seguimiento de hábitos diarios.
+// businessId = null → hábito global de Luminia (pre-configurado)
+// businessId = uuid → hábito personalizado de un gym específico
+
+model Habit {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String?    @map("business_id") @db.Uuid  // null = hábito global Luminia
+  name        String     @db.VarChar(150)   // "Beber 2L de agua", "Dormir 8 horas"
+  description String?    @db.Text
+  category    HabitCategory
+  icon        String?    @db.VarChar(100)   // nombre del ícono o emoji
+  unit        String?    @db.VarChar(50)    // "vasos", "horas", "minutos", "km"
+  targetValue Decimal?   @map("target_value") @db.Decimal(8, 2) // meta diaria (ej: 8 vasos)
+  active      Boolean    @default(true)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @default(now()) @updatedAt @map("updated_at")
+  createdBy   String     @map("created_by") @db.Uuid
+
+  userHabits UserHabit[]
+
+  @@map("habits")
+}
+
+// Hábito adoptado por un usuario (lo activa desde la app)
+model UserHabit {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid        // personId
+  habitId       String    @map("habit_id") @db.Uuid
+  targetValue   Decimal?  @map("target_value") @db.Decimal(8, 2) // puede personalizar la meta
+  reminderTime  String?   @map("reminder_time") @db.VarChar(5)   // "07:30" — hora del push
+  active        Boolean   @default(true)
+  startedAt     DateTime  @default(now()) @map("started_at") @db.Date
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  habit Habit       @relation(fields: [habitId], references: [id])
+  logs  HabitLog[]
+
+  @@unique([userId, habitId])
+  @@map("user_habits")
+}
+
+// Registro diario de cumplimiento — el usuario marca si lo hizo o no
+model HabitLog {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userHabitId String    @map("user_habit_id") @db.Uuid
+  date        DateTime  @db.Date                              // día del registro
+  completed   Boolean   @default(false)
+  value       Decimal?  @db.Decimal(8, 2)                    // cuánto hizo (ej: 6 vasos de 8)
+  notes       String?   @db.VarChar
+  loggedAt    DateTime  @default(now()) @map("logged_at")
+
+  userHabit UserHabit @relation(fields: [userHabitId], references: [id])
+
+  @@unique([userHabitId, date])
+  @@map("habit_logs")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum EquipmentCategory {
+  CARDIO       // caminadoras, bicicletas, elípticas
+  STRENGTH     // máquinas de fuerza, cables
+  FREE_WEIGHTS // pesas libres, mancuernas, barras
+  FUNCTIONAL   // TRX, cajones, cuerdas
+  STRETCHING   // colchonetas, rodillos
+  OTHER
+}
+
+enum EquipmentStatus {
+  ACTIVE
+  MAINTENANCE
+  OUT_OF_SERVICE
+}
+
+enum ScheduleStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  RESERVED
+  ATTENDED
+  CANCELLED
+  NO_SHOW
+}
+
+enum MuscleGroup {
+  CHEST
+  BACK
+  SHOULDERS
+  BICEPS
+  TRICEPS
+  FOREARMS
+  ABS
+  GLUTES
+  QUADRICEPS
+  HAMSTRINGS
+  CALVES
+  FULL_BODY
+  CARDIO
+}
+
+enum FitnessLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum BodyPart {
+  CHEST
+  WAIST
+  HIPS
+  LEFT_ARM
+  RIGHT_ARM
+  LEFT_THIGH
+  RIGHT_THIGH
+  LEFT_CALF
+  RIGHT_CALF
+  NECK
+  SHOULDERS
+}
+
+enum HabitCategory {
+  HYDRATION   // agua, líquidos
+  SLEEP       // sueño y descanso
+  EXERCISE    // actividad física
+  NUTRITION   // alimentación
+  MINDFULNESS // meditación, respiración
+  MOBILITY    // estiramiento, flexibilidad
+  CUSTOM      // hábito libre
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="0000-3" author="jhipster">
+<!--        <loadData usePreparedStatements="true" tableName="company" separator=";" file="liquibase/data/company.csv"/>-->
+<!--        <loadData usePreparedStatements="true" tableName="branch_office" separator=";" file="liquibase/data/branch_office.csv"/>-->
+        <loadData usePreparedStatements="true" tableName="jhi_user" separator=";" file="liquibase/data/user.csv"/>
+        <loadData usePreparedStatements="true" tableName="jhi_authority" separator=";" file="liquibase/data/authority.csv"/>
+        <loadData usePreparedStatements="true" tableName="jhi_user_authority" separator=";" file="liquibase/data/user_authority.csv"/>
+        <loadData usePreparedStatements="true" tableName="offline" separator=";" file="liquibase/data/offline.csv"/>
+    </changeSet>
+</databaseChangeLog>

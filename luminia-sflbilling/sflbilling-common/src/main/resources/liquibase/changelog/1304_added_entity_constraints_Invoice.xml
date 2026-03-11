@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="1304-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="cufd_id"
+                                 baseTableName="invoice"
+                                 constraintName="fk_invoice_cufd_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cufd"/>
+
+        <addForeignKeyConstraint baseColumnNames="sector_document_type_id"
+                                 baseTableName="invoice"
+                                 constraintName="fk_invoice_sector_document_type_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="sector_document_type"/>
+
+        <addForeignKeyConstraint baseColumnNames="broadcast_type_id"
+                                 baseTableName="invoice"
+                                 constraintName="fk_invoice_broadcast_type_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="broadcast_type"/>
+
+        <addForeignKeyConstraint baseColumnNames="invoice_type_id"
+                                 baseTableName="invoice"
+                                 constraintName="fk_invoice_invoice_type_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="invoice_type"/>
+    </changeSet>
+</databaseChangeLog>

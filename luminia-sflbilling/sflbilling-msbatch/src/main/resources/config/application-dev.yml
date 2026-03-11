@@ -1,0 +1,102 @@
+logging:
+  level:
+    ROOT: DEBUG
+    org.hibernate.SQL: OFF
+    bo.com.luminia.sflbilling.msbatch: DEBUG
+
+spring:
+  devtools:
+    restart:
+      enabled: true
+      additional-exclude: static/**
+    livereload:
+      enabled: false # we use Webpack dev server + BrowserSync for livereload
+  jackson:
+    serialization:
+      indent-output: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost:5432/sflbilling
+    username: postgres
+    password: 123456
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+  jpa:
+    database-platform: bo.com.luminia.sflbilling.msbatch.config.dbplatform.FixedPostgreSQL10Dialect
+  liquibase:
+    # Remove 'faker' if you do not want the sample data to be loaded automatically
+    contexts: dev, faker
+  messages:
+    cache-duration: PT1S # 1 second, see the ISO 8601 standard
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8084
+
+coreprop:
+  # CORS is only enabled by default with the "dev" profile
+  cors:
+    allowed-origins: '*'
+    allowed-methods: '*'
+    allowed-headers: '*'
+    exposed-headers: 'Authorization,X-Total-Count'
+    allow-credentials: true
+    max-age: 1800
+  security:
+    authentication:
+      jwt:
+        # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
+        base64-secret: NjkzYjg2MjBlN2IzNjNlZDEyOGNkNGZlMzQyMTJlYTMyOTgyNDk2NmM4YTUxNzZkYWI2ZWU3MzYxYjcxYjNkNzI4YjIzOWY1YjUyZTNiMTI5YmRiNzJjYmQ5NDM2OTcyN2JiNzUyOWI3YTQxMWU0Y2RjMWEzZjliNTdjZWIyNDI=
+        # Token is valid 24 hours
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000
+
+# application:
+invoice:
+  path-temp-folder: "/Users/moises/Desktop/projects"
+  number-massive: 2000
+  number-pack: 500
+batch-validate:
+  cron: "0 * * ? * *"
+expiration:
+  cron: "0 0 8 * * ?"
+  days: 30
+notification:
+  endpoint: "http://199.3.0.179:8080/api/email/send"
+  online-offline-stage: "prepdoduccion"
+  online-offline-email: "pauloo@luminia.com.bo"
+
+online:
+  pack-cron: "*/40 * * * * ?"
+  validate-cron: "*/45 * * * * ?"
+offline:
+  cron : "*/30 * * * * ?"
+  apiKey : "TokenApi eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJTSU5URVNJMjAyMCIsImNvZGlnb1Npc3RlbWEiOiI2RDI0MTI1OENBODI0OUE2NkZFQjhFRiIsIm5pdCI6Ikg0c0lBQUFBQUFBQUFETTBNTEl3TXpjMU1ESUJBSFl6bHZnS0FBQUEiLCJpZCI6MTA3NzE5MCwiZXhwIjoxNjcyNDQ0ODAwLCJpYXQiOjE2NDA5NjEzOTQsIm5pdERlbGVnYWRvIjoxMDI4Njc1MDI0LCJzdWJzaXN0ZW1hIjoiU0ZFIn0.bKwMU_WTie8psBT_Rm_lWyxaB5kvu03zDnbMv30tIdIIODvCa2fFcWdC9KL2urdefAs9kzV2rMgQquScEkkGrA"
+  try-number: 3
+  try-time-connection: 2000
+siat:
+  soap-service: "https://pilotosiatservicios.impuestos.gob.bo/v2/"
+  soap-timeout-connect: 500
+  soap-timeout-request: 15000
+connectivity:
+  check-method: 2
+  host: "pilotosiatservicios.impuestos.gob.bo"
+  port: 443
+  timeout: 500
+batch-revalidate-invoices:
+  cron: "*/30 * * * * ?"
+  quantity: 30
+  url-qr: "https://pilotosiat.impuestos.gob.bo/consulta/QR?nit=%s&cuf=%s&numero=%s&t=0"
+  seconds-from-emitted: 60
+  cron-failed: "*/30 * * * * ?"
+  quantity-failed: 10
+sfl-integration:
+  url-login: "http://199.3.0.179:8000/security/v1/authenticate"
+  user: "admin"
+  password: "admin"
+  url-revert-force: "http://localhost:8082/api/invoices/cancellationsAllParams"
+check-token-certificate:
+  cron: "0 0 6 * * ?"
+  days-to-notify: 100

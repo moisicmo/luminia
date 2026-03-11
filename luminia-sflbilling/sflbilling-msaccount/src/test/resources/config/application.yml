@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: SflBillingMsAccount
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost:5432/sflbilling
+    username: postgres
+    password: postgres
+    hikari:
+      auto-commit: false
+  jpa:
+    database-platform: bo.com.luminia.sflbilling.msaccount.config.dbplatform.FixedPostgreSQL10Dialect
+  jackson:
+    serialization:
+      write-durations-as-timestamps: false
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    properties:
+      hibernate.id.new_generator_mappings: true
+      hibernate.connection.provider_disables_autocommit: true
+      hibernate.cache.use_second_level_cache: false
+      hibernate.cache.use_query_cache: false
+      hibernate.generate_statistics: false
+      hibernate.hbm2ddl.auto: validate
+      hibernate.jdbc.time_zone: UTC
+      hibernate.query.fail_on_pagination_over_collection_fetch: true
+  liquibase:
+    contexts: test
+  main:
+    allow-bean-definition-overriding: true
+  messages:
+    basename: i18n/messages
+  task:
+    execution:
+      thread-name-prefix: sflbilling-msaccount-task-
+      pool:
+        core-size: 1
+        max-size: 50
+        queue-capacity: 10000
+    scheduling:
+      thread-name-prefix: sflbilling-msaccount-scheduling-
+      pool:
+        size: 1
+  thymeleaf:
+    mode: HTML
+
+server:
+  port: 10344
+  address: localhost
+
+coreprop:
+  security:
+    authentication:
+      jwt:
+        base64-secret: NjkzYjg2MjBlN2IzNjNlZDEyOGNkNGZlMzQyMTJlYTMyOTgyNDk2NmM4YTUxNzZkYWI2ZWU3MzYxYjcxYjNkNzI4YjIzOWY1YjUyZTNiMTI5YmRiNzJjYmQ5NDM2OTcyN2JiNzUyOWI3YTQxMWU0Y2RjMWEzZjliNTdjZWIyNDI=
+        token-validity-in-seconds: 86400
+
+# application:
+security :
+  password : "sflb1ll1ing-ms4c0unt"

@@ -1,0 +1,75 @@
+name: luminia-sfl${ENVIRONMENT_NAME:-}
+
+networks:
+  network-app:
+    name: network-sfl${ENVIRONMENT_NAME:-}
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${NETWORK_SUBNET:-10.200.15.0/25}
+
+volumes:
+  sfl-db-vol:
+    name: sfl-db-vol${ENVIRONMENT_NAME:-}
+
+services:
+  # -----------------------------------------------------
+  # BACKEND PROJECTS
+  account1:
+    container_name: accountms1-sfl${ENVIRONMENT_NAME:-}
+    networks:
+      network-app:
+    environment:
+      LOGGING_FILE_NAME: /var/log/app/accountms1.log
+    extends:
+      file: services/01-accountms.yml
+      service: account
+
+  invoice1:
+    container_name: invoicems1-sfl${ENVIRONMENT_NAME:-}
+    networks:
+      network-app:
+    environment:
+      LOGGING_FILE_NAME: /var/log/app/invoicems1.log
+    extends:
+      file: services/02-invoicems.yml
+      service: invoice
+
+  report1:
+    container_name: reportms1-sfl${ENVIRONMENT_NAME:-}
+    networks:
+      network-app:
+    environment:
+      LOGGING_FILE_NAME: /var/log/app/reportms1.log
+    extends:
+      file: services/03-reportms.yml
+      service: report
+
+  batch1:
+    container_name: batchms1-sfl${ENVIRONMENT_NAME:-}
+    networks:
+      network-app:
+    environment:
+      LOGGING_FILE_NAME: /var/log/app/batchms1.log
+    extends:
+      file: services/04-batchms.yml
+      service: batch
+
+  # -----------------------------------------------------------
+  # GATEWAY WITH NGINX
+  gwapi:
+    container_name: gatewayapi-sfl${ENVIRONMENT_NAME:-}
+    networks:
+      network-app:
+    extends:
+      file: services/101-nginx.yml
+      service: gwapi
+
+  # -----------------------------------------------------------
+  # DATABASE DEVELOPMENT
+  sfl-db:
+    networks:
+      network-app:
+    extends:
+      file: database.yml
+      service: database

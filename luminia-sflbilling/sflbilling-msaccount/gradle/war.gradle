@@ -1,0 +1,12 @@
+apply plugin: "war"
+
+bootWar {
+    mainClassName = "bo.com.luminia.sflbilling.msaccount.MsAccountApp"
+    includes = ["WEB-INF/**", "META-INF/**"]
+}
+
+war {
+    enabled = true
+    archiveExtension = "war.original"
+    includes = ["WEB-INF/**", "META-INF/**"]
+}

@@ -1,0 +1,13 @@
+package bo.com.luminia.sflbilling.msbatch.repository;
+
+import bo.com.luminia.sflbilling.domain.SignificantEvent;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface SignificantEventRepository extends JpaRepository<SignificantEvent, Long> {
+    List<SignificantEvent> findAllByCompanyIdAndActiveIsTrue(Integer activityId);
+
+    SignificantEvent findByCompanyIdAndSiatIdAndActiveTrue(Integer companyId, Integer siatId);
+
+}

@@ -1,0 +1,19 @@
+name: luminia-sfl
+
+services:
+  database:
+    container_name: sfl-db${ENVIRONMENT_NAME:-}
+    image: postgres:14.1-alpine
+    restart: unless-stopped
+    environment:
+      TZ: America/La_Paz
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-sflbilling_db}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - sfl-db-vol:/var/lib/postgresql/data/
+    ports:
+      - "${DATABASE_PORT:-0.0.0.0:5432}:5432"
+    command:
+      -c max_connections=${DATABASE_MAX_CONNECTIONS:-1000}

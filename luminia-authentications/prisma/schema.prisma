@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  personId        String           @id @map("person_id") @db.Uuid
+  username        String?          @unique @db.VarChar
+  password        String           @db.VarChar
+  passwordSalt    String           @map("password_salt") @db.VarChar
+  state           State            @default(PENDIENTE)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at")
+  authentications Authentication[]
+  sessions        Session[]
+  forgotPasswords ForgotPassword[]
+
+  @@map("users")
+}
+
+model ForgotPassword {
+  id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String @map("user_id") @db.Uuid
+  verifierToken String @map("verifier_token") @db.VarChar
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+  createdBy String    @map("created_by")
+  updatedBy String?   @map("updated_by")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  user      User      @relation(fields: [userId], references: [personId])
+
+  @@map("forgot_passwords")
+}
+
+model Session {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  sessionToken String   @unique @map("session_token") @db.VarChar
+  refreshToken String   @unique @map("refresh_token") @db.VarChar
+  lastAccessed DateTime @default(now()) @map("last_accessed")
+  userAgent    String   @map("user_agent") @db.VarChar
+  ipAddress    String   @map("ip_address") @db.VarChar
+  fcmToken     String?  @map("fcm_token") @db.VarChar
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+  createdBy String    @map("created_by")
+  updatedBy String?   @map("updated_by")
+  expiresAt DateTime
+  revokedAt DateTime?
+  user      User      @relation(fields: [userId], references: [personId])
+
+  @@map("sessions")
+}
+
+model Authentication {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  typeAuth        TypeAuth @default(EMAIL) @map("type_auth")
+  data            String   @db.VarChar
+  validated       Boolean  @default(false)
+  tokenValidation String?  @unique @map("token_validation")
+  active          Boolean  @default(true)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy String   @map("created_by")
+  updatedBy String?  @map("updated_by")
+  user      User     @relation(fields: [userId], references: [personId])
+
+  @@unique([userId, typeAuth, data])
+  @@map("authentications")
+}
+
+// emuns section
+enum TypeAuth {
+  PHONE
+  EMAIL
+  FACEBOOK
+  GOOGLE
+  APPLE
+}
+
+enum State {
+  ACTIVO
+  INACTIVO
+  SUSPENDIDO
+  BLOQUEADO
+  BANEADO
+  VERIFICADO
+  EN_ESPERA
+  PENDIENTE
+}

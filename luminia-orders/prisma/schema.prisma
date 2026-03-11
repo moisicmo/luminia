@@ -1,0 +1,158 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Orders ───────────────────────────────────────────────────────────────────
+// Universal para todos los tipos de negocio (retail, gimnasio, servicio, etc.)
+// businessId → luminia-business (Business)
+// branchId   → luminia-business (PointOfSale / Branch)
+// customerId → luminia-users (Person) — null si es cliente de mostrador
+// sellerId   → luminia-users (Person) — vendedor o cajero
+//
+// Flujo de inventario (solo aplica a ítems tipo PRODUCT):
+//   CONFIRMED → evento RMQ `order.confirmed` → luminia-store crea Output (SALE)
+//   RETURNED  → evento RMQ `order.returned`  → luminia-store crea Input (RETURN_FROM_CUSTOMER)
+
+model Order {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String      @map("business_id") @db.Uuid
+  branchId       String?     @map("branch_id") @db.Uuid
+  customerId     String?     @map("customer_id") @db.Uuid       // personId (null = mostrador)
+  customerName   String?     @map("customer_name") @db.VarChar(200) // snapshot o nombre libre
+  sellerId       String?     @map("seller_id") @db.Uuid         // personId del vendedor
+  orderNumber    String      @map("order_number") @db.VarChar(20)   // ej: 2026-00001
+  type           OrderType   @default(SALE)
+  status         OrderStatus @default(DRAFT)
+  currency       String      @default("PEN") @db.VarChar(3)    // ISO 4217
+  subtotal       Decimal     @default(0) @db.Decimal(15, 4)
+  discountAmount Decimal     @default(0) @map("discount_amount") @db.Decimal(15, 4)
+  taxAmount      Decimal     @default(0) @map("tax_amount") @db.Decimal(15, 4)
+  total          Decimal     @default(0) @db.Decimal(15, 4)
+  amountPaid     Decimal     @default(0) @map("amount_paid") @db.Decimal(15, 4)
+  amountDue      Decimal     @default(0) @map("amount_due") @db.Decimal(15, 4)  // total - amountPaid
+  notes          String?     @db.VarChar
+  // Refs externas al microservicio de inventario (se llenan al confirmar)
+  storeOutputId  String?     @map("store_output_id") @db.Uuid  // Output.id en luminia-store
+  confirmedAt    DateTime?   @map("confirmed_at")
+  deliveredAt    DateTime?   @map("delivered_at")
+  cancelledAt    DateTime?   @map("cancelled_at")
+  cancelReason   String?     @map("cancel_reason") @db.VarChar
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @default(now()) @updatedAt @map("updated_at")
+  createdBy      String      @map("created_by") @db.Uuid
+  updatedBy      String?     @map("updated_by") @db.Uuid
+
+  items    OrderItem[]
+  payments OrderPayment[]
+
+  @@unique([businessId, orderNumber])
+  @@index([businessId, status])
+  @@index([businessId, customerId])
+  @@map("orders")
+}
+
+// ─── Ítems de la orden ────────────────────────────────────────────────────────
+// itemType + itemId = referencia polimórfica al microservicio de origen:
+//   PRODUCT    → luminia-store    Product.id
+//   CLASS      → luminia-gyms     GymClass.id
+//   MEMBERSHIP → luminia-suscriptions Plan.id
+//   CUSTOM     → sin referencia (ítem libre, nombre manual)
+//
+// Todos los campos de precio son SNAPSHOTS al momento de la venta.
+// Nunca se actualizan aunque cambie el precio del producto.
+
+model OrderItem {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId   String   @map("order_id") @db.Uuid
+  itemType  ItemType @map("item_type")
+  itemId    String?  @map("item_id") @db.Uuid   // null si itemType = CUSTOM
+
+  // Snapshots (inmutables)
+  name      String   @db.VarChar(200)
+  sku       String?  @db.VarChar(50)
+  unitName  String?  @map("unit_name") @db.VarChar(50)  // "caja", "kg", "clase", etc.
+
+  quantity     Decimal  @db.Decimal(15, 4)
+  unitPrice    Decimal  @map("unit_price") @db.Decimal(15, 4)
+  discount     Decimal  @default(0) @db.Decimal(15, 4)
+  taxRate      Decimal? @map("tax_rate") @db.Decimal(5, 2)
+  taxAmount    Decimal  @default(0) @map("tax_amount") @db.Decimal(15, 4)
+  subtotal     Decimal  @db.Decimal(15, 4)   // qty * unitPrice - discount
+  total        Decimal  @db.Decimal(15, 4)   // subtotal + taxAmount
+
+  notes     String?  @db.VarChar
+  createdAt DateTime @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("order_items")
+}
+
+// ─── Pagos de la orden ────────────────────────────────────────────────────────
+// Una orden puede tener múltiples pagos (efectivo + QR, pago parcial, etc.)
+// paymentId → luminia-payments (Transaction.id) — se llena cuando luminia-payments confirma
+
+model OrderPayment {
+  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId   String        @map("order_id") @db.Uuid
+  paymentId String?       @map("payment_id") @db.Uuid  // ref a luminia-payments
+  method    PaymentMethod
+  amount    Decimal       @db.Decimal(15, 4)
+  currency  String        @default("PEN") @db.VarChar(3)
+  status    PaymentStatus @default(PENDING)
+  reference String?       @db.VarChar(100)  // nro de operación, voucher, código QR
+  paidAt    DateTime?     @map("paid_at")
+  createdAt DateTime      @default(now()) @map("created_at")
+  createdBy String        @map("created_by") @db.Uuid
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+  @@map("order_payments")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum OrderType {
+  SALE       // Venta normal (retail, gym, etc.)
+  RETURN     // Devolución de una venta anterior
+  QUOTE      // Cotización (no confirma ni afecta inventario)
+  SERVICE    // Prestación de servicio sin inventario
+}
+
+enum OrderStatus {
+  DRAFT      // En proceso (carrito / preventa)
+  CONFIRMED  // Confirmada — dispara descuento de inventario en luminia-store
+  DELIVERED  // Entregada físicamente al cliente
+  CANCELLED  // Anulada antes de confirmar
+  RETURNED   // Devuelta después de confirmar — dispara reingreso en luminia-store
+}
+
+enum ItemType {
+  PRODUCT    // luminia-store    → Product.id (afecta inventario al confirmar)
+  CLASS      // luminia-gyms     → GymClass.id (clase suelta)
+  MEMBERSHIP // luminia-suscriptions → Plan.id (delega a suscriptions)
+  CUSTOM     // ítem libre sin referencia a otro microservicio
+}
+
+enum PaymentMethod {
+  CASH          // Efectivo
+  CARD          // Tarjeta débito/crédito (POS)
+  QR            // QR (Yape, Plin, etc.)
+  BANK_TRANSFER // Transferencia bancaria
+  CREDIT        // Crédito / fiado (amountDue queda pendiente)
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING   // Registrado pero no confirmado
+  PAID      // Confirmado por luminia-payments
+  FAILED    // Rechazado
+  REFUNDED  // Devuelto
+}

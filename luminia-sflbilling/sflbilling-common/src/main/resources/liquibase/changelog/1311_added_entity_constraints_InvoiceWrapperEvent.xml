@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="1311-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="invoice_id"
+                                 baseTableName="invoice_wrapper_event"
+                                 constraintName="fk_invoice_wrapper_event_invoice_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="invoice"/>
+
+        <addForeignKeyConstraint baseColumnNames="wrapper_event_id"
+                                 baseTableName="invoice_wrapper_event"
+                                 constraintName="fk_invoice_wrapper_event_wrapper_event_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="wrapper_event"/>
+    </changeSet>
+</databaseChangeLog>

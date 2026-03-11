@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1315-3" author="jhipster">
+        <createTable tableName="pending_to_fix">
+            <column name="invoice_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="company_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+            <column name="action" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="counter" type="int" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fail_reason" type="varchar(2000)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <createIndex tableName="pending_to_fix" indexName="invoice_pending_to_fix_idx">
+            <column name="invoice_id"/>
+        </createIndex>
+        <createIndex tableName="pending_to_fix" indexName="company_pending_to_fix_idx">
+            <column name="company_id"/>
+        </createIndex>
+        <createIndex tableName="pending_to_fix" indexName="status_pending_to_fix_idx">
+            <column name="status"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="invoice_id"
+                                 baseTableName="pending_to_fix"
+                                 constraintName="fk_pending_to_fix_invoice_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="invoice"/>
+        <addForeignKeyConstraint baseColumnNames="event_id"
+                                 baseTableName="pending_to_fix"
+                                 constraintName="fk_pending_to_fix_event_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="event"/>
+        <addForeignKeyConstraint baseColumnNames="company_id"
+                                 baseTableName="pending_to_fix"
+                                 constraintName="fk_pending_to_fix_company_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="company"/>
+
+    </changeSet>
+</databaseChangeLog>

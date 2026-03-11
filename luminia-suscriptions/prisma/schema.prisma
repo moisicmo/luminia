@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Promotion {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String       @map("business_id") @db.Uuid
+  code         String       @unique @db.VarChar
+  discountType DiscountType @map("discount_type")
+  discount     Decimal
+  dueDate      DateTime?    @map("due_date")
+  limit        Int?
+  usedCount    Int          @default(0) @map("used_count")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy String   @map("created_by")
+  updatedBy String?  @map("updated_by")
+  plans     Plan[]
+
+  @@map("promotions")
+}
+
+model Plan {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String       @map("business_id") @db.Uuid
+  promotionId   String?      @map("promotion_id") @db.Uuid
+  name          String       @db.VarChar
+  price         Decimal      @default(0.0)
+  discountPrice Decimal      @default(0.0) @map("discount_price")
+  billingCycle  BillingCycle @map("billing_cycle")
+  seatLimit     Int          @map("seat_limit")
+  trialDays     Int          @default(0) @map("trial_days")
+  features      String?
+  active        Boolean      @default(false)
+
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at")
+  createdBy     String         @map("created_by")
+  updatedBy     String?        @map("updated_by")
+  promotion     Promotion?     @relation(fields: [promotionId], references: [id])
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id           String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  planId       String             @map("plan_id") @db.Uuid
+  ownerId      String             @map("owner_id") @db.Uuid
+  ownerType    OwnerType          @map("owner_type")
+  status       SubscriptionStatus @default(TRIAL) @map("status")
+  startDate    DateTime           @map("start_date") @db.Date
+  endDate      DateTime           @map("end_date") @db.Date
+  trialEndsAt  DateTime?          @map("trial_ends_at") @db.Date
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy String   @map("created_by")
+  updatedBy String?  @map("updated_by")
+  plan      Plan     @relation(fields: [planId], references: [id])
+
+  @@map("subscriptions")
+}
+
+// emuns section
+enum OwnerType {
+  CUSTOMER
+  BUSINESS
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+enum BillingCycle {
+  MENSUAL
+  TRIMESTRAL
+  SEMESTRAL
+  ANUAL
+}
+
+enum DiscountType {
+  MONTO
+  PORCENTAJE
+}

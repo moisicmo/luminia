@@ -1,0 +1,17 @@
+name: luminia-sfl
+
+services:
+  gwapi:
+    container_name: gatewayapi-sfl
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${GATEWAYAPI_NGINX_CONF:-../nginx/nginx.conf}:/etc/nginx/nginx.conf
+      - ${GATEWAYAPI_DEFAULT_CONF:-../nginx/conf.d/sfl_api.conf}:/etc/nginx/conf.d/default.conf
+      - ../nginx/util.d/:/etc/nginx/util.d/
+      - ${LOGS_DIR:-~/logs}/gateway-api/:/var/log/nginx/
+    environment:
+      TZ: America/La_Paz
+    ports:
+      - ${GATEWAYAPI_PORT:-0.0.0.0:8000}:80

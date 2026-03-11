@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="1316-1" author="jhipster">
+        <createSequence sequenceName="valid_identity_document_type_seq" startValue="1050" incrementBy="50"/>
+        <createTable tableName="valid_identity_document_type">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="siat_code" type="tinyint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="complement" type="varchar(5)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="social_reason" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+
+        </createTable>
+        <createIndex tableName="valid_identity_document_type" indexName="valid_identity_document_type_code_idx">
+            <column name="siat_code"/>
+        </createIndex>
+        <createIndex tableName="valid_identity_document_type" indexName="valid_identity_document_type_doc_idx">
+            <column name="document"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

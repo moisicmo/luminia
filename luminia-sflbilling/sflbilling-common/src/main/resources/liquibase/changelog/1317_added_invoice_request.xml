@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1317-1" author="jhipster">
+        <createSequence sequenceName="invoice_request_seq" startValue="50" incrementBy="50"/>
+        <createTable tableName="invoice_request">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="request_date" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <column name="response_date" type="datetime">
+                <constraints nullable="true" />
+            </column>
+            <column name="company_id" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="invoice_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+            <column name="request" type="${clobType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="cuf" type="varchar(70)">
+                <constraints nullable="true" />
+            </column>
+            <column name="observation" type="varchar(500)">
+                <constraints nullable="true" />
+            </column>
+            <column name="response" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="elapsed_time" type="bigint" defaultValue="0">
+                <constraints nullable="false" />
+            </column>
+            <column name="type" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+          </createTable>
+        <createIndex tableName="invoice_request" indexName="invoice_request_invoice_id_idx">
+            <column name="invoice_id"/>
+        </createIndex>
+        <createIndex tableName="invoice_request" indexName="invoice_request_company_id_idx">
+            <column name="company_id"/>
+        </createIndex>
+        <addForeignKeyConstraint baseColumnNames="invoice_id"
+                                 baseTableName="invoice_request"
+                                 constraintName="fk_invoice_invoice_request_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="invoice"/>
+        <addForeignKeyConstraint baseColumnNames="company_id"
+                                 baseTableName="invoice_request"
+                                 constraintName="fk_company_invoice_request_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="company"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,7 @@
+package bo.com.luminia.sflbilling.msreport.repository;
+
+import bo.com.luminia.sflbilling.domain.InvoiceWrapperEvent;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface InvoiceWrapperEventRepository extends JpaRepository<InvoiceWrapperEvent, Long> {
+}

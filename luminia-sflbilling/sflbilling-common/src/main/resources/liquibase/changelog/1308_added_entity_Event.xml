@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1308-1" author="jhipster">
+        <createSequence sequenceName="event_seq" startValue="1050" incrementBy="50"/>
+        <createTable tableName="event">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="cufd_event" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reception_code" type="integer">
+                <constraints nullable="true"/>
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cafc" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="branch_office_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="significant_event_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="point_sale_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+        <dropDefaultValue tableName="event" columnName="start_date" columnDataType="datetime"/>
+        <dropDefaultValue tableName="event" columnName="end_date" columnDataType="datetime"/>
+    </changeSet>
+</databaseChangeLog>

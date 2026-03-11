@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Person {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  numberDocument String       @unique @map("number_document") @db.VarChar
+  typeDocument   TypeDocument @default(dni) @map("type_document")
+  name           String       @db.VarChar
+  lastName       String       @map("last_name") @db.VarChar
+  birthDate      DateTime?    @map("birth_date") @db.Date
+  image          String?      @db.VarChar
+  gender         String?      @db.Char(1)
+  nationality    String?      @db.VarChar
+  address        String?      @db.VarChar
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdBy      String       @map("created_by")
+  updatedBy      String?      @map("updated_by")
+  assignments    Assignment[]
+
+  @@map("persons")
+}
+
+model Role {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String?      @map("business_id") @db.Uuid
+  systemId    String       @map("system_id") @db.Uuid
+  name        String       @db.VarChar
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdBy   String       @map("created_by")
+  updatedBy   String?      @map("updated_by")
+  system      System       @relation(fields: [systemId], references: [id])
+  assignments Assignment[]
+  permissions Permission[]
+
+  @@map("roles")
+}
+
+model Assignment {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  personId    String   @map("person_id") @db.Uuid
+  roleId      String   @map("role_id") @db.Uuid
+  description String   @db.VarChar
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy   String   @map("created_by")
+  updatedBy   String?  @map("updated_by")
+  person      Person   @relation(fields: [personId], references: [id])
+  role        Role     @relation(fields: [roleId], references: [id])
+
+  @@unique([personId, roleId])
+  @@map("assignments")
+}
+
+model System {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @unique @db.VarChar
+  description String?   @db.Text
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+  createdBy   String    @map("created_by")
+  updatedBy   String?   @map("updated_by")
+  roles       Role[]
+  subjects    Subject[]
+
+  @@map("systems")
+}
+
+// Representa un recurso/entidad sobre el que se pueden definir permisos
+// Ej: "Factura", "Producto", "Usuario", "Reporte"
+model Subject {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  systemId    String       @map("system_id") @db.Uuid
+  name        String       @db.VarChar
+  description String?      @db.Text
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdBy   String       @map("created_by")
+  updatedBy   String?      @map("updated_by")
+  system      System       @relation(fields: [systemId], references: [id])
+  permissions Permission[]
+
+  @@unique([systemId, name])
+  @@map("subjects")
+}
+
+model Permission {
+  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  roleId    String     @map("role_id") @db.Uuid
+  action    TypeAction
+  subjectId String     @map("subject_id") @db.Uuid
+  inverted  Boolean    @default(false)
+  reason    String?    @db.Text
+  active    Boolean    @default(true)
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at")
+  createdBy String     @map("created_by")
+  updatedBy String?    @map("updated_by")
+  role      Role       @relation(fields: [roleId], references: [id])
+  subject   Subject    @relation(fields: [subjectId], references: [id])
+
+  @@unique([roleId, action, subjectId])
+  @@map("permissions")
+}
+
+// emuns section
+enum TypeDocument {
+  dni
+  nit
+  pasaporte
+  otro
+}
+
+enum TypeAction {
+  CREAR
+  LEER
+  EDITAR
+  ELIMINAR
+}

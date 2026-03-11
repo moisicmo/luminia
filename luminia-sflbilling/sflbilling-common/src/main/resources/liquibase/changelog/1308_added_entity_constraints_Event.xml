@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="1308-2" author="jhipster">
+        <addForeignKeyConstraint baseColumnNames="branch_office_id"
+                                 baseTableName="event"
+                                 constraintName="fk_event_branch_office_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="branch_office"/>
+
+        <addForeignKeyConstraint baseColumnNames="significant_event_id"
+                                 baseTableName="event"
+                                 constraintName="fk_event_significant_event_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="significant_event"/>
+
+        <addForeignKeyConstraint baseColumnNames="point_sale_id"
+                                 baseTableName="event"
+                                 constraintName="fk_event_point_sale_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="point_sale"/>
+    </changeSet>
+</databaseChangeLog>

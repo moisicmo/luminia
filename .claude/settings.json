@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rabbitmqctl list_consumers)",
+      "Bash(lsof -i :3000 -sTCP:LISTEN)",
+      "Read(//Users/moises/Desktop/projects/saas/**)",
+      "Bash(ls -la /Users/moises/Desktop/projects/saas/luminia-sflbilling/sflbilling-common/src/main/java/bo/com/luminia/sflbilling/domain/*.java)",
+      "Bash(find /Users/moises/Desktop/projects/saas/luminia-sflbilling -path */db/migration* -o -path */liquibase* -o -path */changelog*)",
+      "Bash(grep -E \"\\\\.java$\")",
+      "Bash(yarn add:*)",
+      "Bash(yarn build:*)",
+      "Bash(grep -r \"Controller\" /Users/moises/Desktop/projects/saas/luminia-billers/src/modules/*/**.controller.ts)",
+      "Bash(npx prisma:*)",
+      "Read(//Users/moises/Desktop/projects/dinokids/dinokids-front/**)",
+      "Bash(xargs cat:*)",
+      "Bash(printf \"export * from ''./auth/authSlice'';\\\\nexport * from ''./cart/cartSlice'';\\\\nexport * from ''./mall/mallSlice'';\\\\n\\\\nexport * from ''./store'';\\\\n\")",
+      "Bash(yarn typecheck:*)",
+      "Bash(/Users/moises/Desktop/projects/saas/luminia-mall/app/hooks/index.ts:*)",
+      "Bash(/Users/moises/Desktop/projects/saas/luminia-mall/app/store/index.ts:*)",
+      "Bash(timeout 10 yarn dev)"
+    ]
+  }
+}

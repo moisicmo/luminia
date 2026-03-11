@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <property name="now" value="now()" dbms="h2"/>
+    <property name="now" value="current_timestamp" dbms="postgresql"/>
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql, mariadb"/>
+    <property name="clobType" value="longvarchar" dbms="h2"/>
+    <property name="clobType" value="clob" dbms="mysql, oracle, mssql, mariadb, postgresql"/>
+    <property name="uuidType" value="uuid" dbms="h2, postgresql"/>
+    <property name="datetimeType" value="datetime(6)" dbms="mysql, mariadb"/>
+    <property name="datetimeType" value="datetime" dbms="oracle, mssql, postgresql, h2"/>
+
+    <!-- Table and Schema -->
+    <include file="liquibase/changelog/0000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1000_added_entity_Activity.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1001_added_entity_DocumentSector.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1002_added_entity_SignificantEvent.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1003_added_entity_InvoiceLegend.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1004_added_entity_ServiceMessage.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1005_added_entity_CancellationReason.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1006_added_entity_OriginCountry.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1007_added_entity_ProductService.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1008_added_entity_IdentityDocumentType.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1009_added_entity_SectorDocumentType.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1010_added_entity_BroadcastType.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1011_added_entity_InvoiceType.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1012_added_entity_RoomType.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1013_added_entity_PaymentMethodType.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1014_added_entity_CurrencyType.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1015_added_entity_PointSaleType.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1016_added_entity_MeasurementUnit.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1100_added_entity_SyncSetting.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1101_added_entity_SyncLog.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1201_added_entity_Company.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1202_added_entity_Signature.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1203_added_entity_ApprovedProduct.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1300_added_entity_BranchOffice.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1301_added_entity_PointSale.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1302_added_entity_Cuis.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1303_added_entity_Cufd.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1304_added_entity_Invoice.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1305_added_entity_ScheduleSetting.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1306_added_entity_Wrapper.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1307_added_entity_Offline.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1308_added_entity_Event.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1309_added_entity_InvoiceWrapper.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1310_added_entity_WrapperEvent.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1311_added_entity_InvoiceWrapperEvent.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1312_added_entity_WrapperLog.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1313_added_entity_Batch.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1314_added_entity_InvoiceBatch.xml" relativeToChangelogFile="false"/>
+    <!-- Constraints -->
+    <include file="liquibase/changelog/0000_initial_constraints.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1202_added_entity_constraints_Signature.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1203_added_entity_constraints_ApprovedProduct.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1300_added_entity_constraints_BranchOffice.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1301_added_entity_constraints_PointSale.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1302_added_entity_constraints_Cuis.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1303_added_entity_constraints_Cufd.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1304_added_entity_constraints_Invoice.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1305_added_entity_constraints_ScheduleSetting.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1306_added_entity_constraints_Wrapper.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1308_added_entity_constraints_Event.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1309_added_entity_constraints_InvoiceWrapper.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1310_added_entity_constraints_WrapperEvent.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1311_added_entity_constraints_InvoiceWrapperEvent.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1312_added_entity_constraints_WrapperLog.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1313_added_entity_constraints_Batch.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1314_added_entity_constraints_InvoiceBatch.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1315_added_entity_check_invoice.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1315_added_pending_to_fix.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1315_added_automatic_invoice_fix.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1316_added_valid_identity_document_type.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1316_change_branch_office_add_city.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1316_change_branch_office_add_phone.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1317_added_invoice_request.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1318_fn_search_invoice_get_amount.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1318_fn_search_invoice_query_resume.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1319_change_invoice_request.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/1320_change_offline_add_manual_status.xml" relativeToChangelogFile="false"/>
+
+    <!-- Data -->
+    <include file="liquibase/changelog/0000_initial_data.xml" relativeToChangelogFile="false"/>
+
+
+</databaseChangeLog>

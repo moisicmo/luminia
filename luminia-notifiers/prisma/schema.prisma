@@ -1,0 +1,194 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Notifiers ────────────────────────────────────────────────────────────────
+// Servicio de notificaciones desacoplado. Cualquier microservicio le envía un
+// evento RMQ y luminia-notifiers se encarga de entregarlo por el canal correcto.
+//
+// Flujo:
+//   Microservicio → RMQ event `notification.send` → luminia-notifiers
+//   luminia-notifiers → elige Provider activo → entrega → registra Notification
+//
+// Canales soportados: EMAIL, SMS, WHATSAPP, PUSH
+// Providers: SendGrid, Twilio, WhatsApp Business API, Firebase FCM, etc.
+//
+// Referencias externas:
+//   businessId  → luminia-business (puede ser null para notifs del sistema Luminia)
+//   recipientId → luminia-users (Person) — puede ser null si solo hay email/phone
+
+// ─── Configuración de providers ───────────────────────────────────────────────
+// Cada negocio puede tener sus propios providers (ej: su propio SendGrid).
+// Si no tiene, se usa el provider global de Luminia (businessId = null).
+
+model NotifierProvider {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String?      @map("business_id") @db.Uuid  // null = provider global de Luminia
+  channel     Channel
+  provider    ProviderType
+  name        String       @db.VarChar(100)  // "SendGrid producción", "Twilio SMS"
+  credentials Json         // API keys, tokens, sender info (encriptar en prod)
+  isDefault   Boolean      @default(false) @map("is_default")
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdBy   String       @map("created_by") @db.Uuid
+  updatedBy   String?      @map("updated_by") @db.Uuid
+
+  notifications Notification[]
+
+  @@unique([businessId, channel, provider, name])
+  @@map("notifier_providers")
+}
+
+// ─── Plantillas ───────────────────────────────────────────────────────────────
+// Templates reutilizables con variables interpolables: {{name}}, {{code}}, etc.
+// Una plantilla puede ser del sistema Luminia (businessId = null) o de un negocio.
+// subject solo aplica a EMAIL.
+
+model NotificationTemplate {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String?      @map("business_id") @db.Uuid  // null = plantilla global Luminia
+  channel     Channel
+  event       NotifEvent   // el evento que dispara esta plantilla
+  name        String       @db.VarChar(100)
+  subject     String?      @db.VarChar(200)  // asunto del email
+  body        String       @db.Text          // HTML (email) o texto plano (SMS/WA)
+  variables   String[]     // ["name", "code", "amount"] — documentación de variables
+  active      Boolean      @default(true)
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdBy   String       @map("created_by") @db.Uuid
+  updatedBy   String?      @map("updated_by") @db.Uuid
+
+  notifications Notification[]
+
+  @@unique([businessId, channel, event])
+  @@map("notification_templates")
+}
+
+// ─── Notificaciones (log de envíos) ──────────────────────────────────────────
+// Cada intento de envío queda registrado aquí con su resultado.
+// recipientId → luminia-users Person.id (opcional)
+// providerId  → el provider usado para el envío
+// templateId  → la plantilla usada (opcional si fue envío libre sin template)
+//
+// renderedBody guarda el cuerpo ya interpolado con las variables reales.
+// payload guarda el contexto original recibido del evento RMQ.
+// providerResponse guarda la respuesta cruda del proveedor (para debugging).
+
+model Notification {
+  id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId       String?        @map("business_id") @db.Uuid
+  providerId       String?        @map("provider_id") @db.Uuid
+  templateId       String?        @map("template_id") @db.Uuid
+  channel          Channel
+  event            NotifEvent
+  // Destinatario
+  recipientId      String?        @map("recipient_id") @db.Uuid  // personId
+  recipientAddress String         @map("recipient_address") @db.VarChar(200)
+  // email, número de teléfono, device token
+  // Contenido renderizado (snapshot inmutable)
+  subject          String?        @db.VarChar(200)
+  renderedBody     String         @map("rendered_body") @db.Text
+  // Trazabilidad
+  payload          Json?          // contexto recibido del evento (variables originales)
+  status           NotifStatus    @default(PENDING)
+  providerRef      String?        @map("provider_ref") @db.VarChar(200) // message ID del provider
+  providerResponse Json?          @map("provider_response")
+  failureReason    String?        @map("failure_reason") @db.VarChar
+  attemptCount     Int            @default(0) @map("attempt_count")
+  lastAttemptAt    DateTime?      @map("last_attempt_at")
+  sentAt           DateTime?      @map("sent_at")
+  deliveredAt      DateTime?      @map("delivered_at")
+  readAt           DateTime?      @map("read_at")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  provider NotifierProvider?     @relation(fields: [providerId], references: [id])
+  template NotificationTemplate? @relation(fields: [templateId], references: [id])
+
+  @@index([recipientId, channel])
+  @@index([businessId, event, status])
+  @@index([status, attemptCount])  // para el worker de reintentos
+  @@map("notifications")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Channel {
+  EMAIL
+  SMS
+  WHATSAPP
+  PUSH        // Firebase FCM / APNs
+}
+
+enum ProviderType {
+  // Email
+  SENDGRID
+  MAILGUN
+  SES         // Amazon SES
+  SMTP        // SMTP genérico
+  // SMS
+  TWILIO
+  INFOBIP
+  // WhatsApp
+  WHATSAPP_BUSINESS  // Meta Cloud API
+  TWILIO_WHATSAPP
+  // Push
+  FCM         // Firebase Cloud Messaging
+  APNS        // Apple Push Notification Service
+}
+
+enum NotifEvent {
+  // Auth / Cuenta
+  REGISTER_WELCOME       // bienvenida al registrarse
+  VERIFY_EMAIL           // código/link de verificación de email
+  VERIFY_PHONE           // OTP por SMS para verificar teléfono
+  FORGOT_PASSWORD        // link o código para restablecer contraseña
+  LOGIN_ALERT            // alerta de nuevo inicio de sesión
+  ACCOUNT_BLOCKED        // cuenta bloqueada
+
+  // Ventas
+  ORDER_CONFIRMED        // orden confirmada (resumen de compra)
+  ORDER_DELIVERED        // orden entregada
+  ORDER_CANCELLED        // orden cancelada
+  RECEIPT                // nota de venta / comprobante
+  INVOICE                // factura formal
+
+  // Pagos y cobros
+  PAYMENT_RECEIVED       // pago recibido
+  PAYMENT_FAILED         // pago fallido
+  DEBT_REMINDER          // recordatorio de deuda pendiente
+  DEBT_OVERDUE           // deuda vencida
+
+  // Suscripciones
+  SUBSCRIPTION_CREATED   // nueva suscripción activada
+  SUBSCRIPTION_EXPIRING  // suscripción por vencer (recordatorio)
+  SUBSCRIPTION_EXPIRED   // suscripción expirada
+  SUBSCRIPTION_RENEWED   // suscripción renovada
+
+  // Gimnasio
+  CLASS_BOOKING_CONFIRMED  // reserva de clase confirmada
+  CLASS_REMINDER           // recordatorio de clase próxima
+  CLASS_CANCELLED          // clase cancelada
+
+  // Sistema
+  CUSTOM                 // envío libre sin evento predefinido
+}
+
+enum NotifStatus {
+  PENDING     // en cola, esperando envío
+  SENDING     // en proceso de envío
+  SENT        // enviado al provider (sin confirmar entrega)
+  DELIVERED   // confirmado como entregado
+  READ        // leído (solo algunos channels lo soportan)
+  FAILED      // falló todos los intentos
+  CANCELLED   // cancelado antes de enviar
+}

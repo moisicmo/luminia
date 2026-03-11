@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1304-1" author="jhipster">
+        <createSequence sequenceName="invoice_seq" startValue="1050" incrementBy="50"/>
+        <createTable tableName="invoice">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="invoice_number" type="integer">
+                <constraints nullable="false" />
+            </column>
+            <column name="cuf" type="varchar(70)">
+                <constraints nullable="false" />
+            </column>
+            <column name="broadcast_date" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <column name="invoice_xml" type="${clobType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="invoice_hash" type="varchar(70)">
+                <constraints nullable="false" />
+            </column>
+            <column name="invoice_json" type="${clobType}">
+                <constraints nullable="false" />
+            </column>
+            <column name="nit" type="varchar(20)">
+                <constraints nullable="false" />
+            </column>
+            <column name="business_name" type="varchar(500)">
+                <constraints nullable="false" />
+            </column>
+            <column name="reception_code" type="varchar(50)">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="modality_siat" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="cufd_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="sector_document_type_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="broadcast_type_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="invoice_type_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="cafc" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+        <dropDefaultValue tableName="invoice" columnName="broadcast_date" columnDataType="datetime"/>
+        <createIndex tableName="invoice" indexName="invoice_status_idx">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="invoice" indexName="invoice_date_idx">
+            <column name="broadcast_date"/>
+        </createIndex>
+        <createIndex tableName="invoice" indexName="invoice_date_status_idx">
+            <column name="broadcast_date"/>
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

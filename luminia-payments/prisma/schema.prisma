@@ -1,0 +1,262 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Payments ─────────────────────────────────────────────────────────────────
+// luminia-payments es el administrador central de dinero del sistema.
+// NO procesa pagos directamente — registra, coordina y delega a los gateways.
+//
+// Responsabilidades:
+//   1. PaymentMethodConfig  → qué métodos de pago tiene configurado cada negocio
+//   2. Transaction          → ledger de TODOS los movimientos de dinero
+//   3. Debt                 → cuentas por cobrar (RECEIVABLE) y por pagar (PAYABLE)
+//   4. DebtPayment          → pagos parciales o totales de una deuda
+//   5. Wallet               → billetera interna con saldo por propietario
+//   6. WalletMovement       → ledger inmutable de cada movimiento de la billetera
+//
+// Referencias externas (nunca FK, solo IDs):
+//   businessId  → luminia-business (Business)
+//   referenceId → luminia-orders (Order) | luminia-suscriptions (Subscription)
+//   ownerId     → luminia-users (Person) | luminia-business (Business)
+
+// ─── Configuración de métodos de pago ─────────────────────────────────────────
+// Cada negocio configura sus propios métodos activos.
+// credentials guarda las claves del gateway (encriptar en producción).
+
+model PaymentMethodConfig {
+  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String      @map("business_id") @db.Uuid
+  type        GatewayType
+  name        String      @db.VarChar(100)  // "Stripe producción", "QR Simple tienda"
+  credentials Json?       // API keys, merchant ID, QR config, etc.
+  isDefault   Boolean     @default(false) @map("is_default")
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @default(now()) @updatedAt @map("updated_at")
+  createdBy   String      @map("created_by") @db.Uuid
+  updatedBy   String?     @map("updated_by") @db.Uuid
+
+  transactions Transaction[]
+
+  @@unique([businessId, type, name])
+  @@map("payment_method_configs")
+}
+
+// ─── Transacciones ────────────────────────────────────────────────────────────
+// Registro central e inmutable de todo movimiento de dinero.
+// direction: INBOUND = cobro (entra dinero), OUTBOUND = pago (sale dinero)
+//
+// referenceType + referenceId = polimórfico:
+//   ORDER        → luminia-orders       Order.id
+//   SUBSCRIPTION → luminia-suscriptions Subscription.id
+//   DEBT         → Debt.id (este mismo servicio)
+//   WALLET_TOPUP → WalletMovement.id    (recarga de billetera)
+//   MANUAL       → sin referencia externa
+
+model Transaction {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId      String            @map("business_id") @db.Uuid
+  methodConfigId  String?           @map("method_config_id") @db.Uuid
+  direction       TransactionDir
+  referenceType   ReferenceType     @map("reference_type")
+  referenceId     String?           @map("reference_id") @db.Uuid
+  amount          Decimal           @db.Decimal(15, 4)
+  fee             Decimal           @default(0) @db.Decimal(15, 4)    // comisión del gateway
+  netAmount       Decimal           @map("net_amount") @db.Decimal(15, 4) // amount - fee
+  currency        String            @default("BOB") @db.VarChar(3)   // ISO 4217
+  status          TransactionStatus @default(PENDING)
+  gatewayRef      String?           @map("gateway_ref") @db.VarChar(200) // ID en Stripe, nro QR, etc.
+  gatewayResponse Json?             @map("gateway_response")              // respuesta raw del gateway
+  description     String?           @db.VarChar
+  failureReason   String?           @map("failure_reason") @db.VarChar
+  processedAt     DateTime?         @map("processed_at")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at")
+  createdBy       String            @map("created_by") @db.Uuid
+  updatedBy       String?           @map("updated_by") @db.Uuid
+
+  methodConfig   PaymentMethodConfig? @relation(fields: [methodConfigId], references: [id])
+  debtPayments   DebtPayment[]
+  walletMovement WalletMovement?
+
+  @@index([businessId, status])
+  @@index([referenceType, referenceId])
+  @@map("transactions")
+}
+
+// ─── Deudas (cuentas por cobrar / por pagar) ──────────────────────────────────
+// RECEIVABLE = alguien nos debe  (cliente compró al crédito/fiado)
+// PAYABLE    = nosotros debemos  (al proveedor, a Luminia por suscripción, etc.)
+//
+// debtorId/creditorId + PartyType = polimórfico:
+//   BUSINESS  → luminia-business
+//   CUSTOMER  → luminia-users (persona / cliente del negocio)
+//   SUPPLIER  → proveedor registrado en luminia-store
+//
+// debtorName / creditorName = snapshots (no cambian aunque se renombre el cliente)
+
+model Debt {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String        @map("business_id") @db.Uuid
+  type           DebtType
+  // Partes
+  debtorId       String?       @map("debtor_id") @db.Uuid
+  debtorType     PartyType?    @map("debtor_type")
+  debtorName     String        @map("debtor_name") @db.VarChar(200)    // snapshot
+  creditorId     String?       @map("creditor_id") @db.Uuid
+  creditorType   PartyType?    @map("creditor_type")
+  creditorName   String        @map("creditor_name") @db.VarChar(200)  // snapshot
+  // Origen de la deuda
+  referenceType  ReferenceType? @map("reference_type")
+  referenceId    String?        @map("reference_id") @db.Uuid
+  // Montos
+  originalAmount Decimal       @map("original_amount") @db.Decimal(15, 4)
+  paidAmount     Decimal       @default(0) @map("paid_amount") @db.Decimal(15, 4)
+  pendingAmount  Decimal       @map("pending_amount") @db.Decimal(15, 4) // se recalcula en cada DebtPayment
+  currency       String        @default("BOB") @db.VarChar(3)
+  dueDate        DateTime?     @map("due_date") @db.Date
+  status         DebtStatus    @default(PENDING)
+  notes          String?       @db.VarChar
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdBy      String        @map("created_by") @db.Uuid
+  updatedBy      String?       @map("updated_by") @db.Uuid
+
+  payments DebtPayment[]
+
+  @@index([businessId, type, status])
+  @@index([debtorId, debtorType])
+  @@map("debts")
+}
+
+// Cada pago (parcial o total) que abona a una deuda
+model DebtPayment {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  debtId        String   @map("debt_id") @db.Uuid
+  transactionId String   @map("transaction_id") @db.Uuid
+  amount        Decimal  @db.Decimal(15, 4)
+  paidAt        DateTime @default(now()) @map("paid_at")
+  notes         String?  @db.VarChar
+  createdBy     String   @map("created_by") @db.Uuid
+
+  debt        Debt        @relation(fields: [debtId], references: [id])
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+
+  @@map("debt_payments")
+}
+
+// ─── Billetera ────────────────────────────────────────────────────────────────
+// Saldo interno por propietario. ownerId + ownerType = polimórfico:
+//   BUSINESS  → billetera del negocio (para pagar suscripción Luminia, etc.)
+//   CUSTOMER  → billetera del cliente del negocio (recarga y descuenta en compras)
+//
+// REGLA: balance nunca se edita directamente.
+//        Solo cambia al insertar un WalletMovement.
+
+model Wallet {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String    @map("business_id") @db.Uuid
+  ownerId    String    @map("owner_id") @db.Uuid
+  ownerType  PartyType @map("owner_type")
+  balance    Decimal   @default(0) @db.Decimal(15, 4)
+  currency   String    @default("BOB") @db.VarChar(3)
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  movements WalletMovement[]
+
+  @@unique([businessId, ownerId, ownerType, currency])
+  @@map("wallets")
+}
+
+// Ledger inmutable — cada fila es un movimiento de billetera.
+// CREDIT = entra dinero (recarga, devolución, bono)
+// DEBIT  = sale dinero  (pago de compra, descuento)
+// balanceBefore / balanceAfter = snapshots para auditoría.
+
+model WalletMovement {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  walletId      String       @map("wallet_id") @db.Uuid
+  transactionId String?      @unique @map("transaction_id") @db.Uuid
+  type          MovementType
+  amount        Decimal      @db.Decimal(15, 4)
+  balanceBefore Decimal      @map("balance_before") @db.Decimal(15, 4)
+  balanceAfter  Decimal      @map("balance_after") @db.Decimal(15, 4)
+  description   String?      @db.VarChar
+  createdAt     DateTime     @default(now()) @map("created_at")
+  createdBy     String       @map("created_by") @db.Uuid
+
+  wallet      Wallet       @relation(fields: [walletId], references: [id])
+  transaction Transaction? @relation(fields: [transactionId], references: [id])
+
+  @@index([walletId, createdAt])
+  @@map("wallet_movements")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum GatewayType {
+  CASH          // Efectivo
+  CARD_POS      // Tarjeta en POS físico
+  STRIPE        // Stripe (tarjeta online / internacional)
+  QR_SIMPLE     // QR Simple Bolivia
+  TIGO_MONEY    // Tigo Money Bolivia
+  MERCADO_PAGO  // MercadoPago
+  BANK_TRANSFER // Transferencia bancaria
+  WALLET        // Billetera interna Luminia
+  OTHER
+}
+
+enum TransactionDir {
+  INBOUND   // Cobro — entra dinero al negocio
+  OUTBOUND  // Pago  — sale dinero del negocio
+}
+
+enum TransactionStatus {
+  PENDING        // Iniciada, esperando confirmación del gateway
+  PROCESSING     // En procesamiento (webhook pendiente)
+  PAID           // Confirmada y acreditada
+  FAILED         // Rechazada o fallida
+  REFUNDED       // Devuelta total
+  PARTIAL_REFUND // Devuelta parcial
+  CANCELLED      // Cancelada antes de procesar
+}
+
+enum ReferenceType {
+  ORDER         // luminia-orders
+  SUBSCRIPTION  // luminia-suscriptions
+  DEBT          // deuda interna (Debt.id)
+  WALLET_TOPUP  // recarga de billetera
+  MANUAL        // registro manual sin referencia
+}
+
+enum DebtType {
+  RECEIVABLE  // nos deben (cuenta por cobrar)
+  PAYABLE     // debemos  (cuenta por pagar)
+}
+
+enum DebtStatus {
+  PENDING    // sin pagar
+  PARTIAL    // pagada parcialmente
+  PAID       // pagada en su totalidad
+  OVERDUE    // vencida (dueDate < hoy y no pagada)
+  CANCELLED  // cancelada / condonada
+}
+
+enum PartyType {
+  BUSINESS   // luminia-business
+  CUSTOMER   // luminia-users (cliente del negocio)
+  SUPPLIER   // proveedor (luminia-store)
+}
+
+enum MovementType {
+  CREDIT  // entra dinero a la billetera
+  DEBIT   // sale dinero de la billetera
+}

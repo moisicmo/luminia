@@ -1,0 +1,73 @@
+logging:
+  level:
+    ROOT: DEBUG
+    org.hibernate.SQL: ERROR
+    bo.com.luminia.sflbilling.msinvoice: DEBUG
+
+spring:
+  devtools:
+    restart:
+      enabled: true
+      additional-exclude: static/**
+    livereload:
+      enabled: false # we use Webpack dev server + BrowserSync for livereload
+  jackson:
+    serialization:
+      indent-output: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://localhost:5432/sflbilling
+    username: postgres
+    password: 123456
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+  jpa:
+    database-platform: bo.com.luminia.sflbilling.msinvoice.config.dbplatform.FixedPostgreSQL10Dialect
+  liquibase:
+    # Remove 'faker' if you do not want the sample data to be loaded automatically
+    contexts: dev, faker
+  messages:
+    cache-duration: PT1S # 1 second, see the ISO 8601 standard
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8082
+
+coreprop:
+  # CORS is only enabled by default with the "dev" profile
+  cors:
+    allowed-origins: '*'
+    allowed-methods: '*'
+    allowed-headers: '*'
+    exposed-headers: 'Authorization,X-Total-Count'
+    allow-credentials: true
+    max-age: 1800
+  security:
+    authentication:
+      jwt:
+        # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
+        base64-secret: NjkzYjg2MjBlN2IzNjNlZDEyOGNkNGZlMzQyMTJlYTMyOTgyNDk2NmM4YTUxNzZkYWI2ZWU3MzYxYjcxYjNkNzI4YjIzOWY1YjUyZTNiMTI5YmRiNzJjYmQ5NDM2OTcyN2JiNzUyOWI3YTQxMWU0Y2RjMWEzZjliNTdjZWIyNDI=
+        # Token is valid 24 hours
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000
+
+# application:
+invoice:
+  number-limit-batch: 500
+  print-emit-cron-detail: true
+  time-send-siat: 2000
+notification:
+  endpoint: "http://localhost:8083/api/email/send"
+  endpoint-email: "https://saas-notif-api2-production.up.railway.app/api/v1/email/send"
+  client-id: "49a6573a-c44b-46c0-a5a7-9d2a64007617"
+  api-key: "sk_abd80c24731e18494f263b68dd8da9f7d70fa295f7a820267fe6e9796771eb43"
+cancellation:
+  term-days: 9
+  term-days-comercial-exportacion: 180
+siat:
+  soap-service: "https://pilotosiatservicios.impuestos.gob.bo/v2/"
+  skip-check-events: true
+  soap-enable-handler-invoice: false
+  use-saved-identity-document-types: true

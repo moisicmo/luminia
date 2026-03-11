@@ -1,0 +1,199 @@
+plugins {
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${ioSpringDependencyManagementVersion}"
+    id 'com.gorylenko.gradle-git-properties' version "${gitPropertiesPluginVersion}"
+    id 'com.google.cloud.tools.jib' version "${jibPluginVersion}"
+
+    id "java"
+    id "maven-publish"
+    id "idea"
+    id "eclipse"
+}
+
+group = "bo.com.luminia.sflbilling.msbatch"
+version = "1.0.0"
+description = "Batch Microservice"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+apply from: "gradle/docker.gradle"
+
+if (project.hasProperty("prod")) {
+    apply from: "gradle/profile_prod.gradle"
+} else {
+    apply from: "gradle/profile_dev.gradle"
+}
+
+if (project.hasProperty("war")) {
+    apply from: "gradle/war.gradle"
+}
+
+eclipse {
+    sourceSets {
+        main {
+            java {
+                srcDirs += ["build/generated/sources/annotationProcessor/java/main"]
+            }
+        }
+    }
+}
+
+defaultTasks "bootRun"
+
+springBoot {
+    mainClass = "bo.com.luminia.sflbilling.msbatch.MsBatchApp"
+}
+
+test {
+    useJUnitPlatform()
+    exclude "**/*IT*", "**/*IntTest*"
+
+    testLogging {
+        events 'FAILED', 'SKIPPED'
+    }
+    // uncomment if the tests reports are not generated
+    // see https://github.com/jhipster/generator-jhipster/pull/2771 and https://github.com/jhipster/generator-jhipster/pull/4484
+    // ignoreFailures true
+    reports.html.enabled = false
+}
+
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    description = "Execute integration tests."
+    group = "verification"
+    include "**/*IT*", "**/*IntTest*"
+
+    testLogging {
+        events 'FAILED', 'SKIPPED'
+    }
+
+    if (project.hasProperty('testcontainers')) {
+        environment 'spring.profiles.active', 'testcontainers'
+    }
+
+    // uncomment if the tests reports are not generated
+    // see https://github.com/jhipster/generator-jhipster/pull/2771 and https://github.com/jhipster/generator-jhipster/pull/4484
+    // ignoreFailures true
+    reports.html.enabled = false
+}
+
+check.dependsOn integrationTest
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/tests")
+    reportOn test
+}
+
+task integrationTestReport(type: TestReport) {
+    destinationDir = file("$buildDir/reports/tests")
+    reportOn integrationTest
+}
+
+if (!project.hasProperty("runList")) {
+    project.ext.runList = "main"
+}
+
+gitProperties {
+    failOnNoGitDirectory = false
+    keys = ["git.branch", "git.commit.id.abbrev", "git.commit.id", "git.commit.id.describe"]
+}
+
+configurations {
+    providedRuntime
+    implementation.exclude module: "spring-boot-starter-tomcat"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation "bo.com.luminia.sflbilling:sflbilling-common:1.0.0"
+    // Springframework
+    implementation("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+    implementation "org.springframework.boot:spring-boot-starter-logging"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-undertow"
+    implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.security:spring-security-data"
+    implementation "org.springframework.security:spring-security-web"
+    implementation "org.springframework.security:spring-security-config"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
+    // Zalando
+    implementation "org.zalando:problem-spring-web:${problemSpringVersion}"
+    // Jackson
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
+    implementation "com.fasterxml.jackson.module:jackson-module-jaxb-annotations"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+    // Liquibase
+    implementation "org.liquibase:liquibase-core"
+    // Hibernate
+    implementation "org.hibernate:hibernate-core"
+    implementation "org.hibernate:hibernate-entitymanager"
+    implementation "org.hibernate.validator:hibernate-validator"
+    annotationProcessor "org.hibernate:hibernate-jpamodelgen:${hibernateVersion}"
+    // Datasource
+    implementation "com.zaxxer:HikariCP"
+    implementation "org.postgresql:postgresql"
+    implementation "javax.annotation:javax.annotation-api"
+    implementation "javax.transaction:javax.transaction-api"
+    implementation "javax.cache:cache-api"
+    // JWT
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+    // Signature
+    implementation "org.apache.santuario:xmlsec:2.0.5"
+    implementation "org.bouncycastle:bcprov-jdk15on:1.56"
+    implementation "org.bouncycastle:bcpkix-jdk15on:1.56"
+    // TAR
+    implementation "org.apache.ant:ant:1.10.10"
+    // Lombok
+    implementation "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    // Apache Tools
+    implementation "org.apache.commons:commons-lang3"
+    // Swagger
+    implementation "io.springfox:springfox-swagger2:${springfoxVersion}"
+    implementation "io.springfox:springfox-swagger-ui:${springfoxVersion}"
+//    implementation "io.springfox:springfox-bean-validators:${springfoxVersion}"
+
+    implementation "org.jasypt:jasypt:1.9.0"
+
+    implementation "net.sf.jasperreports:jasperreports:6.11.0"
+    implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '3.0.0', ext: 'pom'
+    implementation "com.lowagie:itext:2.1.7"
+//    implementation "com.fasterxml.jackson.core:jackson-databind:2.11.3"
+    implementation "com.google.zxing:core:3.4.1"
+    implementation "com.google.zxing:javase:3.4.1"
+    implementation "org.json:json:20210307"
+    implementation "javax.xml.ws:jaxws-api:${jaxwsApiVersion}"
+
+    implementation 'org.jsoup:jsoup:1.15.3'
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
+    testImplementation "org.springframework.boot:spring-boot-test"
+    testImplementation "com.tngtech.archunit:archunit-junit5-api:${archunitJunit5Version}"
+    testRuntimeOnly "com.tngtech.archunit:archunit-junit5-engine:${archunitJunit5Version}"
+    testImplementation "com.h2database:h2"
+}
+
+task cleanResources(type: Delete) {
+    delete "build/resources"
+}
+
+wrapper {
+    gradleVersion = "7.5"
+}
+
+compileJava.dependsOn processResources
+processResources.dependsOn bootBuildInfo

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1306-1" author="jhipster">
+        <createSequence sequenceName="wrapper_seq" startValue="1050" incrementBy="50"/>
+        <createTable tableName="wrapper">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="cudf_event" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reception_code" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="schedule_setting_id" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+            <column name="branch_office_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="point_sale_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sector_document_type_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+        <dropDefaultValue tableName="wrapper" columnName="start_date" columnDataType="datetime"/>
+        <dropDefaultValue tableName="wrapper" columnName="end_date" columnDataType="datetime"/>
+    </changeSet>
+</databaseChangeLog>

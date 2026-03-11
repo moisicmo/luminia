@@ -1,0 +1,2 @@
+id;nit;name;business_name;city;phone;address;system_code;package_send;event_send;active;environment_siat;modality_siat;created_by
+1;1028675024;LUMINIA_SA;LUMINIA SA;SANTA CRUZ;33333;AV ALEMANA;6CE0F4E55826C2DB97038EF;true;true;true;TEST;ELECTRONIC_BILLING;system

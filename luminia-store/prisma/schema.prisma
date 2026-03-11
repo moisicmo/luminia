@@ -1,0 +1,495 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Store Inventory Structure ────────────────────────────────────────────────
+// businessId = referencia externa a luminia-business (Business)
+// branchId   = referencia externa a luminia-business (Branch)
+// Jerarquía:
+//   Category (árbol) → Product → ProductUnit (conversiones por unidad)
+//   Warehouse → WarehouseLocation → Stock
+//   Input / Output / Transfer → Kardex (ledger)
+
+// ─── Catálogos ────────────────────────────────────────────────────────────────
+
+model Unit {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String   @map("business_id") @db.Uuid
+  name         String   @db.VarChar(50)
+  abbreviation String   @db.VarChar(10)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy    String   @map("created_by")
+  updatedBy    String?  @map("updated_by")
+
+  products            Product[]
+  productUnits        ProductUnit[]
+  unitConversionsFrom UnitConversion[] @relation("FromUnit")
+  unitConversionsTo   UnitConversion[] @relation("ToUnit")
+  inputDetails        InputDetail[]
+  outputDetails       OutputDetail[]
+  transferDetails     TransferDetail[]
+  stocks              Stock[]
+  kardexes            Kardex[]
+
+  @@map("units")
+}
+
+// Conversiones entre unidades: 1 caja = 12 unidades, 1 kg = 1000 g, etc.
+model UnitConversion {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  fromUnitId String   @map("from_unit_id") @db.Uuid
+  toUnitId   String   @map("to_unit_id") @db.Uuid
+  factor     Decimal  @db.Decimal(15, 6)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy  String   @map("created_by")
+  updatedBy  String?  @map("updated_by")
+
+  fromUnit Unit @relation("FromUnit", fields: [fromUnitId], references: [id])
+  toUnit   Unit @relation("ToUnit", fields: [toUnitId], references: [id])
+
+  @@unique([businessId, fromUnitId, toUnitId])
+  @@map("unit_conversions")
+}
+
+model Category {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String   @map("business_id") @db.Uuid
+  parentId    String?  @map("parent_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar
+  imageUrl    String?  @map("image_url") @db.VarChar
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy   String   @map("created_by")
+  updatedBy   String?  @map("updated_by")
+
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  products Product[]
+
+  @@map("categories")
+}
+
+model Brand {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String   @map("business_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy   String   @map("created_by")
+  updatedBy   String?  @map("updated_by")
+
+  products Product[]
+
+  @@map("brands")
+}
+
+model Supplier {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String   @map("business_id") @db.Uuid
+  name        String   @db.VarChar(200)
+  taxId       String?  @map("tax_id") @db.VarChar(20)
+  contactName String?  @map("contact_name") @db.VarChar(100)
+  phone       String?  @db.VarChar(20)
+  email       String?  @db.VarChar(100)
+  address     String?  @db.VarChar
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy   String   @map("created_by")
+  updatedBy   String?  @map("updated_by")
+
+  inputs Input[]
+
+  @@map("suppliers")
+}
+
+// ─── Productos ────────────────────────────────────────────────────────────────
+
+model Product {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String   @map("business_id") @db.Uuid
+  categoryId    String?  @map("category_id") @db.Uuid
+  brandId       String?  @map("brand_id") @db.Uuid
+  baseUnitId    String   @map("base_unit_id") @db.Uuid
+  sku           String   @db.VarChar(50)
+  barcode       String?  @db.VarChar(50)
+  name          String   @db.VarChar(200)
+  description   String?  @db.VarChar
+  imageUrl      String?  @map("image_url") @db.VarChar
+  minimumStock  Decimal? @map("minimum_stock") @db.Decimal(15, 4)
+  maximumStock  Decimal? @map("maximum_stock") @db.Decimal(15, 4)
+  reorderPoint  Decimal? @map("reorder_point") @db.Decimal(15, 4)
+  salePrice     Decimal? @map("sale_price") @db.Decimal(15, 4)
+  purchasePrice Decimal? @map("purchase_price") @db.Decimal(15, 4)
+  isTaxable     Boolean  @default(false) @map("is_taxable")
+  taxRate       Decimal? @map("tax_rate") @db.Decimal(5, 2)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy     String   @map("created_by")
+  updatedBy     String?  @map("updated_by")
+
+  category        Category?        @relation(fields: [categoryId], references: [id])
+  brand           Brand?           @relation(fields: [brandId], references: [id])
+  baseUnit        Unit             @relation(fields: [baseUnitId], references: [id])
+  productUnits    ProductUnit[]
+  stocks          Stock[]
+  inputDetails    InputDetail[]
+  outputDetails   OutputDetail[]
+  transferDetails TransferDetail[]
+  kardexes        Kardex[]
+
+  @@unique([businessId, sku])
+  @@map("products")
+}
+
+// Unidades disponibles por producto + factor de conversión a unidad base
+// Ej: producto=Refresco, baseUnit=unidad;
+//     productUnit caja → conversionFactor=12 (1 caja = 12 unidades)
+//     productUnit pack → conversionFactor=6  (1 pack = 6 unidades)
+model ProductUnit {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  productId        String   @map("product_id") @db.Uuid
+  unitId           String   @map("unit_id") @db.Uuid
+  conversionFactor Decimal  @map("conversion_factor") @db.Decimal(15, 6)
+  isBase           Boolean  @default(false) @map("is_base")
+  isPurchaseUnit   Boolean  @default(false) @map("is_purchase_unit")
+  isSaleUnit       Boolean  @default(false) @map("is_sale_unit")
+  barcode          String?  @db.VarChar(50)
+  salePrice        Decimal? @map("sale_price") @db.Decimal(15, 4)
+  purchasePrice    Decimal? @map("purchase_price") @db.Decimal(15, 4)
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy        String   @map("created_by")
+  updatedBy        String?  @map("updated_by")
+
+  product Product @relation(fields: [productId], references: [id])
+  unit    Unit    @relation(fields: [unitId], references: [id])
+
+  @@unique([productId, unitId])
+  @@map("product_units")
+}
+
+// ─── Almacenes ────────────────────────────────────────────────────────────────
+
+model Warehouse {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String   @map("business_id") @db.Uuid
+  branchId    String?  @map("branch_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar
+  address     String?  @db.VarChar
+  isDefault   Boolean  @default(false) @map("is_default")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy   String   @map("created_by")
+  updatedBy   String?  @map("updated_by")
+
+  locations     WarehouseLocation[]
+  stocks        Stock[]
+  inputs        Input[]
+  outputs       Output[]
+  transfersFrom Transfer[]          @relation("FromWarehouse")
+  transfersTo   Transfer[]          @relation("ToWarehouse")
+  kardexes      Kardex[]
+
+  @@map("warehouses")
+}
+
+// Ubicaciones físicas dentro del almacén: estantes, zonas, pasillos, etc.
+model WarehouseLocation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  warehouseId String   @map("warehouse_id") @db.Uuid
+  code        String   @db.VarChar(20)
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy   String   @map("created_by")
+  updatedBy   String?  @map("updated_by")
+
+  warehouse       Warehouse        @relation(fields: [warehouseId], references: [id])
+  inputDetails    InputDetail[]
+  outputDetails   OutputDetail[]
+  transferDetails TransferDetail[]
+
+  @@unique([warehouseId, code])
+  @@map("warehouse_locations")
+}
+
+// ─── Stock (niveles actuales por producto/almacén/unidad) ─────────────────────
+
+model Stock {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId       String   @map("business_id") @db.Uuid
+  productId        String   @map("product_id") @db.Uuid
+  warehouseId      String   @map("warehouse_id") @db.Uuid
+  unitId           String   @map("unit_id") @db.Uuid
+  quantity         Decimal  @default(0) @db.Decimal(15, 4)
+  reservedQuantity Decimal  @default(0) @map("reserved_quantity") @db.Decimal(15, 4)
+  averageCost      Decimal  @default(0) @map("average_cost") @db.Decimal(15, 4)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy        String   @map("created_by")
+  updatedBy        String?  @map("updated_by")
+
+  product   Product   @relation(fields: [productId], references: [id])
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+  unit      Unit      @relation(fields: [unitId], references: [id])
+
+  @@unique([productId, warehouseId, unitId])
+  @@map("stocks")
+}
+
+// ─── Entradas (inputs) ────────────────────────────────────────────────────────
+
+model Input {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String      @map("business_id") @db.Uuid
+  warehouseId    String      @map("warehouse_id") @db.Uuid
+  supplierId     String?     @map("supplier_id") @db.Uuid
+  type           InputType
+  documentNumber String?     @map("document_number") @db.VarChar(50)
+  referenceId    String?     @map("reference_id") @db.Uuid
+  date           DateTime    @db.Date
+  notes          String?     @db.VarChar
+  subtotal       Decimal     @default(0) @db.Decimal(15, 4)
+  discount       Decimal     @default(0) @db.Decimal(15, 4)
+  total          Decimal     @default(0) @db.Decimal(15, 4)
+  status         InputStatus @default(DRAFT)
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @default(now()) @updatedAt @map("updated_at")
+  createdBy      String      @map("created_by")
+  updatedBy      String?     @map("updated_by")
+
+  warehouse Warehouse     @relation(fields: [warehouseId], references: [id])
+  supplier  Supplier?     @relation(fields: [supplierId], references: [id])
+  details   InputDetail[]
+
+  @@map("inputs")
+}
+
+model InputDetail {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inputId      String    @map("input_id") @db.Uuid
+  productId    String    @map("product_id") @db.Uuid
+  unitId       String    @map("unit_id") @db.Uuid
+  locationId   String?   @map("location_id") @db.Uuid
+  quantity     Decimal   @db.Decimal(15, 4)
+  unitCost     Decimal   @map("unit_cost") @db.Decimal(15, 4)
+  totalCost    Decimal   @map("total_cost") @db.Decimal(15, 4)
+  expiryDate   DateTime? @map("expiry_date") @db.Date
+  batchNumber  String?   @map("batch_number") @db.VarChar(50)
+  serialNumber String?   @map("serial_number") @db.VarChar(50)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
+  createdBy    String    @map("created_by")
+  updatedBy    String?   @map("updated_by")
+
+  input    Input              @relation(fields: [inputId], references: [id])
+  product  Product            @relation(fields: [productId], references: [id])
+  unit     Unit               @relation(fields: [unitId], references: [id])
+  location WarehouseLocation? @relation(fields: [locationId], references: [id])
+
+  @@map("input_details")
+}
+
+// ─── Salidas (outputs) ────────────────────────────────────────────────────────
+
+model Output {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String       @map("business_id") @db.Uuid
+  warehouseId    String       @map("warehouse_id") @db.Uuid
+  type           OutputType
+  documentNumber String?      @map("document_number") @db.VarChar(50)
+  referenceId    String?      @map("reference_id") @db.Uuid
+  date           DateTime     @db.Date
+  notes          String?      @db.VarChar
+  subtotal       Decimal      @default(0) @db.Decimal(15, 4)
+  discount       Decimal      @default(0) @db.Decimal(15, 4)
+  total          Decimal      @default(0) @db.Decimal(15, 4)
+  status         OutputStatus @default(DRAFT)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdBy      String       @map("created_by")
+  updatedBy      String?      @map("updated_by")
+
+  warehouse Warehouse      @relation(fields: [warehouseId], references: [id])
+  details   OutputDetail[]
+
+  @@map("outputs")
+}
+
+model OutputDetail {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  outputId     String    @map("output_id") @db.Uuid
+  productId    String    @map("product_id") @db.Uuid
+  unitId       String    @map("unit_id") @db.Uuid
+  locationId   String?   @map("location_id") @db.Uuid
+  quantity     Decimal   @db.Decimal(15, 4)
+  unitCost     Decimal   @map("unit_cost") @db.Decimal(15, 4)
+  salePrice    Decimal?  @map("sale_price") @db.Decimal(15, 4)
+  totalCost    Decimal   @map("total_cost") @db.Decimal(15, 4)
+  batchNumber  String?   @map("batch_number") @db.VarChar(50)
+  serialNumber String?   @map("serial_number") @db.VarChar(50)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
+  createdBy    String    @map("created_by")
+  updatedBy    String?   @map("updated_by")
+
+  output   Output             @relation(fields: [outputId], references: [id])
+  product  Product            @relation(fields: [productId], references: [id])
+  unit     Unit               @relation(fields: [unitId], references: [id])
+  location WarehouseLocation? @relation(fields: [locationId], references: [id])
+
+  @@map("output_details")
+}
+
+// ─── Traslados entre almacenes ────────────────────────────────────────────────
+
+model Transfer {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId      String         @map("business_id") @db.Uuid
+  fromWarehouseId String         @map("from_warehouse_id") @db.Uuid
+  toWarehouseId   String         @map("to_warehouse_id") @db.Uuid
+  date            DateTime       @db.Date
+  notes           String?        @db.VarChar
+  status          TransferStatus @default(PENDING)
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at")
+  createdBy       String         @map("created_by")
+  updatedBy       String?        @map("updated_by")
+
+  fromWarehouse Warehouse        @relation("FromWarehouse", fields: [fromWarehouseId], references: [id])
+  toWarehouse   Warehouse        @relation("ToWarehouse", fields: [toWarehouseId], references: [id])
+  details       TransferDetail[]
+
+  @@map("transfers")
+}
+
+model TransferDetail {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  transferId String    @map("transfer_id") @db.Uuid
+  productId  String    @map("product_id") @db.Uuid
+  unitId     String    @map("unit_id") @db.Uuid
+  locationId String?   @map("location_id") @db.Uuid
+  quantity   Decimal   @db.Decimal(15, 4)
+  unitCost   Decimal   @map("unit_cost") @db.Decimal(15, 4)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @updatedAt @map("updated_at")
+  createdBy  String    @map("created_by")
+  updatedBy  String?   @map("updated_by")
+
+  transfer Transfer           @relation(fields: [transferId], references: [id])
+  product  Product            @relation(fields: [productId], references: [id])
+  unit     Unit               @relation(fields: [unitId], references: [id])
+  location WarehouseLocation? @relation(fields: [locationId], references: [id])
+
+  @@map("transfer_details")
+}
+
+// ─── Kardex (ledger de todos los movimientos de inventario) ───────────────────
+// Se genera automáticamente al confirmar entradas, salidas y traslados.
+
+model Kardex {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String       @map("business_id") @db.Uuid
+  productId      String       @map("product_id") @db.Uuid
+  warehouseId    String       @map("warehouse_id") @db.Uuid
+  unitId         String       @map("unit_id") @db.Uuid
+  movementDate   DateTime     @map("movement_date")
+  movementType   MovementType @map("movement_type")
+  documentType   DocumentType @map("document_type")
+  documentId     String?      @map("document_id") @db.Uuid
+  documentNumber String?      @map("document_number") @db.VarChar(50)
+  quantity       Decimal      @db.Decimal(15, 4)
+  unitCost       Decimal      @map("unit_cost") @db.Decimal(15, 4)
+  totalCost      Decimal      @map("total_cost") @db.Decimal(15, 4)
+  balanceQty     Decimal      @map("balance_qty") @db.Decimal(15, 4)
+  balanceCost    Decimal      @map("balance_cost") @db.Decimal(15, 4)
+  notes          String?      @db.VarChar
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @default(now()) @updatedAt @map("updated_at")
+  createdBy      String       @map("created_by")
+  updatedBy      String?      @map("updated_by")
+
+  product   Product   @relation(fields: [productId], references: [id])
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+  unit      Unit      @relation(fields: [unitId], references: [id])
+
+  @@index([productId, warehouseId, movementDate])
+  @@map("kardexes")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum InputType {
+  PURCHASE             // Compra a proveedor
+  RETURN_FROM_CUSTOMER // Devolución de cliente
+  ADJUSTMENT_IN        // Ajuste positivo
+  INITIAL_STOCK        // Stock inicial
+  TRANSFER_IN          // Traslado entrante
+  OTHER
+}
+
+enum OutputType {
+  SALE                 // Venta
+  RETURN_TO_SUPPLIER   // Devolución a proveedor
+  ADJUSTMENT_OUT       // Ajuste negativo
+  TRANSFER_OUT         // Traslado saliente
+  DAMAGE               // Daño / merma
+  LOSS                 // Pérdida
+  OTHER
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
+enum DocumentType {
+  INPUT
+  OUTPUT
+  TRANSFER
+  ADJUSTMENT
+}
+
+enum InputStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+enum OutputStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+enum TransferStatus {
+  PENDING
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
+}

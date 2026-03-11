@@ -1,0 +1,137 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Files ────────────────────────────────────────────────────────────────────
+// Servicio de archivos y documentos. Guarda metadata — el archivo físico va en
+// el proveedor de almacenamiento (S3, Cloudflare R2, MinIO, etc.).
+//
+// Dos responsabilidades:
+//   1. File       → subida/descarga de archivos (imágenes, documentos, etc.)
+//   2. Document   → generación de PDFs/reportes desde templates + datos
+//
+// Referencias externas (solo IDs, sin FK):
+//   businessId  → luminia-business
+//   ownerId     → polimórfico: Person, Business, Order, etc.
+//   documentRef → el registro que originó el documento (Order, Invoice, etc.)
+
+// ─── Archivos ─────────────────────────────────────────────────────────────────
+// Cada fila representa un archivo subido al storage.
+// url es la URL pública o presignada según visibilidad.
+// storageKey es la clave interna en el bucket (nunca exponer al cliente).
+
+model File {
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String?     @map("business_id") @db.Uuid  // null = archivo del sistema
+  ownerId      String?     @map("owner_id") @db.Uuid     // quién subió / a quién pertenece
+  ownerType    OwnerType?  @map("owner_type")
+  category     FileCategory
+  mimeType     String      @map("mime_type") @db.VarChar(100)  // "image/jpeg", "application/pdf"
+  originalName String      @map("original_name") @db.VarChar(255)
+  storageKey   String      @unique @map("storage_key") @db.VarChar(500) // clave en el bucket
+  url          String      @db.VarChar(1000)                            // URL de acceso
+  sizeBytes    Int         @map("size_bytes")
+  visibility   Visibility  @default(PRIVATE)
+  expiresAt    DateTime?   @map("expires_at")  // para URLs presignadas o archivos temporales
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @default(now()) @updatedAt @map("updated_at")
+  createdBy    String      @map("created_by") @db.Uuid
+  deletedAt    DateTime?   @map("deleted_at")  // soft delete
+
+  @@index([businessId, category])
+  @@index([ownerId, ownerType])
+  @@map("files")
+}
+
+// ─── Documentos generados ─────────────────────────────────────────────────────
+// PDFs y reportes generados desde templates.
+// El proceso es:
+//   1. Otro microservicio emite `document.generate` con type + payload
+//   2. luminia-files renderiza el template con los datos del payload
+//   3. Genera el PDF y lo sube al storage como un File
+//   4. Guarda el Document con el fileId resultante
+//   5. Devuelve la URL para que el caller la use (enviar por email, mostrar, etc.)
+//
+// documentRef → referencia al registro de origen:
+//   ORDER_RECEIPT  → luminia-orders   Order.id
+//   INVOICE        → luminia-billers  Invoice.id
+//   SUBSCRIPTION   → luminia-suscriptions Subscription.id
+//   REPORT         → sin referencia externa (generado bajo demanda)
+
+model Document {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String?       @map("business_id") @db.Uuid
+  type          DocumentType
+  status        DocumentStatus @default(PENDING)
+  // Referencia al registro que originó el documento
+  refType       DocRefType?   @map("ref_type")
+  refId         String?       @map("ref_id") @db.Uuid
+  // Datos usados para generar el documento (snapshot para regeneración)
+  payload       Json          // contexto con todos los datos necesarios
+  // Resultado
+  fileId        String?       @unique @map("file_id") @db.Uuid  // File generado
+  fileUrl       String?       @map("file_url") @db.VarChar(1000)
+  failureReason String?       @map("failure_reason") @db.VarChar
+  generatedAt   DateTime?     @map("generated_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdBy     String        @map("created_by") @db.Uuid
+
+  @@index([businessId, type])
+  @@index([refType, refId])
+  @@index([status])
+  @@map("documents")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum FileCategory {
+  IMAGE         // fotos de productos, logos, avatares
+  DOCUMENT      // PDFs, contratos, facturas
+  SPREADSHEET   // Excel, CSV
+  REPORT        // PDF generado por luminia-files
+  ATTACHMENT    // adjunto genérico
+  OTHER
+}
+
+enum Visibility {
+  PUBLIC   // URL directa accesible por cualquiera
+  PRIVATE  // requiere URL presignada o autenticación
+}
+
+enum OwnerType {
+  BUSINESS
+  PERSON
+  SYSTEM
+}
+
+enum DocumentType {
+  ORDER_RECEIPT      // Nota de venta / comprobante de compra
+  INVOICE            // Factura formal
+  SUBSCRIPTION_BILL  // Cobro de suscripción Luminia
+  DEBT_STATEMENT     // Estado de cuenta de deuda
+  INVENTORY_REPORT   // Reporte de inventario
+  SALES_REPORT       // Reporte de ventas
+  CUSTOM_REPORT      // Reporte ad-hoc / bajo demanda
+}
+
+enum DocumentStatus {
+  PENDING     // en cola esperando generación
+  GENERATING  // generándose ahora
+  DONE        // generado y disponible
+  FAILED      // falló la generación
+}
+
+enum DocRefType {
+  ORDER
+  INVOICE
+  SUBSCRIPTION
+  DEBT
+  REPORT
+}

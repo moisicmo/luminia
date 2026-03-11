@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+
+    <changeSet id="1319-1" author="jhipster">
+        <addColumn schemaName= "public"
+                   tableName="invoice_request" >
+            <column afterColumn="type"
+                    name="error_checked"
+                    type="boolean"
+                    defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <createIndex tableName="invoice_request" indexName="invoice_request_response_idx">
+            <column name="response"/>
+        </createIndex>
+        <createIndex tableName="invoice_request" indexName="invoice_request_error_checked_idx">
+            <column name="error_checked"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
