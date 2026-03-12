@@ -9,13 +9,17 @@
 * 🟢 You can import this file directly.
 */
 
+export const CashSessionStatus = {
+  OPEN: 'OPEN',
+  CLOSED: 'CLOSED'
+} as const
+
+export type CashSessionStatus = (typeof CashSessionStatus)[keyof typeof CashSessionStatus]
+
+
 export const MemberRole = {
   OWNER: 'OWNER',
-  ADMIN: 'ADMIN',
-  MANAGER: 'MANAGER',
-  SELLER: 'SELLER',
-  INVENTORY: 'INVENTORY',
-  VIEWER: 'VIEWER'
+  MEMBER: 'MEMBER'
 } as const
 
 export type MemberRole = (typeof MemberRole)[keyof typeof MemberRole]
@@ -34,7 +38,18 @@ export const BusinessType = {
   SALUD: 'SALUD',
   ENTRETENIMIENTO: 'ENTRETENIMIENTO',
   ECOMMERCE: 'ECOMMERCE',
-  CONSULTORIA: 'CONSULTORIA'
+  CONSULTORIA: 'CONSULTORIA',
+  GIMNASIO: 'GIMNASIO',
+  VETERINARIA: 'VETERINARIA',
+  BARBERIA: 'BARBERIA',
+  SPA: 'SPA',
+  DENTISTA: 'DENTISTA',
+  PSICOLOGO: 'PSICOLOGO',
+  AGENCIA_TURISTICA: 'AGENCIA_TURISTICA',
+  INMOBILIARIA: 'INMOBILIARIA',
+  SEGURO: 'SEGURO',
+  FREELANCER: 'FREELANCER',
+  LIBRERIA: 'LIBRERIA'
 } as const
 
 export type BusinessType = (typeof BusinessType)[keyof typeof BusinessType]

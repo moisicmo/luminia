@@ -1,0 +1,240 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Transports ─────────────────────────────────────────────────────────────
+// Dos verticales en un solo servicio:
+//   1. Transporte escolar / movilidades — rutas recurrentes, pasajeros fijos
+//   2. Agencias de viaje — buses con asientos, pasajes por fecha/hora
+//
+// businessId = luminia-businesses (Business de tipo TRANSPORTE / AGENCIA_TURISTICA)
+// driverId   = luminia-users (Person)
+// passengerId = luminia-users (Person)
+
+// ─── Vehículos ──────────────────────────────────────────────────────────────
+
+model Vehicle {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String      @map("business_id") @db.Uuid
+  plate         String      @db.VarChar(20)
+  brand         String?     @db.VarChar(50)
+  model         String?     @db.VarChar(50)
+  year          Int?
+  capacity      Int                                        // total de asientos
+  vehicleType   VehicleType @map("vehicle_type")
+  imageUrl      String?     @map("image_url") @db.VarChar
+  active        Boolean     @default(true)
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at")
+  createdBy     String      @map("created_by") @db.Uuid
+  updatedBy     String?     @map("updated_by") @db.Uuid
+
+  seats          Seat[]
+  trips          Trip[]
+  routeSchedules RouteSchedule[]
+
+  @@unique([businessId, plate])
+  @@map("vehicles")
+}
+
+// ─── Asientos (para buses de agencia) ────────────────────────────────────────
+
+model Seat {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  vehicleId String   @map("vehicle_id") @db.Uuid
+  seatCode  String   @map("seat_code") @db.VarChar(10)   // "1A", "2B", etc.
+  floor     Int      @default(1)                           // piso (bus de 2 pisos)
+  seatType  SeatType @default(STANDARD) @map("seat_type")
+  active    Boolean  @default(true)
+
+  vehicle Vehicle  @relation(fields: [vehicleId], references: [id])
+  tickets Ticket[]
+
+  @@unique([vehicleId, seatCode])
+  @@map("seats")
+}
+
+// ─── Rutas ──────────────────────────────────────────────────────────────────
+// Ruta fija: origen → destino con paradas intermedias.
+// Aplica para buses interprovinciales Y para movilidades escolares.
+
+model Route {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String  @map("business_id") @db.Uuid
+  name         String  @db.VarChar(200)                  // "La Paz → Oruro", "Ruta Colegio San Ignacio"
+  origin       String  @db.VarChar(200)
+  destination  String  @db.VarChar(200)
+  distanceKm   Decimal? @map("distance_km") @db.Decimal(10, 2)
+  durationMin  Int?    @map("duration_min")
+  routeType    RouteType @map("route_type")
+  active       Boolean @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy    String   @map("created_by") @db.Uuid
+  updatedBy    String?  @map("updated_by") @db.Uuid
+
+  stops     RouteStop[]
+  schedules RouteSchedule[]
+  trips     Trip[]
+
+  @@index([businessId, routeType])
+  @@map("routes")
+}
+
+// Paradas intermedias de una ruta
+model RouteStop {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId   String  @map("route_id") @db.Uuid
+  name      String  @db.VarChar(200)
+  address   String? @db.VarChar
+  latitude  Float?
+  longitude Float?
+  order     Int                                           // orden de la parada
+  arrivalOffsetMin Int? @map("arrival_offset_min")        // minutos desde la salida
+
+  route Route @relation(fields: [routeId], references: [id])
+
+  @@map("route_stops")
+}
+
+// ─── Programación recurrente (transporte escolar) ───────────────────────────
+// Lunes a viernes, 7:00 AM sale de X y recoge en Y, Z, W...
+
+model RouteSchedule {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  routeId     String   @map("route_id") @db.Uuid
+  vehicleId   String?  @map("vehicle_id") @db.Uuid
+  driverId    String?  @map("driver_id") @db.Uuid         // personId del conductor
+  daysOfWeek  Int[]    @map("days_of_week")                // [1,2,3,4,5] = lun-vie
+  departureTime String @map("departure_time") @db.VarChar(5) // "07:00"
+  returnTime  String?  @map("return_time") @db.VarChar(5)  // "13:30" (vuelta)
+  validFrom   DateTime @map("valid_from") @db.Date
+  validUntil  DateTime? @map("valid_until") @db.Date
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy   String   @map("created_by") @db.Uuid
+
+  route   Route    @relation(fields: [routeId], references: [id])
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+  passengers RoutePassenger[]
+
+  @@map("route_schedules")
+}
+
+// Pasajeros fijos asignados a una programación (niños de un colegio)
+model RoutePassenger {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  scheduleId  String   @map("schedule_id") @db.Uuid
+  passengerId String   @map("passenger_id") @db.Uuid     // personId del pasajero (niño)
+  guardianId  String?  @map("guardian_id") @db.Uuid       // personId del padre/tutor
+  pickupStopName  String? @map("pickup_stop_name") @db.VarChar(200)
+  dropoffStopName String? @map("dropoff_stop_name") @db.VarChar(200)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  createdBy   String   @map("created_by") @db.Uuid
+
+  schedule RouteSchedule @relation(fields: [scheduleId], references: [id])
+
+  @@unique([scheduleId, passengerId])
+  @@map("route_passengers")
+}
+
+// ─── Viajes (instancias de una ruta) ────────────────────────────────────────
+// Cada viaje concreto: "Bus #3, La Paz → Oruro, 15 marzo 2026, 08:00"
+
+model Trip {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String     @map("business_id") @db.Uuid
+  routeId       String     @map("route_id") @db.Uuid
+  vehicleId     String?    @map("vehicle_id") @db.Uuid
+  driverId      String?    @map("driver_id") @db.Uuid      // personId
+  departureTime DateTime   @map("departure_time")
+  arrivalTime   DateTime?  @map("arrival_time")
+  status        TripStatus @default(SCHEDULED)
+  basePrice     Decimal?   @map("base_price") @db.Decimal(15, 4)
+  currency      String     @default("BOB") @db.VarChar(3)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @default(now()) @updatedAt @map("updated_at")
+  createdBy     String     @map("created_by") @db.Uuid
+  updatedBy     String?    @map("updated_by") @db.Uuid
+
+  route   Route    @relation(fields: [routeId], references: [id])
+  vehicle Vehicle? @relation(fields: [vehicleId], references: [id])
+  tickets Ticket[]
+
+  @@index([businessId, departureTime])
+  @@map("trips")
+}
+
+// ─── Pasajes / Tickets ──────────────────────────────────────────────────────
+// Un pasajero compra un asiento para un viaje.
+
+model Ticket {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tripId        String       @map("trip_id") @db.Uuid
+  seatId        String?      @map("seat_id") @db.Uuid       // null si no tiene asiento asignado
+  passengerId   String?      @map("passenger_id") @db.Uuid  // personId
+  passengerName String       @map("passenger_name") @db.VarChar(200)
+  passengerDoc  String?      @map("passenger_doc") @db.VarChar(30)
+  status        TicketStatus @default(RESERVED)
+  price         Decimal      @db.Decimal(15, 4)
+  currency      String       @default("BOB") @db.VarChar(3)
+  transactionId String?      @map("transaction_id") @db.Uuid // luminia-payments
+  boardedAt     DateTime?    @map("boarded_at")
+  cancelledAt   DateTime?    @map("cancelled_at")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  createdBy     String       @map("created_by") @db.Uuid
+
+  trip Trip  @relation(fields: [tripId], references: [id])
+  seat Seat? @relation(fields: [seatId], references: [id])
+
+  @@index([tripId])
+  @@map("tickets")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum VehicleType {
+  BUS
+  MINIBUS
+  VAN            // furgoneta escolar
+  CAR
+  MOTORCYCLE
+}
+
+enum SeatType {
+  STANDARD
+  SEMI_CAMA
+  CAMA
+  VIP
+}
+
+enum RouteType {
+  SCHOOL         // transporte escolar recurrente
+  INTERCITY      // interprovincial / interdepartamental
+  TOURISM        // tour turístico
+  URBAN          // transporte urbano
+}
+
+enum TripStatus {
+  SCHEDULED
+  BOARDING
+  IN_TRANSIT
+  ARRIVED
+  CANCELLED
+}
+
+enum TicketStatus {
+  RESERVED       // reservado, pendiente de pago
+  CONFIRMED      // pagado
+  BOARDED        // pasajero abordó
+  CANCELLED
+  NO_SHOW
+}

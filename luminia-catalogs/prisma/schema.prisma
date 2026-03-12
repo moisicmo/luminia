@@ -1,0 +1,129 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Catalogs — Discovery público ───────────────────────────────────────────
+// Perfiles públicos agregados de negocios para búsqueda, filtros y SEO.
+// Se sincronizan desde luminia-businesses + datos propios del vertical.
+//
+// Cada vertical (fitness, mascotas, viajes, etc.) publica su perfil aquí.
+// El frontend de cada marketplace consume este servicio para el home/búsqueda.
+
+// ─── Perfil público del negocio ─────────────────────────────────────────────
+
+model PublicProfile {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String   @map("business_id") @db.Uuid        // luminia-businesses
+  branchId      String?  @map("branch_id") @db.Uuid          // si es por sucursal
+  vertical      Vertical                                      // en qué marketplace aparece
+  name          String   @db.VarChar(200)
+  slug          String   @db.VarChar(100)
+  description   String?  @db.VarChar(2000)
+  shortDesc     String?  @map("short_desc") @db.VarChar(300)
+  logoUrl       String?  @map("logo_url") @db.VarChar
+  coverUrl      String?  @map("cover_url") @db.VarChar
+  // Ubicación
+  city          String?  @db.VarChar(100)
+  region        String?  @db.VarChar(100)
+  country       String   @default("BO") @db.VarChar(3)
+  address       String?  @db.VarChar
+  latitude      Float?
+  longitude     Float?
+  // Contacto
+  phone         String?  @db.VarChar(20)
+  whatsapp      String?  @db.VarChar(20)
+  email         String?  @db.VarChar(100)
+  website       String?  @db.VarChar
+  // Ratings (synced from luminia-reviews)
+  avgRating     Decimal  @default(0) @map("avg_rating") @db.Decimal(3, 2)
+  reviewCount   Int      @default(0) @map("review_count")
+  // SEO / búsqueda
+  featured      Boolean  @default(false)                     // destacado en home
+  verified      Boolean  @default(false)                     // verificado por Luminia
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
+
+  tags     ProfileTag[]
+  amenities ProfileAmenity[]
+  gallery  ProfileImage[]
+  hours    ProfileHours[]
+
+  @@unique([vertical, slug])
+  @@index([vertical, city, active])
+  @@index([businessId])
+  @@map("public_profiles")
+}
+
+// Tags/etiquetas para búsqueda y filtros
+model ProfileTag {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId String @map("profile_id") @db.Uuid
+  tag       String @db.VarChar(50)                           // "wifi", "estacionamiento", "24hrs"
+
+  profile PublicProfile @relation(fields: [profileId], references: [id])
+
+  @@unique([profileId, tag])
+  @@map("profile_tags")
+}
+
+// Amenidades / características
+model ProfileAmenity {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId String @map("profile_id") @db.Uuid
+  name      String @db.VarChar(100)
+  icon      String? @db.VarChar(50)                          // nombre del icono
+
+  profile PublicProfile @relation(fields: [profileId], references: [id])
+
+  @@map("profile_amenities")
+}
+
+// Galería de imágenes
+model ProfileImage {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId String  @map("profile_id") @db.Uuid
+  url       String  @db.VarChar
+  caption   String? @db.VarChar(200)
+  order     Int     @default(0)
+
+  profile PublicProfile @relation(fields: [profileId], references: [id])
+
+  @@map("profile_images")
+}
+
+// Horarios de atención
+model ProfileHours {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  profileId String @map("profile_id") @db.Uuid
+  dayOfWeek Int    @map("day_of_week")                       // 1=lunes … 7=domingo
+  openTime  String @map("open_time") @db.VarChar(5)          // "08:00"
+  closeTime String @map("close_time") @db.VarChar(5)         // "22:00"
+
+  profile PublicProfile @relation(fields: [profileId], references: [id])
+
+  @@unique([profileId, dayOfWeek])
+  @@map("profile_hours")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Vertical {
+  FITNESS         // gyms, studios, crossfit
+  PETS            // veterinarias, pet shops
+  TRAVEL          // agencias turísticas
+  TRANSPORT       // transporte escolar, buses
+  HEALTH          // dentistas, psicólogos, consultorios
+  BEAUTY          // barberías, spas, salones
+  EDUCATION       // colegios, institutos, plataformas
+  FOOD            // restaurantes, cafeterías
+  RETAIL          // tiendas, librerías
+  REAL_ESTATE     // inmobiliarias
+  HOSPITALITY     // hoteles, hostales
+}

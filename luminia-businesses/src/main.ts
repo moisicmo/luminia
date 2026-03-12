@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { envs, RMQServiceBusiness } from './config';
+import { envs, RMQServiceBusinesses } from './config';
 
 async function bootstrap() {
 
@@ -14,7 +14,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: envs.rmqServers,
-      queue: RMQServiceBusiness.getQueueName(),
+      queue: RMQServiceBusinesses.getQueueName(),
       queueOptions: { durable: true },
       socketOptions: {
         heartbeatIntervalInSeconds: 5,

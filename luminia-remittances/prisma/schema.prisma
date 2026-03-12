@@ -1,0 +1,130 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Remittances — Remesas internacionales ──────────────────────────────────
+// Transferencias de dinero entre países.
+// senderId / recipientId = luminia-users (Person)
+//
+// Flujo: PENDING → PROCESSING → COMPLETED (o FAILED / CANCELLED / REFUNDED)
+//
+// Luminia cobra comisión = fee por cada transferencia.
+
+// ─── Corredor (corridor) ────────────────────────────────────────────────────
+// Par de países habilitado con métodos de pago disponibles por cada lado.
+
+model Corridor {
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  originCountry   String  @map("origin_country") @db.VarChar(3)       // ISO 3166 (BO, PE, AR, US)
+  originCurrency  String  @map("origin_currency") @db.VarChar(3)      // BOB, PEN, ARS, USD
+  destCountry     String  @map("dest_country") @db.VarChar(3)
+  destCurrency    String  @map("dest_currency") @db.VarChar(3)
+  active          Boolean @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+
+  rates      ExchangeRate[]
+  transfers  Remittance[]
+
+  @@unique([originCountry, destCountry])
+  @@map("corridors")
+}
+
+// Tipo de cambio vigente para un corredor
+model ExchangeRate {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  corridorId  String   @map("corridor_id") @db.Uuid
+  rate        Decimal  @db.Decimal(15, 6)                   // 1 origen = X destino
+  spreadPct   Decimal  @default(0) @map("spread_pct") @db.Decimal(5, 4) // margen %
+  validFrom   DateTime @map("valid_from")
+  validUntil  DateTime? @map("valid_until")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  corridor Corridor @relation(fields: [corridorId], references: [id])
+
+  @@index([corridorId, active])
+  @@map("exchange_rates")
+}
+
+// ─── Método de pago por país ────────────────────────────────────────────────
+
+model PaymentChannel {
+  id          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  country     String         @db.VarChar(3)
+  name        String         @db.VarChar(100)              // "Yape", "Nequi", "Zelle", "QR BNB"
+  channelType ChannelType    @map("channel_type")
+  config      String?        @db.Text                      // JSON con credenciales/config
+  active      Boolean        @default(true)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  @@map("payment_channels")
+}
+
+// ─── Remesa ─────────────────────────────────────────────────────────────────
+
+model Remittance {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  corridorId       String           @map("corridor_id") @db.Uuid
+  senderId         String           @map("sender_id") @db.Uuid         // personId
+  senderName       String           @map("sender_name") @db.VarChar(200)
+  recipientId      String?          @map("recipient_id") @db.Uuid      // personId (puede no estar registrado)
+  recipientName    String           @map("recipient_name") @db.VarChar(200)
+  recipientAccount String?          @map("recipient_account") @db.VarChar(100) // cuenta destino
+  recipientPhone   String?          @map("recipient_phone") @db.VarChar(20)
+  // Montos
+  sendAmount       Decimal          @map("send_amount") @db.Decimal(15, 4)
+  sendCurrency     String           @map("send_currency") @db.VarChar(3)
+  receiveAmount    Decimal          @map("receive_amount") @db.Decimal(15, 4)
+  receiveCurrency  String           @map("receive_currency") @db.VarChar(3)
+  exchangeRate     Decimal          @map("exchange_rate") @db.Decimal(15, 6)
+  fee              Decimal          @db.Decimal(15, 4)                  // comisión de Luminia
+  feeCurrency      String           @map("fee_currency") @db.VarChar(3)
+  // Estado
+  status           RemittanceStatus @default(PENDING)
+  // Canales
+  sendChannel      String?          @map("send_channel") @db.VarChar(100)     // "Yape", "QR BNB"
+  receiveChannel   String?          @map("receive_channel") @db.VarChar(100)  // "Nequi", "Transfer"
+  // Referencia al pago (luminia-payments Transaction.id)
+  transactionId    String?          @map("transaction_id") @db.Uuid
+  // Compliance
+  purpose          String?          @db.VarChar(200)                   // motivo del envío
+  completedAt      DateTime?        @map("completed_at")
+  cancelledAt      DateTime?        @map("cancelled_at")
+  cancelReason     String?          @map("cancel_reason") @db.VarChar
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @default(now()) @updatedAt @map("updated_at")
+  createdBy        String           @map("created_by") @db.Uuid
+
+  corridor Corridor @relation(fields: [corridorId], references: [id])
+
+  @@index([senderId])
+  @@index([status])
+  @@map("remittances")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum ChannelType {
+  MOBILE_WALLET    // Yape, Tigo Money, Nequi
+  BANK_TRANSFER    // transferencia bancaria
+  QR               // QR de banco
+  CASH_PICKUP      // retiro en efectivo
+  CARD             // tarjeta débito/crédito
+}
+
+enum RemittanceStatus {
+  PENDING          // creada, esperando pago del sender
+  PROCESSING       // pago recibido, procesando envío
+  COMPLETED        // dinero entregado al recipient
+  FAILED           // falló el envío
+  CANCELLED        // cancelada
+  REFUNDED         // reembolsada al sender
+}

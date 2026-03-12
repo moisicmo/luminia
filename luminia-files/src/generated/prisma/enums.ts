@@ -9,7 +9,64 @@
 * 🟢 You can import this file directly.
 */
 
+export const FileCategory = {
+  IMAGE: 'IMAGE',
+  DOCUMENT: 'DOCUMENT',
+  SPREADSHEET: 'SPREADSHEET',
+  REPORT: 'REPORT',
+  ATTACHMENT: 'ATTACHMENT',
+  OTHER: 'OTHER'
+} as const
+
+export type FileCategory = (typeof FileCategory)[keyof typeof FileCategory]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const Visibility = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE'
+} as const
+
+export type Visibility = (typeof Visibility)[keyof typeof Visibility]
+
+
+export const OwnerType = {
+  BUSINESS: 'BUSINESS',
+  PERSON: 'PERSON',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type OwnerType = (typeof OwnerType)[keyof typeof OwnerType]
+
+
+export const DocumentType = {
+  ORDER_RECEIPT: 'ORDER_RECEIPT',
+  INVOICE: 'INVOICE',
+  SUBSCRIPTION_BILL: 'SUBSCRIPTION_BILL',
+  DEBT_STATEMENT: 'DEBT_STATEMENT',
+  INVENTORY_REPORT: 'INVENTORY_REPORT',
+  SALES_REPORT: 'SALES_REPORT',
+  CUSTOM_REPORT: 'CUSTOM_REPORT'
+} as const
+
+export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
+
+
+export const DocumentStatus = {
+  PENDING: 'PENDING',
+  GENERATING: 'GENERATING',
+  DONE: 'DONE',
+  FAILED: 'FAILED'
+} as const
+
+export type DocumentStatus = (typeof DocumentStatus)[keyof typeof DocumentStatus]
+
+
+export const DocRefType = {
+  ORDER: 'ORDER',
+  INVOICE: 'INVOICE',
+  SUBSCRIPTION: 'SUBSCRIPTION',
+  DEBT: 'DEBT',
+  REPORT: 'REPORT'
+} as const
+
+export type DocRefType = (typeof DocRefType)[keyof typeof DocRefType]

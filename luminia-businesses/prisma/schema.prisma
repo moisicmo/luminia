@@ -45,23 +45,43 @@ model Business {
   branches          Branch[]
   systemAssignments SystemAssignment[]
   members           BusinessMember[]
+  roles             BusinessRole[]
 
   @@map("businesses")
 }
 
+model BusinessRole {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId  String   @map("business_id") @db.Uuid
+  name        String   @db.VarChar
+  description String?  @db.VarChar
+  isSystem    Boolean  @default(false) @map("is_system") // created automatically, cannot be deleted
+  permissions String[] // e.g. ["ventas:crear", "productos:ver"]
+
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @default(now()) @updatedAt @map("updated_at")
+  createdBy String           @map("created_by") @db.Uuid
+  updatedBy String?          @map("updated_by") @db.Uuid
+  business  Business         @relation(fields: [businessId], references: [id])
+  members   BusinessMember[]
+
+  @@map("business_roles")
+}
+
 model BusinessMember {
-  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  businessId String     @map("business_id") @db.Uuid
-  userId     String     @map("user_id") @db.Uuid   // personId from luminia-users
-  role       MemberRole @default(SELLER)
-  active     Boolean    @default(true)
+  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String      @map("business_id") @db.Uuid
+  userId       String      @map("user_id") @db.Uuid   // personId from luminia-users
+  role         MemberRole  @default(MEMBER)
+  roleId       String?     @map("role_id") @db.Uuid   // FK to BusinessRole (null for OWNER)
+  active       Boolean     @default(true)
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-  createdBy String   @map("created_by") @db.Uuid
-  updatedBy String?  @map("updated_by") @db.Uuid
-
-  business Business @relation(fields: [businessId], references: [id])
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdBy    String        @map("created_by") @db.Uuid
+  updatedBy    String?       @map("updated_by") @db.Uuid
+  business     Business      @relation(fields: [businessId], references: [id])
+  businessRole BusinessRole? @relation(fields: [roleId], references: [id])
 
   @@unique([businessId, userId])
   @@index([userId])
@@ -99,24 +119,54 @@ model PointOfSale {
   name     String  @db.VarChar
   active   Boolean @default(true)
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-  createdBy String   @map("created_by")
-  updatedBy String?  @map("updated_by")
-  branch    Branch   @relation(fields: [branchId], references: [id])
+  createdAt DateTime             @default(now()) @map("created_at")
+  updatedAt DateTime             @default(now()) @updatedAt @map("updated_at")
+  createdBy String               @map("created_by")
+  updatedBy String?              @map("updated_by")
+  branch    Branch               @relation(fields: [branchId], references: [id])
+  sessions  CashRegisterSession[]
 
   @@map("points_of_sale")
 }
 
+// ─── Apertura/Cierre de caja ─────────────────────────────────────────────────
+// Cada sesión representa un turno: apertura con monto inicial → cierre con
+// totales y diferencia. cashierId = personId del cajero (luminia-users).
+
+model CashRegisterSession {
+  id              String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId      String             @map("business_id") @db.Uuid
+  pointOfSaleId   String             @map("point_of_sale_id") @db.Uuid
+  cashierId       String             @map("cashier_id") @db.Uuid        // personId del cajero
+  status          CashSessionStatus  @default(OPEN)
+  openingAmount   Decimal            @map("opening_amount") @db.Decimal(15, 4)
+  closingAmount   Decimal?           @map("closing_amount") @db.Decimal(15, 4)
+  expectedAmount  Decimal?           @map("expected_amount") @db.Decimal(15, 4)
+  difference      Decimal?           @db.Decimal(15, 4)                         // closing - expected
+  currency        String             @default("BOB") @db.VarChar(3)
+  openedAt        DateTime           @default(now()) @map("opened_at")
+  closedAt        DateTime?          @map("closed_at")
+  notes           String?            @db.VarChar
+  createdBy       String             @map("created_by") @db.Uuid
+  updatedBy       String?            @map("updated_by") @db.Uuid
+
+  pointOfSale PointOfSale @relation(fields: [pointOfSaleId], references: [id])
+
+  @@index([businessId, status])
+  @@index([cashierId])
+  @@map("cash_register_sessions")
+}
+
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
+enum CashSessionStatus {
+  OPEN
+  CLOSED
+}
+
 enum MemberRole {
-  OWNER      // Dueño (asignado automáticamente al crear el negocio)
-  ADMIN      // Administrador total excepto eliminar el negocio
-  MANAGER    // Gestiona productos, órdenes y reportes
-  SELLER     // Solo crea y gestiona ventas/órdenes
-  INVENTORY  // Solo gestiona stock, entradas y salidas
-  VIEWER     // Solo lectura
+  OWNER  // Dueño — control total, no necesita BusinessRole
+  MEMBER // Todos los demás — sus permisos vienen de BusinessRole
 }
 
 enum BusinessType {
@@ -133,4 +183,15 @@ enum BusinessType {
   ENTRETENIMIENTO
   ECOMMERCE
   CONSULTORIA
+  GIMNASIO
+  VETERINARIA
+  BARBERIA
+  SPA
+  DENTISTA
+  PSICOLOGO
+  AGENCIA_TURISTICA
+  INMOBILIARIA
+  SEGURO
+  FREELANCER
+  LIBRERIA
 }

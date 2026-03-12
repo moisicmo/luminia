@@ -1,26 +1,19 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsUUID } from 'class-validator';
-
-export enum MemberRole {
-  ADMIN      = 'ADMIN',
-  MANAGER    = 'MANAGER',
-  SELLER     = 'SELLER',
-  INVENTORY  = 'INVENTORY',
-  VIEWER     = 'VIEWER',
-}
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsUUID } from 'class-validator';
 
 export class AddMemberDto {
   @ApiProperty({ description: 'personId del usuario a agregar (obtenido de /users/search)' })
   @IsUUID()
   userId: string;
 
-  @ApiProperty({ enum: MemberRole, example: MemberRole.SELLER })
-  @IsEnum(MemberRole)
-  role: MemberRole;
+  @ApiPropertyOptional({ description: 'ID del rol (BusinessRole) a asignar al nuevo miembro' })
+  @IsOptional()
+  @IsUUID()
+  roleId?: string;
 }
 
 export class UpdateMemberRoleDto {
-  @ApiProperty({ enum: MemberRole, example: MemberRole.MANAGER })
-  @IsEnum(MemberRole)
-  role: MemberRole;
+  @ApiProperty({ description: 'ID del rol (BusinessRole) a asignar' })
+  @IsUUID()
+  roleId: string;
 }

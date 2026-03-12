@@ -16,8 +16,8 @@ datasource db {
 // sellerId   → luminia-users (Person) — vendedor o cajero
 //
 // Flujo de inventario (solo aplica a ítems tipo PRODUCT):
-//   CONFIRMED → evento RMQ `order.confirmed` → luminia-store crea Output (SALE)
-//   RETURNED  → evento RMQ `order.returned`  → luminia-store crea Input (RETURN_FROM_CUSTOMER)
+//   CONFIRMED → evento RMQ `order.confirmed` → luminia-inventory crea Output (SALE)
+//   RETURNED  → evento RMQ `order.returned`  → luminia-inventory crea Input (RETURN_FROM_CUSTOMER)
 
 model Order {
   id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -38,7 +38,7 @@ model Order {
   amountDue      Decimal     @default(0) @map("amount_due") @db.Decimal(15, 4)  // total - amountPaid
   notes          String?     @db.VarChar
   // Refs externas al microservicio de inventario (se llenan al confirmar)
-  storeOutputId  String?     @map("store_output_id") @db.Uuid  // Output.id en luminia-store
+  storeOutputId  String?     @map("store_output_id") @db.Uuid  // Output.id en luminia-inventory
   confirmedAt    DateTime?   @map("confirmed_at")
   deliveredAt    DateTime?   @map("delivered_at")
   cancelledAt    DateTime?   @map("cancelled_at")
@@ -59,8 +59,8 @@ model Order {
 
 // ─── Ítems de la orden ────────────────────────────────────────────────────────
 // itemType + itemId = referencia polimórfica al microservicio de origen:
-//   PRODUCT    → luminia-store    Product.id
-//   CLASS      → luminia-gyms     GymClass.id
+//   PRODUCT    → luminia-inventory    Product.id
+//   CLASS      → luminia-fitness     GymClass.id
 //   MEMBERSHIP → luminia-suscriptions Plan.id
 //   CUSTOM     → sin referencia (ítem libre, nombre manual)
 //
@@ -128,16 +128,19 @@ enum OrderType {
 
 enum OrderStatus {
   DRAFT      // En proceso (carrito / preventa)
-  CONFIRMED  // Confirmada — dispara descuento de inventario en luminia-store
+  CONFIRMED  // Confirmada — dispara descuento de inventario en luminia-inventory
   DELIVERED  // Entregada físicamente al cliente
   CANCELLED  // Anulada antes de confirmar
-  RETURNED   // Devuelta después de confirmar — dispara reingreso en luminia-store
+  RETURNED   // Devuelta después de confirmar — dispara reingreso en luminia-inventory
 }
 
 enum ItemType {
-  PRODUCT    // luminia-store    → Product.id (afecta inventario al confirmar)
-  CLASS      // luminia-gyms     → GymClass.id (clase suelta)
+  PRODUCT    // luminia-inventories → Product.id (afecta inventario al confirmar)
+  CLASS      // luminia-fitness     → GymClass.id (clase suelta)
   MEMBERSHIP // luminia-suscriptions → Plan.id (delega a suscriptions)
+  BOOKING    // luminia-bookings    → BookableService.id (cita, tour, etc.)
+  TICKET     // luminia-transports  → Ticket.id (pasaje de bus)
+  ROOM       // hospedaje / hotel   → habitación/reserva
   CUSTOM     // ítem libre sin referencia a otro microservicio
 }
 

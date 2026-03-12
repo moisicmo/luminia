@@ -7,21 +7,25 @@ ROOT="/Users/moises/Desktop/projects/saas"
 NEST_SERVICES=(
   "luminia-authentications"
   "luminia-billers"
-  "luminia-business"
+  "luminia-bookings"
+  "luminia-businesses"
+  "luminia-catalogs"
   "luminia-files"
-  "luminia-gateway"
-  "luminia-gyms"
+  "luminia-fitness"
+  "luminia-inventories"
   "luminia-notifiers"
   "luminia-orders"
   "luminia-payments"
-  "luminia-store"
+  "luminia-remittances"
+  "luminia-reviews"
   "luminia-suscriptions"
+  "luminia-transports"
   "luminia-users"
 )
 
 # React frontend
 REACT_SERVICES=(
-  "luminia-mall"
+  "luminia-portal"
 )
 
 open_tab() {

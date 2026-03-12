@@ -34,6 +34,9 @@ export const ItemType = {
   PRODUCT: 'PRODUCT',
   CLASS: 'CLASS',
   MEMBERSHIP: 'MEMBERSHIP',
+  BOOKING: 'BOOKING',
+  TICKET: 'TICKET',
+  ROOM: 'ROOM',
   CUSTOM: 'CUSTOM'
 } as const
 

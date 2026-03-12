@@ -386,9 +386,11 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   SystemAssignment: 'SystemAssignment',
   Business: 'Business',
+  BusinessRole: 'BusinessRole',
   BusinessMember: 'BusinessMember',
   Branch: 'Branch',
-  PointOfSale: 'PointOfSale'
+  PointOfSale: 'PointOfSale',
+  CashRegisterSession: 'CashRegisterSession'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "systemAssignment" | "business" | "businessMember" | "branch" | "pointOfSale"
+    modelProps: "systemAssignment" | "business" | "businessRole" | "businessMember" | "branch" | "pointOfSale" | "cashRegisterSession"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -553,6 +555,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.BusinessCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.BusinessCountAggregateOutputType> | number
+        }
+      }
+    }
+    BusinessRole: {
+      payload: Prisma.$BusinessRolePayload<ExtArgs>
+      fields: Prisma.BusinessRoleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BusinessRoleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BusinessRoleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>
+        }
+        findFirst: {
+          args: Prisma.BusinessRoleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BusinessRoleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>
+        }
+        findMany: {
+          args: Prisma.BusinessRoleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>[]
+        }
+        create: {
+          args: Prisma.BusinessRoleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>
+        }
+        createMany: {
+          args: Prisma.BusinessRoleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BusinessRoleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>[]
+        }
+        delete: {
+          args: Prisma.BusinessRoleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>
+        }
+        update: {
+          args: Prisma.BusinessRoleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>
+        }
+        deleteMany: {
+          args: Prisma.BusinessRoleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BusinessRoleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BusinessRoleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>[]
+        }
+        upsert: {
+          args: Prisma.BusinessRoleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BusinessRolePayload>
+        }
+        aggregate: {
+          args: Prisma.BusinessRoleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBusinessRole>
+        }
+        groupBy: {
+          args: Prisma.BusinessRoleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BusinessRoleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BusinessRoleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BusinessRoleCountAggregateOutputType> | number
         }
       }
     }
@@ -778,6 +854,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CashRegisterSession: {
+      payload: Prisma.$CashRegisterSessionPayload<ExtArgs>
+      fields: Prisma.CashRegisterSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CashRegisterSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CashRegisterSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.CashRegisterSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CashRegisterSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>
+        }
+        findMany: {
+          args: Prisma.CashRegisterSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>[]
+        }
+        create: {
+          args: Prisma.CashRegisterSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>
+        }
+        createMany: {
+          args: Prisma.CashRegisterSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CashRegisterSessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>[]
+        }
+        delete: {
+          args: Prisma.CashRegisterSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>
+        }
+        update: {
+          args: Prisma.CashRegisterSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.CashRegisterSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CashRegisterSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CashRegisterSessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.CashRegisterSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CashRegisterSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.CashRegisterSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCashRegisterSession>
+        }
+        groupBy: {
+          args: Prisma.CashRegisterSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CashRegisterSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CashRegisterSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CashRegisterSessionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -848,11 +998,28 @@ export const BusinessScalarFieldEnum = {
 export type BusinessScalarFieldEnum = (typeof BusinessScalarFieldEnum)[keyof typeof BusinessScalarFieldEnum]
 
 
+export const BusinessRoleScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  name: 'name',
+  description: 'description',
+  isSystem: 'isSystem',
+  permissions: 'permissions',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type BusinessRoleScalarFieldEnum = (typeof BusinessRoleScalarFieldEnum)[keyof typeof BusinessRoleScalarFieldEnum]
+
+
 export const BusinessMemberScalarFieldEnum = {
   id: 'id',
   businessId: 'businessId',
   userId: 'userId',
   role: 'role',
+  roleId: 'roleId',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -898,6 +1065,27 @@ export const PointOfSaleScalarFieldEnum = {
 } as const
 
 export type PointOfSaleScalarFieldEnum = (typeof PointOfSaleScalarFieldEnum)[keyof typeof PointOfSaleScalarFieldEnum]
+
+
+export const CashRegisterSessionScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  pointOfSaleId: 'pointOfSaleId',
+  cashierId: 'cashierId',
+  status: 'status',
+  openingAmount: 'openingAmount',
+  closingAmount: 'closingAmount',
+  expectedAmount: 'expectedAmount',
+  difference: 'difference',
+  currency: 'currency',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type CashRegisterSessionScalarFieldEnum = (typeof CashRegisterSessionScalarFieldEnum)[keyof typeof CashRegisterSessionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1004,6 +1192,34 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CashSessionStatus'
+ */
+export type EnumCashSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CashSessionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CashSessionStatus[]'
+ */
+export type ListEnumCashSessionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CashSessionStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -1117,9 +1333,11 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   systemAssignment?: Prisma.SystemAssignmentOmit
   business?: Prisma.BusinessOmit
+  businessRole?: Prisma.BusinessRoleOmit
   businessMember?: Prisma.BusinessMemberOmit
   branch?: Prisma.BranchOmit
   pointOfSale?: Prisma.PointOfSaleOmit
+  cashRegisterSession?: Prisma.CashRegisterSessionOmit
 }
 
 /* Types for Logging */

@@ -10,7 +10,7 @@ import { Reflector } from '@nestjs/core';
 import { Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout } from 'rxjs';
-import { RMQServiceBusiness } from '@/config';
+import { RMQServiceBusinesses } from '@/config';
 import { MIN_ROLE_KEY, MemberRole, ROLE_WEIGHT } from '../decorators/min-role.decorator';
 
 const RMQ_TIMEOUT_MS = 8_000;
@@ -21,7 +21,7 @@ export class BusinessGuard implements CanActivate {
 
   constructor(
     private readonly reflector: Reflector,
-    @Inject(RMQServiceBusiness.getName())
+    @Inject(RMQServiceBusinesses.getName())
     private readonly businessClient: ClientProxy,
   ) {}
 

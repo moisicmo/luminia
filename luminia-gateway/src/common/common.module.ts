@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { envs, RMQServiceBusiness } from '@/config';
+import { envs, RMQServiceBusinesses } from '@/config';
 import { BusinessGuard } from './guards/business.guard';
 
 @Global()
@@ -8,11 +8,11 @@ import { BusinessGuard } from './guards/business.guard';
   imports: [
     ClientsModule.register([
       {
-        name: RMQServiceBusiness.getName(),
+        name: RMQServiceBusinesses.getName(),
         transport: Transport.RMQ,
         options: {
           urls: envs.rmqServers,
-          queue: RMQServiceBusiness.getQueueName(),
+          queue: RMQServiceBusinesses.getQueueName(),
           queueOptions: { durable: true },
         },
       },

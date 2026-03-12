@@ -50,6 +50,11 @@ export type SystemAssignment = Prisma.SystemAssignmentModel
  */
 export type Business = Prisma.BusinessModel
 /**
+ * Model BusinessRole
+ * 
+ */
+export type BusinessRole = Prisma.BusinessRoleModel
+/**
  * Model BusinessMember
  * 
  */
@@ -64,3 +69,8 @@ export type Branch = Prisma.BranchModel
  * 
  */
 export type PointOfSale = Prisma.PointOfSaleModel
+/**
+ * Model CashRegisterSession
+ * 
+ */
+export type CashRegisterSession = Prisma.CashRegisterSessionModel

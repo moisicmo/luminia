@@ -15,6 +15,7 @@ import { BusinessId } from '../common/decorators/business-id.decorator';
 import { BusinessGuard } from '../common/guards/business.guard';
 import { MinRole, MemberRole } from '../common/decorators/min-role.decorator';
 import { SubscriptionsService } from './subscriptions.service';
+import { Public } from '../common/decorators/public.decorator';
 
 @ApiTags('Subscriptions')
 @ApiBearerAuth('Authorization')
@@ -26,6 +27,7 @@ export class SubscriptionsController {
   // ─── Platform Plans (public — no BusinessGuard needed) ────────────────────
 
   @Get('platform-plans')
+  @Public()
   @ApiOperation({ summary: 'Listar planes de plataforma disponibles' })
   listPlatformPlans() {
     return this.subscriptionsService.listPlatformPlans();

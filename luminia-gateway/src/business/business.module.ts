@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { envs, RMQServiceBusiness } from '@/config';
+import { envs, RMQServiceBusinesses } from '@/config';
 import { BusinessController } from './business.controller';
 import { BusinessService } from './business.service';
 
@@ -8,11 +8,11 @@ import { BusinessService } from './business.service';
   imports: [
     ClientsModule.register([
       {
-        name: RMQServiceBusiness.getName(),
+        name: RMQServiceBusinesses.getName(),
         transport: Transport.RMQ,
         options: {
           urls: envs.rmqServers,
-          queue: RMQServiceBusiness.getQueueName(),
+          queue: RMQServiceBusinesses.getQueueName(),
           queueOptions: { durable: true },
         },
       },

@@ -97,7 +97,7 @@ model Transaction {
 // debtorId/creditorId + PartyType = polimórfico:
 //   BUSINESS  → luminia-business
 //   CUSTOMER  → luminia-users (persona / cliente del negocio)
-//   SUPPLIER  → proveedor registrado en luminia-store
+//   SUPPLIER  → proveedor registrado en luminia-inventory
 //
 // debtorName / creditorName = snapshots (no cambian aunque se renombre el cliente)
 
@@ -251,9 +251,10 @@ enum DebtStatus {
 }
 
 enum PartyType {
-  BUSINESS   // luminia-business
+  BUSINESS   // luminia-businesses
   CUSTOMER   // luminia-users (cliente del negocio)
-  SUPPLIER   // proveedor (luminia-store)
+  SUPPLIER   // proveedor (luminia-inventories)
+  PLATFORM   // Luminia como entidad (comisiones, suscripciones de plataforma)
 }
 
 enum MovementType {

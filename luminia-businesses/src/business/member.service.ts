@@ -148,20 +148,28 @@ export class MemberService {
         select: { ownerId: true },
       });
 
-      if (!business) return { hasAccess: false, role: null, isOwner: false };
+      if (!business) return { hasAccess: false, role: null, isOwner: false, permissions: [] };
 
       if (business.ownerId === userId) {
-        return { hasAccess: true, role: 'OWNER', isOwner: true };
+        // Owner has all permissions implicitly
+        return { hasAccess: true, role: 'OWNER', isOwner: true, permissions: ['*'] };
       }
 
       const member = await prisma.businessMember.findUnique({
         where: { businessId_userId: { businessId, userId } },
-        select: { role: true, active: true },
+        include: { businessRole: true },
       });
 
-      if (!member?.active) return { hasAccess: false, role: null, isOwner: false };
+      if (!member?.active) return { hasAccess: false, role: null, isOwner: false, permissions: [] };
 
-      return { hasAccess: true, role: member.role, isOwner: false };
+      const permissions = member.businessRole?.permissions ?? [];
+      return {
+        hasAccess: true,
+        role: member.businessRole?.name ?? member.role,
+        roleId: member.roleId,
+        isOwner: false,
+        permissions,
+      };
     } catch (err) {
       this.logger.error(`[members.checkAccess] error: ${(err as Error).message}`);
       throw new RpcException({ status: 500, message: 'Error al verificar acceso' });
@@ -179,8 +187,10 @@ export class MemberService {
 
     const member = await prisma.businessMember.findUnique({
       where: { businessId_userId: { businessId, userId } },
+      include: { businessRole: true },
     });
-    if (!member?.active || !['ADMIN'].includes(member.role)) {
+    const canManage = member?.active && member.businessRole?.permissions.includes('miembros:gestionar');
+    if (!canManage) {
       throw new RpcException({ status: 403, message: 'No tienes permisos para gestionar miembros' });
     }
     return business;

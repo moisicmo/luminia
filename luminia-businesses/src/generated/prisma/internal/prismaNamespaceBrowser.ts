@@ -53,9 +53,11 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   SystemAssignment: 'SystemAssignment',
   Business: 'Business',
+  BusinessRole: 'BusinessRole',
   BusinessMember: 'BusinessMember',
   Branch: 'Branch',
-  PointOfSale: 'PointOfSale'
+  PointOfSale: 'PointOfSale',
+  CashRegisterSession: 'CashRegisterSession'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -105,11 +107,28 @@ export const BusinessScalarFieldEnum = {
 export type BusinessScalarFieldEnum = (typeof BusinessScalarFieldEnum)[keyof typeof BusinessScalarFieldEnum]
 
 
+export const BusinessRoleScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  name: 'name',
+  description: 'description',
+  isSystem: 'isSystem',
+  permissions: 'permissions',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type BusinessRoleScalarFieldEnum = (typeof BusinessRoleScalarFieldEnum)[keyof typeof BusinessRoleScalarFieldEnum]
+
+
 export const BusinessMemberScalarFieldEnum = {
   id: 'id',
   businessId: 'businessId',
   userId: 'userId',
   role: 'role',
+  roleId: 'roleId',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -155,6 +174,27 @@ export const PointOfSaleScalarFieldEnum = {
 } as const
 
 export type PointOfSaleScalarFieldEnum = (typeof PointOfSaleScalarFieldEnum)[keyof typeof PointOfSaleScalarFieldEnum]
+
+
+export const CashRegisterSessionScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  pointOfSaleId: 'pointOfSaleId',
+  cashierId: 'cashierId',
+  status: 'status',
+  openingAmount: 'openingAmount',
+  closingAmount: 'closingAmount',
+  expectedAmount: 'expectedAmount',
+  difference: 'difference',
+  currency: 'currency',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt',
+  notes: 'notes',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type CashRegisterSessionScalarFieldEnum = (typeof CashRegisterSessionScalarFieldEnum)[keyof typeof CashRegisterSessionScalarFieldEnum]
 
 
 export const SortOrder = {

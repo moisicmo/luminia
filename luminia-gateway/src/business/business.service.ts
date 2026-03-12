@@ -1,7 +1,7 @@
 import { Inject, Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom, timeout, TimeoutError } from 'rxjs';
-import { RMQServiceBusiness } from '@/config';
+import { RMQServiceBusinesses } from '@/config';
 import { CreateBusinessDto } from './dto/create-business.dto';
 
 const RMQ_TIMEOUT_MS = 10_000;
@@ -11,7 +11,7 @@ export class BusinessService {
   private readonly logger = new Logger(BusinessService.name);
 
   constructor(
-    @Inject(RMQServiceBusiness.getName())
+    @Inject(RMQServiceBusinesses.getName())
     private readonly businessClient: ClientProxy,
   ) {}
 
@@ -36,6 +36,17 @@ export class BusinessService {
     }
   }
 
+  listPublic() {
+    return this.send('business.list.public', {});
+  }
+
+  resolveByUrl(url: string) {
+    return this.send<{ businessId: string; name: string; url: string; systemId: string | null }>(
+      'business.findByUrl',
+      { url },
+    );
+  }
+
   createBusiness(dto: CreateBusinessDto, ownerId: string) {
     return this.send('business.create', { dto, ownerId });
   }
@@ -50,19 +61,45 @@ export class BusinessService {
 
   // ─── Members ──────────────────────────────────────────────────────────────
 
-  addMember(businessId: string, userId: string, role: string, invitedBy: string) {
-    return this.send('business.members.add', { businessId, userId, role, invitedBy });
+  addMember(businessId: string, userId: string, invitedBy: string, roleId?: string) {
+    return this.send('business.members.add', { businessId, userId, role: 'MEMBER', invitedBy, roleId });
   }
 
   listMembers(businessId: string, requesterId: string) {
     return this.send('business.members.list', { businessId, requesterId });
   }
 
-  updateMemberRole(businessId: string, memberId: string, role: string, requesterId: string) {
-    return this.send('business.members.updateRole', { businessId, memberId, role, requesterId });
+  updateMemberRole(businessId: string, memberId: string, roleId: string, requesterId: string) {
+    return this.send('business.roles.assign', { businessId, memberId, roleId, requesterId });
   }
 
   removeMember(businessId: string, memberId: string, requesterId: string) {
     return this.send('business.members.remove', { businessId, memberId, requesterId });
+  }
+
+  // ─── Roles ──────────────────────────────────────────────────────────────
+
+  listRoles(businessId: string) {
+    return this.send('business.roles.list', { businessId });
+  }
+
+  listPermissions() {
+    return this.send('business.roles.permissions', {});
+  }
+
+  createRole(businessId: string, data: { name: string; description?: string; permissions: string[] }, createdBy: string) {
+    return this.send('business.roles.create', { businessId, ...data, createdBy });
+  }
+
+  updateRole(businessId: string, roleId: string, data: { name?: string; description?: string; permissions?: string[] }, requesterId: string) {
+    return this.send('business.roles.update', { businessId, roleId, ...data, requesterId });
+  }
+
+  removeRole(businessId: string, roleId: string, requesterId: string) {
+    return this.send('business.roles.remove', { businessId, roleId, requesterId });
+  }
+
+  assignRole(businessId: string, memberId: string, roleId: string, requesterId: string) {
+    return this.send('business.roles.assign', { businessId, memberId, roleId, requesterId });
   }
 }

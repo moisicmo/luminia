@@ -1,0 +1,120 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Bookings — Motor de reservas genérico ──────────────────────────────────
+// Soporta: citas de dentista, clases de gym, tours, transporte, consultas,
+// hospedaje, corte de pelo, etc.
+//
+// businessId  = luminia-businesses (Business)
+// branchId    = luminia-businesses (Branch)
+// customerId  = luminia-users (Person)
+// providerId  = luminia-users (Person) — quien atiende: doctor, trainer, barbero
+//
+// Flujo: PENDING → CONFIRMED → COMPLETED (o CANCELLED / NO_SHOW)
+
+// ─── Servicio reservable ────────────────────────────────────────────────────
+// Lo que el negocio ofrece y se puede agendar.
+// Ej: "Corte de pelo", "Clase de Spinning", "Consulta dental", "Tour Salar"
+
+model BookableService {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String   @map("business_id") @db.Uuid
+  branchId     String?  @map("branch_id") @db.Uuid
+  name         String   @db.VarChar(200)
+  description  String?  @db.VarChar
+  durationMin  Int      @map("duration_min")             // duración en minutos
+  capacity     Int      @default(1)                       // 1=individual, N=grupal
+  price        Decimal? @db.Decimal(15, 4)
+  currency     String   @default("BOB") @db.VarChar(3)
+  requiresProvider Boolean @default(true) @map("requires_provider") // necesita asignar proveedor
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy    String   @map("created_by") @db.Uuid
+  updatedBy    String?  @map("updated_by") @db.Uuid
+
+  slots    BookingSlot[]
+  bookings Booking[]
+
+  @@index([businessId, active])
+  @@map("bookable_services")
+}
+
+// ─── Horario disponible (slot) ──────────────────────────────────────────────
+// Bloque de tiempo ofertado. Puede ser recurrente (via cron/programación)
+// o único. providerId = quién atiende ese slot.
+
+model BookingSlot {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  serviceId   String    @map("service_id") @db.Uuid
+  providerId  String?   @map("provider_id") @db.Uuid    // personId del que atiende
+  startTime   DateTime  @map("start_time")
+  endTime     DateTime  @map("end_time")
+  capacity    Int       @default(1)                       // cupos disponibles
+  booked      Int       @default(0)                       // cupos tomados
+  status      SlotStatus @default(AVAILABLE)
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  service  BookableService @relation(fields: [serviceId], references: [id])
+  bookings Booking[]
+
+  @@index([serviceId, startTime])
+  @@map("booking_slots")
+}
+
+// ─── Reserva ────────────────────────────────────────────────────────────────
+// Una persona reserva un slot para un servicio.
+
+model Booking {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String        @map("business_id") @db.Uuid
+  serviceId    String        @map("service_id") @db.Uuid
+  slotId       String?       @map("slot_id") @db.Uuid
+  customerId   String        @map("customer_id") @db.Uuid   // personId del cliente
+  customerName String?       @map("customer_name") @db.VarChar(200) // snapshot
+  providerId   String?       @map("provider_id") @db.Uuid   // personId del proveedor
+  status       BookingStatus @default(PENDING)
+  startTime    DateTime      @map("start_time")
+  endTime      DateTime      @map("end_time")
+  price        Decimal?      @db.Decimal(15, 4)
+  currency     String        @default("BOB") @db.VarChar(3)
+  notes        String?       @db.VarChar
+  // Referencia al pago (luminia-payments Transaction.id)
+  transactionId String?      @map("transaction_id") @db.Uuid
+  cancelledAt  DateTime?     @map("cancelled_at")
+  cancelReason String?       @map("cancel_reason") @db.VarChar
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdBy    String        @map("created_by") @db.Uuid
+
+  service BookableService @relation(fields: [serviceId], references: [id])
+  slot    BookingSlot?    @relation(fields: [slotId], references: [id])
+
+  @@index([businessId, status])
+  @@index([customerId])
+  @@index([providerId])
+  @@map("bookings")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum SlotStatus {
+  AVAILABLE
+  FULL
+  BLOCKED    // bloqueado manualmente (feriado, mantenimiento)
+}
+
+enum BookingStatus {
+  PENDING    // esperando confirmación
+  CONFIRMED  // confirmada
+  COMPLETED  // servicio prestado
+  CANCELLED  // cancelada por cliente o negocio
+  NO_SHOW    // cliente no se presentó
+}

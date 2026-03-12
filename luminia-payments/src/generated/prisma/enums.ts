@@ -78,7 +78,8 @@ export type DebtStatus = (typeof DebtStatus)[keyof typeof DebtStatus]
 export const PartyType = {
   BUSINESS: 'BUSINESS',
   CUSTOMER: 'CUSTOMER',
-  SUPPLIER: 'SUPPLIER'
+  SUPPLIER: 'SUPPLIER',
+  PLATFORM: 'PLATFORM'
 } as const
 
 export type PartyType = (typeof PartyType)[keyof typeof PartyType]

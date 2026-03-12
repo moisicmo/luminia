@@ -215,6 +215,7 @@ export type PointOfSaleWhereInput = {
   createdBy?: Prisma.StringFilter<"PointOfSale"> | string
   updatedBy?: Prisma.StringNullableFilter<"PointOfSale"> | string | null
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  sessions?: Prisma.CashRegisterSessionListRelationFilter
 }
 
 export type PointOfSaleOrderByWithRelationInput = {
@@ -228,6 +229,7 @@ export type PointOfSaleOrderByWithRelationInput = {
   createdBy?: Prisma.SortOrder
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   branch?: Prisma.BranchOrderByWithRelationInput
+  sessions?: Prisma.CashRegisterSessionOrderByRelationAggregateInput
 }
 
 export type PointOfSaleWhereUniqueInput = Prisma.AtLeast<{
@@ -244,6 +246,7 @@ export type PointOfSaleWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.StringFilter<"PointOfSale"> | string
   updatedBy?: Prisma.StringNullableFilter<"PointOfSale"> | string | null
   branch?: Prisma.XOR<Prisma.BranchScalarRelationFilter, Prisma.BranchWhereInput>
+  sessions?: Prisma.CashRegisterSessionListRelationFilter
 }, "id">
 
 export type PointOfSaleOrderByWithAggregationInput = {
@@ -286,6 +289,7 @@ export type PointOfSaleCreateInput = {
   createdBy: string
   updatedBy?: string | null
   branch: Prisma.BranchCreateNestedOneWithoutPointsOfSaleInput
+  sessions?: Prisma.CashRegisterSessionCreateNestedManyWithoutPointOfSaleInput
 }
 
 export type PointOfSaleUncheckedCreateInput = {
@@ -298,6 +302,7 @@ export type PointOfSaleUncheckedCreateInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy?: string | null
+  sessions?: Prisma.CashRegisterSessionUncheckedCreateNestedManyWithoutPointOfSaleInput
 }
 
 export type PointOfSaleUpdateInput = {
@@ -310,6 +315,7 @@ export type PointOfSaleUpdateInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branch?: Prisma.BranchUpdateOneRequiredWithoutPointsOfSaleNestedInput
+  sessions?: Prisma.CashRegisterSessionUpdateManyWithoutPointOfSaleNestedInput
 }
 
 export type PointOfSaleUncheckedUpdateInput = {
@@ -322,6 +328,7 @@ export type PointOfSaleUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessions?: Prisma.CashRegisterSessionUncheckedUpdateManyWithoutPointOfSaleNestedInput
 }
 
 export type PointOfSaleCreateManyInput = {
@@ -405,6 +412,11 @@ export type PointOfSaleMinOrderByAggregateInput = {
   updatedBy?: Prisma.SortOrder
 }
 
+export type PointOfSaleScalarRelationFilter = {
+  is?: Prisma.PointOfSaleWhereInput
+  isNot?: Prisma.PointOfSaleWhereInput
+}
+
 export type PointOfSaleCreateNestedManyWithoutBranchInput = {
   create?: Prisma.XOR<Prisma.PointOfSaleCreateWithoutBranchInput, Prisma.PointOfSaleUncheckedCreateWithoutBranchInput> | Prisma.PointOfSaleCreateWithoutBranchInput[] | Prisma.PointOfSaleUncheckedCreateWithoutBranchInput[]
   connectOrCreate?: Prisma.PointOfSaleCreateOrConnectWithoutBranchInput | Prisma.PointOfSaleCreateOrConnectWithoutBranchInput[]
@@ -447,6 +459,20 @@ export type PointOfSaleUncheckedUpdateManyWithoutBranchNestedInput = {
   deleteMany?: Prisma.PointOfSaleScalarWhereInput | Prisma.PointOfSaleScalarWhereInput[]
 }
 
+export type PointOfSaleCreateNestedOneWithoutSessionsInput = {
+  create?: Prisma.XOR<Prisma.PointOfSaleCreateWithoutSessionsInput, Prisma.PointOfSaleUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.PointOfSaleCreateOrConnectWithoutSessionsInput
+  connect?: Prisma.PointOfSaleWhereUniqueInput
+}
+
+export type PointOfSaleUpdateOneRequiredWithoutSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PointOfSaleCreateWithoutSessionsInput, Prisma.PointOfSaleUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.PointOfSaleCreateOrConnectWithoutSessionsInput
+  upsert?: Prisma.PointOfSaleUpsertWithoutSessionsInput
+  connect?: Prisma.PointOfSaleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PointOfSaleUpdateToOneWithWhereWithoutSessionsInput, Prisma.PointOfSaleUpdateWithoutSessionsInput>, Prisma.PointOfSaleUncheckedUpdateWithoutSessionsInput>
+}
+
 export type PointOfSaleCreateWithoutBranchInput = {
   id?: string
   code?: string | null
@@ -456,6 +482,7 @@ export type PointOfSaleCreateWithoutBranchInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy?: string | null
+  sessions?: Prisma.CashRegisterSessionCreateNestedManyWithoutPointOfSaleInput
 }
 
 export type PointOfSaleUncheckedCreateWithoutBranchInput = {
@@ -467,6 +494,7 @@ export type PointOfSaleUncheckedCreateWithoutBranchInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy?: string | null
+  sessions?: Prisma.CashRegisterSessionUncheckedCreateNestedManyWithoutPointOfSaleInput
 }
 
 export type PointOfSaleCreateOrConnectWithoutBranchInput = {
@@ -510,6 +538,70 @@ export type PointOfSaleScalarWhereInput = {
   updatedBy?: Prisma.StringNullableFilter<"PointOfSale"> | string | null
 }
 
+export type PointOfSaleCreateWithoutSessionsInput = {
+  id?: string
+  code?: string | null
+  name: string
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: string
+  updatedBy?: string | null
+  branch: Prisma.BranchCreateNestedOneWithoutPointsOfSaleInput
+}
+
+export type PointOfSaleUncheckedCreateWithoutSessionsInput = {
+  id?: string
+  branchId: string
+  code?: string | null
+  name: string
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: string
+  updatedBy?: string | null
+}
+
+export type PointOfSaleCreateOrConnectWithoutSessionsInput = {
+  where: Prisma.PointOfSaleWhereUniqueInput
+  create: Prisma.XOR<Prisma.PointOfSaleCreateWithoutSessionsInput, Prisma.PointOfSaleUncheckedCreateWithoutSessionsInput>
+}
+
+export type PointOfSaleUpsertWithoutSessionsInput = {
+  update: Prisma.XOR<Prisma.PointOfSaleUpdateWithoutSessionsInput, Prisma.PointOfSaleUncheckedUpdateWithoutSessionsInput>
+  create: Prisma.XOR<Prisma.PointOfSaleCreateWithoutSessionsInput, Prisma.PointOfSaleUncheckedCreateWithoutSessionsInput>
+  where?: Prisma.PointOfSaleWhereInput
+}
+
+export type PointOfSaleUpdateToOneWithWhereWithoutSessionsInput = {
+  where?: Prisma.PointOfSaleWhereInput
+  data: Prisma.XOR<Prisma.PointOfSaleUpdateWithoutSessionsInput, Prisma.PointOfSaleUncheckedUpdateWithoutSessionsInput>
+}
+
+export type PointOfSaleUpdateWithoutSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branch?: Prisma.BranchUpdateOneRequiredWithoutPointsOfSaleNestedInput
+}
+
+export type PointOfSaleUncheckedUpdateWithoutSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
 export type PointOfSaleCreateManyBranchInput = {
   id?: string
   code?: string | null
@@ -530,6 +622,7 @@ export type PointOfSaleUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessions?: Prisma.CashRegisterSessionUpdateManyWithoutPointOfSaleNestedInput
 }
 
 export type PointOfSaleUncheckedUpdateWithoutBranchInput = {
@@ -541,6 +634,7 @@ export type PointOfSaleUncheckedUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessions?: Prisma.CashRegisterSessionUncheckedUpdateManyWithoutPointOfSaleNestedInput
 }
 
 export type PointOfSaleUncheckedUpdateManyWithoutBranchInput = {
@@ -555,6 +649,35 @@ export type PointOfSaleUncheckedUpdateManyWithoutBranchInput = {
 }
 
 
+/**
+ * Count Type PointOfSaleCountOutputType
+ */
+
+export type PointOfSaleCountOutputType = {
+  sessions: number
+}
+
+export type PointOfSaleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  sessions?: boolean | PointOfSaleCountOutputTypeCountSessionsArgs
+}
+
+/**
+ * PointOfSaleCountOutputType without action
+ */
+export type PointOfSaleCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PointOfSaleCountOutputType
+   */
+  select?: Prisma.PointOfSaleCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PointOfSaleCountOutputType without action
+ */
+export type PointOfSaleCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CashRegisterSessionWhereInput
+}
+
 
 export type PointOfSaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -567,6 +690,8 @@ export type PointOfSaleSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   createdBy?: boolean
   updatedBy?: boolean
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  sessions?: boolean | Prisma.PointOfSale$sessionsArgs<ExtArgs>
+  _count?: boolean | Prisma.PointOfSaleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pointOfSale"]>
 
 export type PointOfSaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -610,6 +735,8 @@ export type PointOfSaleSelectScalar = {
 export type PointOfSaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "code" | "name" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["pointOfSale"]>
 export type PointOfSaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
+  sessions?: boolean | Prisma.PointOfSale$sessionsArgs<ExtArgs>
+  _count?: boolean | Prisma.PointOfSaleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PointOfSaleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
@@ -622,6 +749,7 @@ export type $PointOfSalePayload<ExtArgs extends runtime.Types.Extensions.Interna
   name: "PointOfSale"
   objects: {
     branch: Prisma.$BranchPayload<ExtArgs>
+    sessions: Prisma.$CashRegisterSessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1028,6 +1156,7 @@ readonly fields: PointOfSaleFieldRefs;
 export interface Prisma__PointOfSaleClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   branch<T extends Prisma.BranchDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BranchDefaultArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  sessions<T extends Prisma.PointOfSale$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PointOfSale$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CashRegisterSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1459,6 +1588,30 @@ export type PointOfSaleDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Limit how many PointOfSales to delete.
    */
   limit?: number
+}
+
+/**
+ * PointOfSale.sessions
+ */
+export type PointOfSale$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CashRegisterSession
+   */
+  select?: Prisma.CashRegisterSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CashRegisterSession
+   */
+  omit?: Prisma.CashRegisterSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CashRegisterSessionInclude<ExtArgs> | null
+  where?: Prisma.CashRegisterSessionWhereInput
+  orderBy?: Prisma.CashRegisterSessionOrderByWithRelationInput | Prisma.CashRegisterSessionOrderByWithRelationInput[]
+  cursor?: Prisma.CashRegisterSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CashRegisterSessionScalarFieldEnum | Prisma.CashRegisterSessionScalarFieldEnum[]
 }
 
 /**

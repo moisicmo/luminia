@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { BusinessModule } from './business/business.module';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
-import { StoreModule } from './store/store.module';
+import { InventoryModule } from './inventory/inventory.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
@@ -19,7 +19,7 @@ import { AuthGuard } from './common/guards/auth.guard';
     AuthModule,
     BusinessModule,
     UsersModule,
-    StoreModule,
+    InventoryModule,
     SubscriptionsModule,
     OrdersModule,
     PaymentsModule,

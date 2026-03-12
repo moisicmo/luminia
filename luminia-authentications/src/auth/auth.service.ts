@@ -198,7 +198,7 @@ export class AuthService {
           userId: dto.personId,
           typeAuth: dto.typeAuth,
           data: dto.identifier,
-          validated: false,
+          validated: true, // TODO: cambiar a false cuando se implemente la verificación por email
           tokenValidation,
           active: true,
           createdBy: dto.personId,

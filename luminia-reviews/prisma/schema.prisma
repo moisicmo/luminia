@@ -1,0 +1,91 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Reviews — Reseñas genéricas ────────────────────────────────────────────
+// Sistema polimórfico: cualquier entidad del ecosistema puede ser reseñada.
+// targetType + targetId = referencia polimórfica:
+//   BUSINESS   → luminia-businesses (Business.id)
+//   BRANCH     → luminia-businesses (Branch.id)
+//   PRODUCT    → luminia-inventories (Product.id)
+//   SERVICE    → luminia-bookings (BookableService.id)
+//   TRIP       → luminia-transports (Trip.id)
+//   PROVIDER   → luminia-users (Person.id) — doctor, trainer, barbero
+//
+// authorId = luminia-users (Person.id)
+
+model Review {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  targetType  TargetType @map("target_type")
+  targetId    String     @map("target_id") @db.Uuid
+  authorId    String     @map("author_id") @db.Uuid      // personId del que reseña
+  authorName  String     @map("author_name") @db.VarChar(200) // snapshot
+  rating      Int                                          // 1–5
+  title       String?    @db.VarChar(200)
+  comment     String?    @db.VarChar(2000)
+  verified    Boolean    @default(false)                   // compra verificada
+  visible     Boolean    @default(true)
+  // Referencia que prueba la interacción (orderId, bookingId, ticketId)
+  referenceType RefType? @map("reference_type")
+  referenceId   String?  @map("reference_id") @db.Uuid
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @default(now()) @updatedAt @map("updated_at")
+
+  response ReviewResponse?
+
+  @@unique([targetType, targetId, authorId]) // una reseña por usuario por entidad
+  @@index([targetType, targetId])
+  @@map("reviews")
+}
+
+// Respuesta del negocio a una reseña
+model ReviewResponse {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reviewId  String   @unique @map("review_id") @db.Uuid
+  authorId  String   @map("author_id") @db.Uuid          // personId del que responde
+  comment   String   @db.VarChar(2000)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  review Review @relation(fields: [reviewId], references: [id])
+
+  @@map("review_responses")
+}
+
+// Agregado de ratings por target — se actualiza en cada insert/update/delete de Review
+model RatingSummary {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  targetType  TargetType @map("target_type")
+  targetId    String     @map("target_id") @db.Uuid
+  totalCount  Int        @default(0) @map("total_count")
+  averageRating Decimal  @default(0) @map("average_rating") @db.Decimal(3, 2) // 4.35
+  ratingSum   Int        @default(0) @map("rating_sum")
+  updatedAt   DateTime   @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([targetType, targetId])
+  @@map("rating_summaries")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum TargetType {
+  BUSINESS
+  BRANCH
+  PRODUCT
+  SERVICE
+  TRIP
+  PROVIDER
+}
+
+enum RefType {
+  ORDER
+  BOOKING
+  TICKET
+  SUBSCRIPTION
+}

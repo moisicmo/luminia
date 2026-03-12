@@ -4,7 +4,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsEnum,
-  IsUrl,
   ValidateNested,
   IsNumber,
 } from 'class-validator';
@@ -76,15 +75,15 @@ export class CreateBusinessDto {
 
   @ApiProperty({ enum: BusinessType, example: BusinessType.TIENDA })
   @IsEnum(BusinessType)
-  businessType: BusinessType;
+  businessType?: BusinessType;
 
   @ApiPropertyOptional({ example: '123456789' })
   @IsString()
   @IsOptional()
   taxId?: string;
 
-  @ApiPropertyOptional({ example: 'https://mitienda.com' })
-  @IsUrl()
+  @ApiPropertyOptional({ example: 'mi-tienda' })
+  @IsString()
   @IsOptional()
   url?: string;
 

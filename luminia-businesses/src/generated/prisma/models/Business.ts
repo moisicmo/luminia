@@ -241,6 +241,7 @@ export type BusinessWhereInput = {
   branches?: Prisma.BranchListRelationFilter
   systemAssignments?: Prisma.SystemAssignmentListRelationFilter
   members?: Prisma.BusinessMemberListRelationFilter
+  roles?: Prisma.BusinessRoleListRelationFilter
 }
 
 export type BusinessOrderByWithRelationInput = {
@@ -259,6 +260,7 @@ export type BusinessOrderByWithRelationInput = {
   branches?: Prisma.BranchOrderByRelationAggregateInput
   systemAssignments?: Prisma.SystemAssignmentOrderByRelationAggregateInput
   members?: Prisma.BusinessMemberOrderByRelationAggregateInput
+  roles?: Prisma.BusinessRoleOrderByRelationAggregateInput
 }
 
 export type BusinessWhereUniqueInput = Prisma.AtLeast<{
@@ -280,6 +282,7 @@ export type BusinessWhereUniqueInput = Prisma.AtLeast<{
   branches?: Prisma.BranchListRelationFilter
   systemAssignments?: Prisma.SystemAssignmentListRelationFilter
   members?: Prisma.BusinessMemberListRelationFilter
+  roles?: Prisma.BusinessRoleListRelationFilter
 }, "id">
 
 export type BusinessOrderByWithAggregationInput = {
@@ -334,6 +337,7 @@ export type BusinessCreateInput = {
   branches?: Prisma.BranchCreateNestedManyWithoutBusinessInput
   systemAssignments?: Prisma.SystemAssignmentCreateNestedManyWithoutBusinessInput
   members?: Prisma.BusinessMemberCreateNestedManyWithoutBusinessInput
+  roles?: Prisma.BusinessRoleCreateNestedManyWithoutBusinessInput
 }
 
 export type BusinessUncheckedCreateInput = {
@@ -352,6 +356,7 @@ export type BusinessUncheckedCreateInput = {
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutBusinessInput
   systemAssignments?: Prisma.SystemAssignmentUncheckedCreateNestedManyWithoutBusinessInput
   members?: Prisma.BusinessMemberUncheckedCreateNestedManyWithoutBusinessInput
+  roles?: Prisma.BusinessRoleUncheckedCreateNestedManyWithoutBusinessInput
 }
 
 export type BusinessUpdateInput = {
@@ -370,6 +375,7 @@ export type BusinessUpdateInput = {
   branches?: Prisma.BranchUpdateManyWithoutBusinessNestedInput
   systemAssignments?: Prisma.SystemAssignmentUpdateManyWithoutBusinessNestedInput
   members?: Prisma.BusinessMemberUpdateManyWithoutBusinessNestedInput
+  roles?: Prisma.BusinessRoleUpdateManyWithoutBusinessNestedInput
 }
 
 export type BusinessUncheckedUpdateInput = {
@@ -388,6 +394,7 @@ export type BusinessUncheckedUpdateInput = {
   branches?: Prisma.BranchUncheckedUpdateManyWithoutBusinessNestedInput
   systemAssignments?: Prisma.SystemAssignmentUncheckedUpdateManyWithoutBusinessNestedInput
   members?: Prisma.BusinessMemberUncheckedUpdateManyWithoutBusinessNestedInput
+  roles?: Prisma.BusinessRoleUncheckedUpdateManyWithoutBusinessNestedInput
 }
 
 export type BusinessCreateManyInput = {
@@ -507,6 +514,20 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type BusinessCreateNestedOneWithoutRolesInput = {
+  create?: Prisma.XOR<Prisma.BusinessCreateWithoutRolesInput, Prisma.BusinessUncheckedCreateWithoutRolesInput>
+  connectOrCreate?: Prisma.BusinessCreateOrConnectWithoutRolesInput
+  connect?: Prisma.BusinessWhereUniqueInput
+}
+
+export type BusinessUpdateOneRequiredWithoutRolesNestedInput = {
+  create?: Prisma.XOR<Prisma.BusinessCreateWithoutRolesInput, Prisma.BusinessUncheckedCreateWithoutRolesInput>
+  connectOrCreate?: Prisma.BusinessCreateOrConnectWithoutRolesInput
+  upsert?: Prisma.BusinessUpsertWithoutRolesInput
+  connect?: Prisma.BusinessWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BusinessUpdateToOneWithWhereWithoutRolesInput, Prisma.BusinessUpdateWithoutRolesInput>, Prisma.BusinessUncheckedUpdateWithoutRolesInput>
+}
+
 export type BusinessCreateNestedOneWithoutMembersInput = {
   create?: Prisma.XOR<Prisma.BusinessCreateWithoutMembersInput, Prisma.BusinessUncheckedCreateWithoutMembersInput>
   connectOrCreate?: Prisma.BusinessCreateOrConnectWithoutMembersInput
@@ -550,6 +571,7 @@ export type BusinessCreateWithoutSystemAssignmentsInput = {
   updatedBy?: string | null
   branches?: Prisma.BranchCreateNestedManyWithoutBusinessInput
   members?: Prisma.BusinessMemberCreateNestedManyWithoutBusinessInput
+  roles?: Prisma.BusinessRoleCreateNestedManyWithoutBusinessInput
 }
 
 export type BusinessUncheckedCreateWithoutSystemAssignmentsInput = {
@@ -567,6 +589,7 @@ export type BusinessUncheckedCreateWithoutSystemAssignmentsInput = {
   updatedBy?: string | null
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutBusinessInput
   members?: Prisma.BusinessMemberUncheckedCreateNestedManyWithoutBusinessInput
+  roles?: Prisma.BusinessRoleUncheckedCreateNestedManyWithoutBusinessInput
 }
 
 export type BusinessCreateOrConnectWithoutSystemAssignmentsInput = {
@@ -600,6 +623,7 @@ export type BusinessUpdateWithoutSystemAssignmentsInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branches?: Prisma.BranchUpdateManyWithoutBusinessNestedInput
   members?: Prisma.BusinessMemberUpdateManyWithoutBusinessNestedInput
+  roles?: Prisma.BusinessRoleUpdateManyWithoutBusinessNestedInput
 }
 
 export type BusinessUncheckedUpdateWithoutSystemAssignmentsInput = {
@@ -616,6 +640,95 @@ export type BusinessUncheckedUpdateWithoutSystemAssignmentsInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branches?: Prisma.BranchUncheckedUpdateManyWithoutBusinessNestedInput
+  members?: Prisma.BusinessMemberUncheckedUpdateManyWithoutBusinessNestedInput
+  roles?: Prisma.BusinessRoleUncheckedUpdateManyWithoutBusinessNestedInput
+}
+
+export type BusinessCreateWithoutRolesInput = {
+  id?: string
+  ownerId: string
+  name: string
+  businessType?: $Enums.BusinessType
+  url?: string | null
+  taxId?: string | null
+  logo?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: string
+  updatedBy?: string | null
+  branches?: Prisma.BranchCreateNestedManyWithoutBusinessInput
+  systemAssignments?: Prisma.SystemAssignmentCreateNestedManyWithoutBusinessInput
+  members?: Prisma.BusinessMemberCreateNestedManyWithoutBusinessInput
+}
+
+export type BusinessUncheckedCreateWithoutRolesInput = {
+  id?: string
+  ownerId: string
+  name: string
+  businessType?: $Enums.BusinessType
+  url?: string | null
+  taxId?: string | null
+  logo?: string | null
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: string
+  updatedBy?: string | null
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutBusinessInput
+  systemAssignments?: Prisma.SystemAssignmentUncheckedCreateNestedManyWithoutBusinessInput
+  members?: Prisma.BusinessMemberUncheckedCreateNestedManyWithoutBusinessInput
+}
+
+export type BusinessCreateOrConnectWithoutRolesInput = {
+  where: Prisma.BusinessWhereUniqueInput
+  create: Prisma.XOR<Prisma.BusinessCreateWithoutRolesInput, Prisma.BusinessUncheckedCreateWithoutRolesInput>
+}
+
+export type BusinessUpsertWithoutRolesInput = {
+  update: Prisma.XOR<Prisma.BusinessUpdateWithoutRolesInput, Prisma.BusinessUncheckedUpdateWithoutRolesInput>
+  create: Prisma.XOR<Prisma.BusinessCreateWithoutRolesInput, Prisma.BusinessUncheckedCreateWithoutRolesInput>
+  where?: Prisma.BusinessWhereInput
+}
+
+export type BusinessUpdateToOneWithWhereWithoutRolesInput = {
+  where?: Prisma.BusinessWhereInput
+  data: Prisma.XOR<Prisma.BusinessUpdateWithoutRolesInput, Prisma.BusinessUncheckedUpdateWithoutRolesInput>
+}
+
+export type BusinessUpdateWithoutRolesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branches?: Prisma.BranchUpdateManyWithoutBusinessNestedInput
+  systemAssignments?: Prisma.SystemAssignmentUpdateManyWithoutBusinessNestedInput
+  members?: Prisma.BusinessMemberUpdateManyWithoutBusinessNestedInput
+}
+
+export type BusinessUncheckedUpdateWithoutRolesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  businessType?: Prisma.EnumBusinessTypeFieldUpdateOperationsInput | $Enums.BusinessType
+  url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  taxId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  logo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutBusinessNestedInput
+  systemAssignments?: Prisma.SystemAssignmentUncheckedUpdateManyWithoutBusinessNestedInput
   members?: Prisma.BusinessMemberUncheckedUpdateManyWithoutBusinessNestedInput
 }
 
@@ -634,6 +747,7 @@ export type BusinessCreateWithoutMembersInput = {
   updatedBy?: string | null
   branches?: Prisma.BranchCreateNestedManyWithoutBusinessInput
   systemAssignments?: Prisma.SystemAssignmentCreateNestedManyWithoutBusinessInput
+  roles?: Prisma.BusinessRoleCreateNestedManyWithoutBusinessInput
 }
 
 export type BusinessUncheckedCreateWithoutMembersInput = {
@@ -651,6 +765,7 @@ export type BusinessUncheckedCreateWithoutMembersInput = {
   updatedBy?: string | null
   branches?: Prisma.BranchUncheckedCreateNestedManyWithoutBusinessInput
   systemAssignments?: Prisma.SystemAssignmentUncheckedCreateNestedManyWithoutBusinessInput
+  roles?: Prisma.BusinessRoleUncheckedCreateNestedManyWithoutBusinessInput
 }
 
 export type BusinessCreateOrConnectWithoutMembersInput = {
@@ -684,6 +799,7 @@ export type BusinessUpdateWithoutMembersInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branches?: Prisma.BranchUpdateManyWithoutBusinessNestedInput
   systemAssignments?: Prisma.SystemAssignmentUpdateManyWithoutBusinessNestedInput
+  roles?: Prisma.BusinessRoleUpdateManyWithoutBusinessNestedInput
 }
 
 export type BusinessUncheckedUpdateWithoutMembersInput = {
@@ -701,6 +817,7 @@ export type BusinessUncheckedUpdateWithoutMembersInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   branches?: Prisma.BranchUncheckedUpdateManyWithoutBusinessNestedInput
   systemAssignments?: Prisma.SystemAssignmentUncheckedUpdateManyWithoutBusinessNestedInput
+  roles?: Prisma.BusinessRoleUncheckedUpdateManyWithoutBusinessNestedInput
 }
 
 export type BusinessCreateWithoutBranchesInput = {
@@ -718,6 +835,7 @@ export type BusinessCreateWithoutBranchesInput = {
   updatedBy?: string | null
   systemAssignments?: Prisma.SystemAssignmentCreateNestedManyWithoutBusinessInput
   members?: Prisma.BusinessMemberCreateNestedManyWithoutBusinessInput
+  roles?: Prisma.BusinessRoleCreateNestedManyWithoutBusinessInput
 }
 
 export type BusinessUncheckedCreateWithoutBranchesInput = {
@@ -735,6 +853,7 @@ export type BusinessUncheckedCreateWithoutBranchesInput = {
   updatedBy?: string | null
   systemAssignments?: Prisma.SystemAssignmentUncheckedCreateNestedManyWithoutBusinessInput
   members?: Prisma.BusinessMemberUncheckedCreateNestedManyWithoutBusinessInput
+  roles?: Prisma.BusinessRoleUncheckedCreateNestedManyWithoutBusinessInput
 }
 
 export type BusinessCreateOrConnectWithoutBranchesInput = {
@@ -768,6 +887,7 @@ export type BusinessUpdateWithoutBranchesInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   systemAssignments?: Prisma.SystemAssignmentUpdateManyWithoutBusinessNestedInput
   members?: Prisma.BusinessMemberUpdateManyWithoutBusinessNestedInput
+  roles?: Prisma.BusinessRoleUpdateManyWithoutBusinessNestedInput
 }
 
 export type BusinessUncheckedUpdateWithoutBranchesInput = {
@@ -785,6 +905,7 @@ export type BusinessUncheckedUpdateWithoutBranchesInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   systemAssignments?: Prisma.SystemAssignmentUncheckedUpdateManyWithoutBusinessNestedInput
   members?: Prisma.BusinessMemberUncheckedUpdateManyWithoutBusinessNestedInput
+  roles?: Prisma.BusinessRoleUncheckedUpdateManyWithoutBusinessNestedInput
 }
 
 
@@ -796,12 +917,14 @@ export type BusinessCountOutputType = {
   branches: number
   systemAssignments: number
   members: number
+  roles: number
 }
 
 export type BusinessCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branches?: boolean | BusinessCountOutputTypeCountBranchesArgs
   systemAssignments?: boolean | BusinessCountOutputTypeCountSystemAssignmentsArgs
   members?: boolean | BusinessCountOutputTypeCountMembersArgs
+  roles?: boolean | BusinessCountOutputTypeCountRolesArgs
 }
 
 /**
@@ -835,6 +958,13 @@ export type BusinessCountOutputTypeCountMembersArgs<ExtArgs extends runtime.Type
   where?: Prisma.BusinessMemberWhereInput
 }
 
+/**
+ * BusinessCountOutputType without action
+ */
+export type BusinessCountOutputTypeCountRolesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BusinessRoleWhereInput
+}
+
 
 export type BusinessSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -852,6 +982,7 @@ export type BusinessSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   branches?: boolean | Prisma.Business$branchesArgs<ExtArgs>
   systemAssignments?: boolean | Prisma.Business$systemAssignmentsArgs<ExtArgs>
   members?: boolean | Prisma.Business$membersArgs<ExtArgs>
+  roles?: boolean | Prisma.Business$rolesArgs<ExtArgs>
   _count?: boolean | Prisma.BusinessCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["business"]>
 
@@ -905,6 +1036,7 @@ export type BusinessInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   branches?: boolean | Prisma.Business$branchesArgs<ExtArgs>
   systemAssignments?: boolean | Prisma.Business$systemAssignmentsArgs<ExtArgs>
   members?: boolean | Prisma.Business$membersArgs<ExtArgs>
+  roles?: boolean | Prisma.Business$rolesArgs<ExtArgs>
   _count?: boolean | Prisma.BusinessCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BusinessIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -916,6 +1048,7 @@ export type $BusinessPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     branches: Prisma.$BranchPayload<ExtArgs>[]
     systemAssignments: Prisma.$SystemAssignmentPayload<ExtArgs>[]
     members: Prisma.$BusinessMemberPayload<ExtArgs>[]
+    roles: Prisma.$BusinessRolePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1327,6 +1460,7 @@ export interface Prisma__BusinessClient<T, Null = never, ExtArgs extends runtime
   branches<T extends Prisma.Business$branchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Business$branchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   systemAssignments<T extends Prisma.Business$systemAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Business$systemAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SystemAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   members<T extends Prisma.Business$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Business$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BusinessMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  roles<T extends Prisma.Business$rolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Business$rolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BusinessRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1825,6 +1959,30 @@ export type Business$membersArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.BusinessMemberScalarFieldEnum | Prisma.BusinessMemberScalarFieldEnum[]
+}
+
+/**
+ * Business.roles
+ */
+export type Business$rolesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BusinessRole
+   */
+  select?: Prisma.BusinessRoleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BusinessRole
+   */
+  omit?: Prisma.BusinessRoleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BusinessRoleInclude<ExtArgs> | null
+  where?: Prisma.BusinessRoleWhereInput
+  orderBy?: Prisma.BusinessRoleOrderByWithRelationInput | Prisma.BusinessRoleOrderByWithRelationInput[]
+  cursor?: Prisma.BusinessRoleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BusinessRoleScalarFieldEnum | Prisma.BusinessRoleScalarFieldEnum[]
 }
 
 /**

@@ -17,4 +17,13 @@ import * as Prisma from './internal/prismaNamespaceBrowser'
 export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
-
+/**
+ * Model File
+ * 
+ */
+export type File = Prisma.FileModel
+/**
+ * Model Document
+ * 
+ */
+export type Document = Prisma.DocumentModel

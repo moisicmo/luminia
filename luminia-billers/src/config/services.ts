@@ -14,12 +14,28 @@ export class RMQServiceBillers {
     return 'billers_queue';
   }
 }
-export class RMQServiceBusiness {
+export class RMQServiceBookings {
   static getName() {
-    return 'RMQ_SERVICE_BUSINESS';
+    return 'RMQ_SERVICE_BOOKINGS';
   }
   static getQueueName() {
-    return 'business_queue';
+    return 'bookings_queue';
+  }
+}
+export class RMQServiceBusinesses {
+  static getName() {
+    return 'RMQ_SERVICE_BUSINESSES';
+  }
+  static getQueueName() {
+    return 'businesses_queue';
+  }
+}
+export class RMQServiceCatalogs {
+  static getName() {
+    return 'RMQ_SERVICE_CATALOGS';
+  }
+  static getQueueName() {
+    return 'catalogs_queue';
   }
 }
 export class RMQServiceFiles {
@@ -30,12 +46,20 @@ export class RMQServiceFiles {
     return 'files_queue';
   }
 }
-export class RMQServiceGyms {
+export class RMQServiceFitness {
   static getName() {
-    return 'RMQ_SERVICE_GYMS';
+    return 'RMQ_SERVICE_FITNESS';
   }
   static getQueueName() {
-    return 'gyms_queue';
+    return 'fitness_queue';
+  }
+}
+export class RMQServiceInventories {
+  static getName() {
+    return 'RMQ_SERVICE_INVENTORIES';
+  }
+  static getQueueName() {
+    return 'inventories_queue';
   }
 }
 export class RMQServiceNotifiers {
@@ -62,12 +86,20 @@ export class RMQServicePayments {
     return 'payments_queue';
   }
 }
-export class RMQServiceStores {
+export class RMQServiceRemittances {
   static getName() {
-    return 'RMQ_SERVICE_STORES';
+    return 'RMQ_SERVICE_REMITTANCES';
   }
   static getQueueName() {
-    return 'stores_queue';
+    return 'remittances_queue';
+  }
+}
+export class RMQServiceReviews {
+  static getName() {
+    return 'RMQ_SERVICE_REVIEWS';
+  }
+  static getQueueName() {
+    return 'reviews_queue';
   }
 }
 export class RMQServiceSubscriptions {
@@ -76,6 +108,14 @@ export class RMQServiceSubscriptions {
   }
   static getQueueName() {
     return 'subscriptions_queue';
+  }
+}
+export class RMQServiceTransports {
+  static getName() {
+    return 'RMQ_SERVICE_TRANSPORTS';
+  }
+  static getQueueName() {
+    return 'transports_queue';
   }
 }
 export class RMQServiceUsers {
