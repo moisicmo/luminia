@@ -17,7 +17,8 @@
       "Bash(yarn typecheck:*)",
       "Bash(/Users/moises/Desktop/projects/saas/luminia-mall/app/hooks/index.ts:*)",
       "Bash(/Users/moises/Desktop/projects/saas/luminia-mall/app/store/index.ts:*)",
-      "Bash(timeout 10 yarn dev)"
+      "Bash(timeout 10 yarn dev)",
+      "Bash(chmod +x /Users/moises/Desktop/projects/saas/start-all.sh)"
     ]
   }
 }

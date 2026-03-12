@@ -51,7 +51,9 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  NotifierProvider: 'NotifierProvider',
+  NotificationTemplate: 'NotificationTemplate',
+  Notification: 'Notification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +70,117 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const NotifierProviderScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  channel: 'channel',
+  provider: 'provider',
+  name: 'name',
+  credentials: 'credentials',
+  isDefault: 'isDefault',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type NotifierProviderScalarFieldEnum = (typeof NotifierProviderScalarFieldEnum)[keyof typeof NotifierProviderScalarFieldEnum]
+
+
+export const NotificationTemplateScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  channel: 'channel',
+  event: 'event',
+  name: 'name',
+  subject: 'subject',
+  body: 'body',
+  variables: 'variables',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type NotificationTemplateScalarFieldEnum = (typeof NotificationTemplateScalarFieldEnum)[keyof typeof NotificationTemplateScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  providerId: 'providerId',
+  templateId: 'templateId',
+  channel: 'channel',
+  event: 'event',
+  recipientId: 'recipientId',
+  recipientAddress: 'recipientAddress',
+  subject: 'subject',
+  renderedBody: 'renderedBody',
+  payload: 'payload',
+  status: 'status',
+  providerRef: 'providerRef',
+  providerResponse: 'providerResponse',
+  failureReason: 'failureReason',
+  attemptCount: 'attemptCount',
+  lastAttemptAt: 'lastAttemptAt',
+  sentAt: 'sentAt',
+  deliveredAt: 'deliveredAt',
+  readAt: 'readAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

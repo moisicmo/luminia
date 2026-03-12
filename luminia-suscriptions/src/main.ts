@@ -28,7 +28,7 @@ async function bootstrap() {
   );
   await app.startAllMicroservices();
   await app.listen(envs.port);
-  logger.log(`User Microservice running on port ${envs.port}`);
+  logger.log(`Subscriptions Microservice running on port ${envs.port}`);
 
 }
 bootstrap();

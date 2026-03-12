@@ -17,7 +17,7 @@ export class PersonService {
             { name: { contains: q, mode: 'insensitive' } },
             { lastName: { contains: q, mode: 'insensitive' } },
           ],
-          active: true,
+          // active: true,
         },
         select: {
           id: true,

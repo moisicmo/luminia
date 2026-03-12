@@ -8,4 +8,10 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/PaymentMethodConfig'
+export type * from './models/Transaction'
+export type * from './models/Debt'
+export type * from './models/DebtPayment'
+export type * from './models/Wallet'
+export type * from './models/WalletMovement'
 export type * from './commonInputTypes'

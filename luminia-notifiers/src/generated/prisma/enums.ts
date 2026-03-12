@@ -9,7 +9,69 @@
 * 🟢 You can import this file directly.
 */
 
+export const Channel = {
+  EMAIL: 'EMAIL',
+  SMS: 'SMS',
+  WHATSAPP: 'WHATSAPP',
+  PUSH: 'PUSH'
+} as const
+
+export type Channel = (typeof Channel)[keyof typeof Channel]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const ProviderType = {
+  SENDGRID: 'SENDGRID',
+  MAILGUN: 'MAILGUN',
+  SES: 'SES',
+  SMTP: 'SMTP',
+  TWILIO: 'TWILIO',
+  INFOBIP: 'INFOBIP',
+  WHATSAPP_BUSINESS: 'WHATSAPP_BUSINESS',
+  TWILIO_WHATSAPP: 'TWILIO_WHATSAPP',
+  FCM: 'FCM',
+  APNS: 'APNS'
+} as const
+
+export type ProviderType = (typeof ProviderType)[keyof typeof ProviderType]
+
+
+export const NotifEvent = {
+  REGISTER_WELCOME: 'REGISTER_WELCOME',
+  VERIFY_EMAIL: 'VERIFY_EMAIL',
+  VERIFY_PHONE: 'VERIFY_PHONE',
+  FORGOT_PASSWORD: 'FORGOT_PASSWORD',
+  LOGIN_ALERT: 'LOGIN_ALERT',
+  ACCOUNT_BLOCKED: 'ACCOUNT_BLOCKED',
+  ORDER_CONFIRMED: 'ORDER_CONFIRMED',
+  ORDER_DELIVERED: 'ORDER_DELIVERED',
+  ORDER_CANCELLED: 'ORDER_CANCELLED',
+  RECEIPT: 'RECEIPT',
+  INVOICE: 'INVOICE',
+  PAYMENT_RECEIVED: 'PAYMENT_RECEIVED',
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+  DEBT_REMINDER: 'DEBT_REMINDER',
+  DEBT_OVERDUE: 'DEBT_OVERDUE',
+  SUBSCRIPTION_CREATED: 'SUBSCRIPTION_CREATED',
+  SUBSCRIPTION_EXPIRING: 'SUBSCRIPTION_EXPIRING',
+  SUBSCRIPTION_EXPIRED: 'SUBSCRIPTION_EXPIRED',
+  SUBSCRIPTION_RENEWED: 'SUBSCRIPTION_RENEWED',
+  CLASS_BOOKING_CONFIRMED: 'CLASS_BOOKING_CONFIRMED',
+  CLASS_REMINDER: 'CLASS_REMINDER',
+  CLASS_CANCELLED: 'CLASS_CANCELLED',
+  CUSTOM: 'CUSTOM'
+} as const
+
+export type NotifEvent = (typeof NotifEvent)[keyof typeof NotifEvent]
+
+
+export const NotifStatus = {
+  PENDING: 'PENDING',
+  SENDING: 'SENDING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  READ: 'READ',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type NotifStatus = (typeof NotifStatus)[keyof typeof NotifStatus]

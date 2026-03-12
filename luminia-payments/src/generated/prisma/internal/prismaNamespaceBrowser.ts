@@ -51,7 +51,12 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  PaymentMethodConfig: 'PaymentMethodConfig',
+  Transaction: 'Transaction',
+  Debt: 'Debt',
+  DebtPayment: 'DebtPayment',
+  Wallet: 'Wallet',
+  WalletMovement: 'WalletMovement'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +73,160 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const PaymentMethodConfigScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  type: 'type',
+  name: 'name',
+  credentials: 'credentials',
+  isDefault: 'isDefault',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type PaymentMethodConfigScalarFieldEnum = (typeof PaymentMethodConfigScalarFieldEnum)[keyof typeof PaymentMethodConfigScalarFieldEnum]
+
+
+export const TransactionScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  methodConfigId: 'methodConfigId',
+  direction: 'direction',
+  referenceType: 'referenceType',
+  referenceId: 'referenceId',
+  amount: 'amount',
+  fee: 'fee',
+  netAmount: 'netAmount',
+  currency: 'currency',
+  status: 'status',
+  gatewayRef: 'gatewayRef',
+  gatewayResponse: 'gatewayResponse',
+  description: 'description',
+  failureReason: 'failureReason',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
+
+
+export const DebtScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  type: 'type',
+  debtorId: 'debtorId',
+  debtorType: 'debtorType',
+  debtorName: 'debtorName',
+  creditorId: 'creditorId',
+  creditorType: 'creditorType',
+  creditorName: 'creditorName',
+  referenceType: 'referenceType',
+  referenceId: 'referenceId',
+  originalAmount: 'originalAmount',
+  paidAmount: 'paidAmount',
+  pendingAmount: 'pendingAmount',
+  currency: 'currency',
+  dueDate: 'dueDate',
+  status: 'status',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type DebtScalarFieldEnum = (typeof DebtScalarFieldEnum)[keyof typeof DebtScalarFieldEnum]
+
+
+export const DebtPaymentScalarFieldEnum = {
+  id: 'id',
+  debtId: 'debtId',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  paidAt: 'paidAt',
+  notes: 'notes',
+  createdBy: 'createdBy'
+} as const
+
+export type DebtPaymentScalarFieldEnum = (typeof DebtPaymentScalarFieldEnum)[keyof typeof DebtPaymentScalarFieldEnum]
+
+
+export const WalletScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  ownerId: 'ownerId',
+  ownerType: 'ownerType',
+  balance: 'balance',
+  currency: 'currency',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WalletScalarFieldEnum = (typeof WalletScalarFieldEnum)[keyof typeof WalletScalarFieldEnum]
+
+
+export const WalletMovementScalarFieldEnum = {
+  id: 'id',
+  walletId: 'walletId',
+  transactionId: 'transactionId',
+  type: 'type',
+  amount: 'amount',
+  balanceBefore: 'balanceBefore',
+  balanceAfter: 'balanceAfter',
+  description: 'description',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy'
+} as const
+
+export type WalletMovementScalarFieldEnum = (typeof WalletMovementScalarFieldEnum)[keyof typeof WalletMovementScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

@@ -51,7 +51,9 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  Order: 'Order',
+  OrderItem: 'OrderItem',
+  OrderPayment: 'OrderPayment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +70,99 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const OrderScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  branchId: 'branchId',
+  customerId: 'customerId',
+  customerName: 'customerName',
+  sellerId: 'sellerId',
+  orderNumber: 'orderNumber',
+  type: 'type',
+  status: 'status',
+  currency: 'currency',
+  subtotal: 'subtotal',
+  discountAmount: 'discountAmount',
+  taxAmount: 'taxAmount',
+  total: 'total',
+  amountPaid: 'amountPaid',
+  amountDue: 'amountDue',
+  notes: 'notes',
+  storeOutputId: 'storeOutputId',
+  confirmedAt: 'confirmedAt',
+  deliveredAt: 'deliveredAt',
+  cancelledAt: 'cancelledAt',
+  cancelReason: 'cancelReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
+
+
+export const OrderItemScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  itemType: 'itemType',
+  itemId: 'itemId',
+  name: 'name',
+  sku: 'sku',
+  unitName: 'unitName',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  discount: 'discount',
+  taxRate: 'taxRate',
+  taxAmount: 'taxAmount',
+  subtotal: 'subtotal',
+  total: 'total',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
+
+
+export const OrderPaymentScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  paymentId: 'paymentId',
+  method: 'method',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  reference: 'reference',
+  paidAt: 'paidAt',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy'
+} as const
+
+export type OrderPaymentScalarFieldEnum = (typeof OrderPaymentScalarFieldEnum)[keyof typeof OrderPaymentScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

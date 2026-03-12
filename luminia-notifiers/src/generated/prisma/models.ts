@@ -8,4 +8,7 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/NotifierProvider'
+export type * from './models/NotificationTemplate'
+export type * from './models/Notification'
 export type * from './commonInputTypes'

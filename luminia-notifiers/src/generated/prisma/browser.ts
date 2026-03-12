@@ -17,4 +17,18 @@ import * as Prisma from './internal/prismaNamespaceBrowser'
 export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
-
+/**
+ * Model NotifierProvider
+ * 
+ */
+export type NotifierProvider = Prisma.NotifierProviderModel
+/**
+ * Model NotificationTemplate
+ * 
+ */
+export type NotificationTemplate = Prisma.NotificationTemplateModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

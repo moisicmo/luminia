@@ -9,7 +9,100 @@
 * 🟢 You can import this file directly.
 */
 
+export const EquipmentCategory = {
+  CARDIO: 'CARDIO',
+  STRENGTH: 'STRENGTH',
+  FREE_WEIGHTS: 'FREE_WEIGHTS',
+  FUNCTIONAL: 'FUNCTIONAL',
+  STRETCHING: 'STRETCHING',
+  OTHER: 'OTHER'
+} as const
+
+export type EquipmentCategory = (typeof EquipmentCategory)[keyof typeof EquipmentCategory]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const EquipmentStatus = {
+  ACTIVE: 'ACTIVE',
+  MAINTENANCE: 'MAINTENANCE',
+  OUT_OF_SERVICE: 'OUT_OF_SERVICE'
+} as const
+
+export type EquipmentStatus = (typeof EquipmentStatus)[keyof typeof EquipmentStatus]
+
+
+export const ScheduleStatus = {
+  SCHEDULED: 'SCHEDULED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ScheduleStatus = (typeof ScheduleStatus)[keyof typeof ScheduleStatus]
+
+
+export const BookingStatus = {
+  RESERVED: 'RESERVED',
+  ATTENDED: 'ATTENDED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW'
+} as const
+
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
+
+
+export const MuscleGroup = {
+  CHEST: 'CHEST',
+  BACK: 'BACK',
+  SHOULDERS: 'SHOULDERS',
+  BICEPS: 'BICEPS',
+  TRICEPS: 'TRICEPS',
+  FOREARMS: 'FOREARMS',
+  ABS: 'ABS',
+  GLUTES: 'GLUTES',
+  QUADRICEPS: 'QUADRICEPS',
+  HAMSTRINGS: 'HAMSTRINGS',
+  CALVES: 'CALVES',
+  FULL_BODY: 'FULL_BODY',
+  CARDIO: 'CARDIO'
+} as const
+
+export type MuscleGroup = (typeof MuscleGroup)[keyof typeof MuscleGroup]
+
+
+export const FitnessLevel = {
+  BEGINNER: 'BEGINNER',
+  INTERMEDIATE: 'INTERMEDIATE',
+  ADVANCED: 'ADVANCED'
+} as const
+
+export type FitnessLevel = (typeof FitnessLevel)[keyof typeof FitnessLevel]
+
+
+export const BodyPart = {
+  CHEST: 'CHEST',
+  WAIST: 'WAIST',
+  HIPS: 'HIPS',
+  LEFT_ARM: 'LEFT_ARM',
+  RIGHT_ARM: 'RIGHT_ARM',
+  LEFT_THIGH: 'LEFT_THIGH',
+  RIGHT_THIGH: 'RIGHT_THIGH',
+  LEFT_CALF: 'LEFT_CALF',
+  RIGHT_CALF: 'RIGHT_CALF',
+  NECK: 'NECK',
+  SHOULDERS: 'SHOULDERS'
+} as const
+
+export type BodyPart = (typeof BodyPart)[keyof typeof BodyPart]
+
+
+export const HabitCategory = {
+  HYDRATION: 'HYDRATION',
+  SLEEP: 'SLEEP',
+  EXERCISE: 'EXERCISE',
+  NUTRITION: 'NUTRITION',
+  MINDFULNESS: 'MINDFULNESS',
+  MOBILITY: 'MOBILITY',
+  CUSTOM: 'CUSTOM'
+} as const
+
+export type HabitCategory = (typeof HabitCategory)[keyof typeof HabitCategory]

@@ -9,7 +9,84 @@
 * 🟢 You can import this file directly.
 */
 
+export const GatewayType = {
+  CASH: 'CASH',
+  CARD_POS: 'CARD_POS',
+  STRIPE: 'STRIPE',
+  QR_SIMPLE: 'QR_SIMPLE',
+  TIGO_MONEY: 'TIGO_MONEY',
+  MERCADO_PAGO: 'MERCADO_PAGO',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  WALLET: 'WALLET',
+  OTHER: 'OTHER'
+} as const
+
+export type GatewayType = (typeof GatewayType)[keyof typeof GatewayType]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const TransactionDir = {
+  INBOUND: 'INBOUND',
+  OUTBOUND: 'OUTBOUND'
+} as const
+
+export type TransactionDir = (typeof TransactionDir)[keyof typeof TransactionDir]
+
+
+export const TransactionStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+  PARTIAL_REFUND: 'PARTIAL_REFUND',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type TransactionStatus = (typeof TransactionStatus)[keyof typeof TransactionStatus]
+
+
+export const ReferenceType = {
+  ORDER: 'ORDER',
+  SUBSCRIPTION: 'SUBSCRIPTION',
+  DEBT: 'DEBT',
+  WALLET_TOPUP: 'WALLET_TOPUP',
+  MANUAL: 'MANUAL'
+} as const
+
+export type ReferenceType = (typeof ReferenceType)[keyof typeof ReferenceType]
+
+
+export const DebtType = {
+  RECEIVABLE: 'RECEIVABLE',
+  PAYABLE: 'PAYABLE'
+} as const
+
+export type DebtType = (typeof DebtType)[keyof typeof DebtType]
+
+
+export const DebtStatus = {
+  PENDING: 'PENDING',
+  PARTIAL: 'PARTIAL',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type DebtStatus = (typeof DebtStatus)[keyof typeof DebtStatus]
+
+
+export const PartyType = {
+  BUSINESS: 'BUSINESS',
+  CUSTOMER: 'CUSTOMER',
+  SUPPLIER: 'SUPPLIER'
+} as const
+
+export type PartyType = (typeof PartyType)[keyof typeof PartyType]
+
+
+export const MovementType = {
+  CREDIT: 'CREDIT',
+  DEBIT: 'DEBIT'
+} as const
+
+export type MovementType = (typeof MovementType)[keyof typeof MovementType]

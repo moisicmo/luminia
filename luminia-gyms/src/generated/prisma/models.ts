@@ -8,4 +8,20 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/GymProfile'
+export type * from './models/GymBranchProfile'
+export type * from './models/GymReview'
+export type * from './models/Equipment'
+export type * from './models/GymClass'
+export type * from './models/ClassSchedule'
+export type * from './models/ClassBooking'
+export type * from './models/Exercise'
+export type * from './models/Routine'
+export type * from './models/RoutineExercise'
+export type * from './models/MemberRoutine'
+export type * from './models/MemberPhysical'
+export type * from './models/BodyMeasurement'
+export type * from './models/Habit'
+export type * from './models/UserHabit'
+export type * from './models/HabitLog'
 export type * from './commonInputTypes'

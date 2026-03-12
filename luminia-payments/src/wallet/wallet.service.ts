@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { prisma } from '@/lib/prisma';
 
+
 @Injectable()
 export class WalletService {
   private readonly logger = new Logger(WalletService.name);
@@ -115,18 +116,18 @@ export class WalletService {
     transactionId?: string,
   ) {
     try {
-      const walletCheck = await prisma.wallet.findUnique({ where: { id: walletId } });
-      if (!walletCheck) {
-        throw new RpcException({ status: 404, message: 'Billetera no encontrada' });
-      }
-      if (Number(walletCheck.balance) < Number(amount)) {
-        throw new RpcException({ status: 400, message: 'Saldo insuficiente en la billetera' });
-      }
-
       return await prisma.$transaction(async (tx) => {
         const wallet = await tx.wallet.findUnique({ where: { id: walletId } });
-        const balanceBefore = Number(wallet!.balance);
+        if (!wallet) {
+          throw new RpcException({ status: 404, message: 'Billetera no encontrada' });
+        }
+
+        const balanceBefore = Number(wallet.balance);
         const balanceAfter = balanceBefore - Number(amount);
+
+        if (balanceBefore < Number(amount)) {
+          throw new RpcException({ status: 400, message: 'Saldo insuficiente en la billetera' });
+        }
 
         await tx.walletMovement.create({
           data: {

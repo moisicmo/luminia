@@ -29,8 +29,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more GymProfiles
+ * const gymProfiles = await prisma.gymProfile.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -39,4 +39,83 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
-
+/**
+ * Model GymProfile
+ * 
+ */
+export type GymProfile = Prisma.GymProfileModel
+/**
+ * Model GymBranchProfile
+ * 
+ */
+export type GymBranchProfile = Prisma.GymBranchProfileModel
+/**
+ * Model GymReview
+ * 
+ */
+export type GymReview = Prisma.GymReviewModel
+/**
+ * Model Equipment
+ * 
+ */
+export type Equipment = Prisma.EquipmentModel
+/**
+ * Model GymClass
+ * 
+ */
+export type GymClass = Prisma.GymClassModel
+/**
+ * Model ClassSchedule
+ * 
+ */
+export type ClassSchedule = Prisma.ClassScheduleModel
+/**
+ * Model ClassBooking
+ * 
+ */
+export type ClassBooking = Prisma.ClassBookingModel
+/**
+ * Model Exercise
+ * 
+ */
+export type Exercise = Prisma.ExerciseModel
+/**
+ * Model Routine
+ * 
+ */
+export type Routine = Prisma.RoutineModel
+/**
+ * Model RoutineExercise
+ * 
+ */
+export type RoutineExercise = Prisma.RoutineExerciseModel
+/**
+ * Model MemberRoutine
+ * 
+ */
+export type MemberRoutine = Prisma.MemberRoutineModel
+/**
+ * Model MemberPhysical
+ * 
+ */
+export type MemberPhysical = Prisma.MemberPhysicalModel
+/**
+ * Model BodyMeasurement
+ * 
+ */
+export type BodyMeasurement = Prisma.BodyMeasurementModel
+/**
+ * Model Habit
+ * 
+ */
+export type Habit = Prisma.HabitModel
+/**
+ * Model UserHabit
+ * 
+ */
+export type UserHabit = Prisma.UserHabitModel
+/**
+ * Model HabitLog
+ * 
+ */
+export type HabitLog = Prisma.HabitLogModel

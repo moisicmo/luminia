@@ -51,7 +51,22 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  GymProfile: 'GymProfile',
+  GymBranchProfile: 'GymBranchProfile',
+  GymReview: 'GymReview',
+  Equipment: 'Equipment',
+  GymClass: 'GymClass',
+  ClassSchedule: 'ClassSchedule',
+  ClassBooking: 'ClassBooking',
+  Exercise: 'Exercise',
+  Routine: 'Routine',
+  RoutineExercise: 'RoutineExercise',
+  MemberRoutine: 'MemberRoutine',
+  MemberPhysical: 'MemberPhysical',
+  BodyMeasurement: 'BodyMeasurement',
+  Habit: 'Habit',
+  UserHabit: 'UserHabit',
+  HabitLog: 'HabitLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +83,279 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const GymProfileScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  description: 'description',
+  coverImage: 'coverImage',
+  amenities: 'amenities',
+  rating: 'rating',
+  reviewCount: 'reviewCount',
+  discoverable: 'discoverable',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type GymProfileScalarFieldEnum = (typeof GymProfileScalarFieldEnum)[keyof typeof GymProfileScalarFieldEnum]
+
+
+export const GymBranchProfileScalarFieldEnum = {
+  id: 'id',
+  gymProfileId: 'gymProfileId',
+  branchId: 'branchId',
+  description: 'description',
+  capacity: 'capacity',
+  photos: 'photos',
+  amenities: 'amenities',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type GymBranchProfileScalarFieldEnum = (typeof GymBranchProfileScalarFieldEnum)[keyof typeof GymBranchProfileScalarFieldEnum]
+
+
+export const GymReviewScalarFieldEnum = {
+  id: 'id',
+  gymProfileId: 'gymProfileId',
+  memberId: 'memberId',
+  rating: 'rating',
+  comment: 'comment',
+  createdAt: 'createdAt'
+} as const
+
+export type GymReviewScalarFieldEnum = (typeof GymReviewScalarFieldEnum)[keyof typeof GymReviewScalarFieldEnum]
+
+
+export const EquipmentScalarFieldEnum = {
+  id: 'id',
+  branchProfileId: 'branchProfileId',
+  name: 'name',
+  category: 'category',
+  brand: 'brand',
+  quantity: 'quantity',
+  status: 'status',
+  imageUrl: 'imageUrl',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type EquipmentScalarFieldEnum = (typeof EquipmentScalarFieldEnum)[keyof typeof EquipmentScalarFieldEnum]
+
+
+export const GymClassScalarFieldEnum = {
+  id: 'id',
+  branchProfileId: 'branchProfileId',
+  name: 'name',
+  description: 'description',
+  durationMin: 'durationMin',
+  capacity: 'capacity',
+  imageUrl: 'imageUrl',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type GymClassScalarFieldEnum = (typeof GymClassScalarFieldEnum)[keyof typeof GymClassScalarFieldEnum]
+
+
+export const ClassScheduleScalarFieldEnum = {
+  id: 'id',
+  gymClassId: 'gymClassId',
+  instructorId: 'instructorId',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  location: 'location',
+  status: 'status',
+  cancelReason: 'cancelReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type ClassScheduleScalarFieldEnum = (typeof ClassScheduleScalarFieldEnum)[keyof typeof ClassScheduleScalarFieldEnum]
+
+
+export const ClassBookingScalarFieldEnum = {
+  id: 'id',
+  scheduleId: 'scheduleId',
+  memberId: 'memberId',
+  status: 'status',
+  attendedAt: 'attendedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ClassBookingScalarFieldEnum = (typeof ClassBookingScalarFieldEnum)[keyof typeof ClassBookingScalarFieldEnum]
+
+
+export const ExerciseScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  name: 'name',
+  muscleGroup: 'muscleGroup',
+  equipment: 'equipment',
+  description: 'description',
+  videoUrl: 'videoUrl',
+  imageUrl: 'imageUrl',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type ExerciseScalarFieldEnum = (typeof ExerciseScalarFieldEnum)[keyof typeof ExerciseScalarFieldEnum]
+
+
+export const RoutineScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  name: 'name',
+  goal: 'goal',
+  level: 'level',
+  durationWeeks: 'durationWeeks',
+  description: 'description',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type RoutineScalarFieldEnum = (typeof RoutineScalarFieldEnum)[keyof typeof RoutineScalarFieldEnum]
+
+
+export const RoutineExerciseScalarFieldEnum = {
+  id: 'id',
+  routineId: 'routineId',
+  exerciseId: 'exerciseId',
+  dayNumber: 'dayNumber',
+  order: 'order',
+  sets: 'sets',
+  reps: 'reps',
+  restSeconds: 'restSeconds',
+  notes: 'notes'
+} as const
+
+export type RoutineExerciseScalarFieldEnum = (typeof RoutineExerciseScalarFieldEnum)[keyof typeof RoutineExerciseScalarFieldEnum]
+
+
+export const MemberRoutineScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  businessId: 'businessId',
+  routineId: 'routineId',
+  assignedBy: 'assignedBy',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  active: 'active',
+  notes: 'notes',
+  createdAt: 'createdAt'
+} as const
+
+export type MemberRoutineScalarFieldEnum = (typeof MemberRoutineScalarFieldEnum)[keyof typeof MemberRoutineScalarFieldEnum]
+
+
+export const MemberPhysicalScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  businessId: 'businessId',
+  recordedAt: 'recordedAt',
+  weightKg: 'weightKg',
+  heightCm: 'heightCm',
+  bodyFatPct: 'bodyFatPct',
+  muscleKg: 'muscleKg',
+  bmi: 'bmi',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  createdBy: 'createdBy'
+} as const
+
+export type MemberPhysicalScalarFieldEnum = (typeof MemberPhysicalScalarFieldEnum)[keyof typeof MemberPhysicalScalarFieldEnum]
+
+
+export const BodyMeasurementScalarFieldEnum = {
+  id: 'id',
+  memberPhysicalId: 'memberPhysicalId',
+  part: 'part',
+  valueCm: 'valueCm'
+} as const
+
+export type BodyMeasurementScalarFieldEnum = (typeof BodyMeasurementScalarFieldEnum)[keyof typeof BodyMeasurementScalarFieldEnum]
+
+
+export const HabitScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  icon: 'icon',
+  unit: 'unit',
+  targetValue: 'targetValue',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type HabitScalarFieldEnum = (typeof HabitScalarFieldEnum)[keyof typeof HabitScalarFieldEnum]
+
+
+export const UserHabitScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  habitId: 'habitId',
+  targetValue: 'targetValue',
+  reminderTime: 'reminderTime',
+  active: 'active',
+  startedAt: 'startedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type UserHabitScalarFieldEnum = (typeof UserHabitScalarFieldEnum)[keyof typeof UserHabitScalarFieldEnum]
+
+
+export const HabitLogScalarFieldEnum = {
+  id: 'id',
+  userHabitId: 'userHabitId',
+  date: 'date',
+  completed: 'completed',
+  value: 'value',
+  notes: 'notes',
+  loggedAt: 'loggedAt'
+} as const
+
+export type HabitLogScalarFieldEnum = (typeof HabitLogScalarFieldEnum)[keyof typeof HabitLogScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

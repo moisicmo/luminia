@@ -17,4 +17,83 @@ import * as Prisma from './internal/prismaNamespaceBrowser'
 export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
-
+/**
+ * Model GymProfile
+ * 
+ */
+export type GymProfile = Prisma.GymProfileModel
+/**
+ * Model GymBranchProfile
+ * 
+ */
+export type GymBranchProfile = Prisma.GymBranchProfileModel
+/**
+ * Model GymReview
+ * 
+ */
+export type GymReview = Prisma.GymReviewModel
+/**
+ * Model Equipment
+ * 
+ */
+export type Equipment = Prisma.EquipmentModel
+/**
+ * Model GymClass
+ * 
+ */
+export type GymClass = Prisma.GymClassModel
+/**
+ * Model ClassSchedule
+ * 
+ */
+export type ClassSchedule = Prisma.ClassScheduleModel
+/**
+ * Model ClassBooking
+ * 
+ */
+export type ClassBooking = Prisma.ClassBookingModel
+/**
+ * Model Exercise
+ * 
+ */
+export type Exercise = Prisma.ExerciseModel
+/**
+ * Model Routine
+ * 
+ */
+export type Routine = Prisma.RoutineModel
+/**
+ * Model RoutineExercise
+ * 
+ */
+export type RoutineExercise = Prisma.RoutineExerciseModel
+/**
+ * Model MemberRoutine
+ * 
+ */
+export type MemberRoutine = Prisma.MemberRoutineModel
+/**
+ * Model MemberPhysical
+ * 
+ */
+export type MemberPhysical = Prisma.MemberPhysicalModel
+/**
+ * Model BodyMeasurement
+ * 
+ */
+export type BodyMeasurement = Prisma.BodyMeasurementModel
+/**
+ * Model Habit
+ * 
+ */
+export type Habit = Prisma.HabitModel
+/**
+ * Model UserHabit
+ * 
+ */
+export type UserHabit = Prisma.UserHabitModel
+/**
+ * Model HabitLog
+ * 
+ */
+export type HabitLog = Prisma.HabitLogModel
