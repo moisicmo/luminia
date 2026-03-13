@@ -59,8 +59,8 @@ export function ProductsSection() {
         description: p.description,
         categoryId: p.categoryId,
         categoryName: cats.find((c: any) => c.id === p.categoryId)?.name ?? '',
-        price: Number(p.price ?? 0),
-        cost: Number(p.cost ?? 0),
+        price: Number(p.salePrice ?? p.price ?? 0),
+        cost: Number(p.purchasePrice ?? p.cost ?? 0),
         stock: p.stock ?? p.currentStock ?? 0,
         active: p.active !== false,
       })));
@@ -105,8 +105,8 @@ export function ProductsSection() {
       const payload: any = {
         name: form.name,
         description: form.description || undefined,
-        price: form.price,
-        cost: form.cost,
+        salePrice: form.price,
+        purchasePrice: form.cost,
         active: form.active,
       };
       if (form.categoryId) payload.categoryId = form.categoryId;

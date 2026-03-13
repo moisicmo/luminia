@@ -5,6 +5,8 @@ import { AdminLayout, type AdminSection } from './components/AdminLayout';
 import { DashboardSection } from './sections/DashboardSection';
 import { ProductsSection } from './sections/ProductsSection';
 import { CategoriesSection } from './sections/CategoriesSection';
+import { SuppliersSection } from './sections/SuppliersSection';
+import { CustomersSection } from './sections/CustomersSection';
 import { InventorySection } from './sections/InventorySection';
 import { PurchasesSection } from './sections/PurchasesSection';
 import { SalesSection } from './sections/SalesSection';
@@ -40,6 +42,8 @@ function getSectionFromPath(): AdminSection {
   const path = window.location.pathname;
   if (path.includes('/admin/products'))   return 'products';
   if (path.includes('/admin/categories')) return 'categories';
+  if (path.includes('/admin/suppliers'))  return 'suppliers';
+  if (path.includes('/admin/customers'))  return 'customers';
   if (path.includes('/admin/inventory'))  return 'inventory';
   if (path.includes('/admin/purchases'))  return 'purchases';
   if (path.includes('/admin/sales'))      return 'sales';
@@ -70,8 +74,12 @@ export function AdminView({ slug }: Props) {
         return luminiApi.get(`/business/${bizId}/members`);
       })
       .then(({ data }) => {
-        const isMember = data.some((m: any) => m.userId === payload.sub || m.personId === payload.sub);
-        setAuthState(isMember ? 'authorized' : 'unauthorized');
+        // data puede ser { ownerId, members: [...] } o un array directo
+        const ownerId = data.ownerId;
+        const members: any[] = Array.isArray(data) ? data : (data.members ?? []);
+        const isOwner = ownerId === payload.sub;
+        const isMember = members.some((m: any) => m.userId === payload.sub || m.personId === payload.sub);
+        setAuthState(isOwner || isMember ? 'authorized' : 'unauthorized');
       })
       .catch(() => setAuthState('unauthorized'));
   }, [slug]);
@@ -120,6 +128,8 @@ export function AdminView({ slug }: Props) {
     dashboard:  <DashboardSection />,
     products:   <ProductsSection />,
     categories: <CategoriesSection />,
+    suppliers:  <SuppliersSection />,
+    customers:  <CustomersSection />,
     inventory:  <InventorySection />,
     purchases:  <PurchasesSection />,
     sales:      <SalesSection />,

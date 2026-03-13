@@ -13,7 +13,8 @@ export default defineConfig({
   base: '/', // importante para que .well-known esté en raíz
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
     server: {
-    host: VITE_HOST || 'localhost', // Usar el valor de la variable de entorno o 'localhost' por defecto
-    port: Number(VITE_PORT) || 3000, // Usar el valor de la variable de entorno o 3000 por defecto
+    host: VITE_HOST || 'localhost',
+    port: Number(VITE_PORT) || 3000,
+    allowedHosts: ['.lvh.me', '.luminia.local', '.luminia.com'],
   },
 });

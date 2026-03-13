@@ -5,6 +5,7 @@ ROOT="/Users/moises/Desktop/projects/saas"
 
 # NestJS microservices
 NEST_SERVICES=(
+  "luminia-gateway"
   "luminia-authentications"
   "luminia-billers"
   "luminia-bookings"

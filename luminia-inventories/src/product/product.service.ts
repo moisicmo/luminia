@@ -11,9 +11,9 @@ export class ProductService {
   async createProduct(
     data: {
       businessId: string;
-      sku: string;
+      sku?: string;
       name: string;
-      baseUnitId: string;
+      baseUnitId?: string;
       categoryId?: string;
       brandId?: string;
       barcode?: string;
@@ -24,14 +24,59 @@ export class ProductService {
       reorderPoint?: number;
       salePrice?: number;
       purchasePrice?: number;
+      price?: number;
+      cost?: number;
       isTaxable?: boolean;
       taxRate?: number;
+      active?: boolean;
     },
     createdBy: string,
   ) {
     try {
+      // Auto-generar SKU si no se envía
+      let sku = data.sku;
+      if (!sku) {
+        const count = await prisma.product.count({ where: { businessId: data.businessId } });
+        sku = `PROD-${String(count + 1).padStart(4, '0')}`;
+      }
+
+      // Buscar o crear unidad base por defecto ("Unidad")
+      let baseUnitId = data.baseUnitId;
+      if (!baseUnitId) {
+        let defaultUnit = await prisma.unit.findFirst({
+          where: { businessId: data.businessId, active: true },
+          orderBy: { createdAt: 'asc' },
+        });
+        if (!defaultUnit) {
+          defaultUnit = await prisma.unit.create({
+            data: {
+              businessId: data.businessId,
+              name: 'Unidad',
+              abbreviation: 'und',
+              createdBy,
+              active: true,
+            },
+          });
+        }
+        baseUnitId = defaultUnit.id;
+      }
+
+      // Mapear price/cost a salePrice/purchasePrice
+      const salePrice = data.salePrice ?? data.price;
+      const purchasePrice = data.purchasePrice ?? data.cost;
+
+      const { price: _p, cost: _c, active: _a, ...rest } = data;
+
       return await prisma.product.create({
-        data: { ...data, createdBy, active: true },
+        data: {
+          ...rest,
+          sku,
+          baseUnitId,
+          salePrice,
+          purchasePrice,
+          createdBy,
+          active: data.active !== false,
+        },
         include: {
           category: { select: { id: true, name: true } },
           brand: { select: { id: true, name: true } },
@@ -99,6 +144,11 @@ export class ProductService {
     try {
       const existing = await prisma.product.findFirst({ where: { id, businessId, active: true } });
       if (!existing) throw new RpcException({ status: 404, message: 'Producto no encontrado' });
+
+      // Mapear aliases
+      if (data.price !== undefined && data.salePrice === undefined) { data.salePrice = data.price; delete data.price; }
+      if (data.cost !== undefined && data.purchasePrice === undefined) { data.purchasePrice = data.cost; delete data.cost; }
+
       return await prisma.product.update({
         where: { id },
         data: { ...data, updatedBy },

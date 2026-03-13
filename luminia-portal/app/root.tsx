@@ -6,11 +6,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from 'react-router';
+import { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import type { Route } from './+types/root';
 import { StorefrontView } from './routes/storefront/storefront.view';
 import { AdminView } from './routes/admin/admin.view';
+import { useAuth } from './hooks/useAuth';
 import './app.css';
 
 export const links: Route.LinksFunction = () => [
@@ -22,19 +24,37 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-/** Detect business slug from subdomain or ?subdomain= query param (for dev). */
+/**
+ * Detect business slug from subdomain or query param.
+ *
+ * Supports:
+ * 1. ?subdomain=patito                → dev query param
+ * 2. patito.lvh.me:4300               → dev via lvh.me (resolves to 127.0.0.1)
+ * 3. patito.luminia.local:4300         → dev via /etc/hosts
+ * 4. patito.luminia.com               → production
+ */
 function detectSubdomain(): string | null {
   if (typeof window === 'undefined') return null;
 
-  // Dev: ?subdomain=mitienda
+  // 1. Query param (always works, any environment)
   const params = new URLSearchParams(window.location.search);
   const qp = params.get('subdomain');
   if (qp) return qp;
 
-  // Prod: mitienda.luminia.com
-  const host = window.location.hostname; // e.g. "mitienda.luminia.com"
+  const host = window.location.hostname;
   const parts = host.split('.');
-  // Only treat as subdomain if it's x.luminia.com (3 parts) and not www
+
+  // 2. Dev: patito.lvh.me (2 parts after split = subdomain + lvh + me)
+  if (parts.length === 3 && parts[1] === 'lvh' && parts[2] === 'me') {
+    return parts[0];
+  }
+
+  // 3. Dev: patito.luminia.local
+  if (parts.length === 3 && parts[2] === 'local' && parts[0] !== 'www') {
+    return parts[0];
+  }
+
+  // 4. Prod: patito.luminia.com (3 parts, not www)
   if (parts.length === 3 && parts[1] === 'luminia' && parts[0] !== 'www') {
     return parts[0];
   }
@@ -65,17 +85,23 @@ function isAdminPath(): boolean {
   return window.location.pathname.startsWith('/admin');
 }
 
-export default function App() {
+function AppContent() {
   const subdomain = detectSubdomain();
   const admin = isAdminPath();
+  const { checkAuth } = useAuth();
 
+  // Restaurar sesión desde localStorage al iniciar
+  useEffect(() => { checkAuth(); }, []);
+
+  if (subdomain && admin) return <AdminView slug={subdomain} />;
+  if (subdomain) return <StorefrontView slug={subdomain} />;
+  return <Outlet />;
+}
+
+export default function App() {
   return (
     <Provider store={store}>
-      {subdomain && admin
-        ? <AdminView slug={subdomain} />
-        : subdomain
-        ? <StorefrontView slug={subdomain} />
-        : <Outlet />}
+      <AppContent />
     </Provider>
   );
 }

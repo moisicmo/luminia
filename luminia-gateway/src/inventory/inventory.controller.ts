@@ -253,4 +253,178 @@ export class InventoryController {
   ) {
     return this.inventoryService.removeProductUnit(productUnitId, productId, businessId, user.sub);
   }
+
+  // ─── Warehouses ───────────────────────────────────────────────────────────────
+
+  @Post('warehouses')
+  @MinRole(MemberRole.MANAGER)
+  @ApiOperation({ summary: 'Crear almacén' })
+  createWarehouse(@Body() body: any, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.createWarehouse(businessId, body, user.sub);
+  }
+
+  @Get('warehouses')
+  @ApiOperation({ summary: 'Listar almacenes del negocio' })
+  listWarehouses(@BusinessId() businessId: string) {
+    return this.inventoryService.listWarehouses(businessId);
+  }
+
+  @Patch('warehouses/:id')
+  @MinRole(MemberRole.MANAGER)
+  @ApiOperation({ summary: 'Actualizar almacén' })
+  updateWarehouse(
+    @Param('id') id: string,
+    @Body() body: any,
+    @BusinessId() businessId: string,
+    @User() user: CurrentUser,
+  ) {
+    return this.inventoryService.updateWarehouse(id, businessId, body, user.sub);
+  }
+
+  @Delete('warehouses/:id')
+  @MinRole(MemberRole.MANAGER)
+  @ApiOperation({ summary: 'Eliminar almacén' })
+  removeWarehouse(
+    @Param('id') id: string,
+    @BusinessId() businessId: string,
+    @User() user: CurrentUser,
+  ) {
+    return this.inventoryService.removeWarehouse(id, businessId, user.sub);
+  }
+
+  // ─── Inputs (Entradas de inventario) ──────────────────────────────────────────
+
+  @Post('inputs')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Crear entrada de inventario' })
+  createInput(@Body() body: any, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.createInput(businessId, body, user.sub);
+  }
+
+  @Get('inputs')
+  @ApiOperation({ summary: 'Listar entradas de inventario' })
+  listInputs(
+    @BusinessId() businessId: string,
+    @Query('warehouseId') warehouseId?: string,
+    @Query('type') type?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.inventoryService.listInputs(businessId, { warehouseId, type, status });
+  }
+
+  @Get('inputs/:id')
+  @ApiOperation({ summary: 'Obtener entrada por ID' })
+  findInput(@Param('id') id: string, @BusinessId() businessId: string) {
+    return this.inventoryService.findInput(id, businessId);
+  }
+
+  @Post('inputs/:id/confirm')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Confirmar entrada (actualiza stock)' })
+  confirmInput(@Param('id') id: string, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.confirmInput(id, businessId, user.sub);
+  }
+
+  @Post('inputs/:id/cancel')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Cancelar entrada' })
+  cancelInput(@Param('id') id: string, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.cancelInput(id, businessId, user.sub);
+  }
+
+  // ─── Customers ──────────────────────────────────────────────────────────────
+
+  @Post('customers')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Crear cliente' })
+  createCustomer(@Body() body: any, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.createCustomer(businessId, body, user.sub);
+  }
+
+  @Get('customers')
+  @ApiOperation({ summary: 'Listar clientes del negocio' })
+  listCustomers(@BusinessId() businessId: string) {
+    return this.inventoryService.listCustomers(businessId);
+  }
+
+  @Patch('customers/:id')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Actualizar cliente' })
+  updateCustomer(
+    @Param('id') id: string,
+    @Body() body: any,
+    @BusinessId() businessId: string,
+    @User() user: CurrentUser,
+  ) {
+    return this.inventoryService.updateCustomer(id, businessId, body, user.sub);
+  }
+
+  @Delete('customers/:id')
+  @MinRole(MemberRole.MANAGER)
+  @ApiOperation({ summary: 'Eliminar cliente' })
+  removeCustomer(
+    @Param('id') id: string,
+    @BusinessId() businessId: string,
+    @User() user: CurrentUser,
+  ) {
+    return this.inventoryService.removeCustomer(id, businessId, user.sub);
+  }
+
+  // ─── Outputs (Salidas de inventario / Ventas) ─────────────────────────────────
+
+  @Post('outputs')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Crear salida de inventario' })
+  createOutput(@Body() body: any, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.createOutput(businessId, body, user.sub);
+  }
+
+  @Get('outputs')
+  @ApiOperation({ summary: 'Listar salidas de inventario' })
+  listOutputs(
+    @BusinessId() businessId: string,
+    @Query('warehouseId') warehouseId?: string,
+    @Query('type') type?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.inventoryService.listOutputs(businessId, { warehouseId, type, status });
+  }
+
+  @Post('outputs/:id/confirm')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Confirmar salida (descuenta stock)' })
+  confirmOutput(@Param('id') id: string, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.confirmOutput(id, businessId, user.sub);
+  }
+
+  @Post('outputs/:id/cancel')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Cancelar salida' })
+  cancelOutput(@Param('id') id: string, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.cancelOutput(id, businessId, user.sub);
+  }
+
+  // ─── Stock ────────────────────────────────────────────────────────────────────
+
+  @Get('stock')
+  @ApiOperation({ summary: 'Listar stock' })
+  listStock(
+    @BusinessId() businessId: string,
+    @Query('warehouseId') warehouseId?: string,
+    @Query('productId') productId?: string,
+  ) {
+    return this.inventoryService.listStock(businessId, { warehouseId, productId });
+  }
+
+  // ─── Kardex ───────────────────────────────────────────────────────────────────
+
+  @Get('kardex')
+  @ApiOperation({ summary: 'Listar movimientos kardex' })
+  listKardex(
+    @BusinessId() businessId: string,
+    @Query('productId') productId?: string,
+    @Query('warehouseId') warehouseId?: string,
+  ) {
+    return this.inventoryService.listKardex(businessId, { productId, warehouseId });
+  }
 }

@@ -5,15 +5,17 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { luminiApi } from '@/services/luminiApi';
+import { useWarehouse } from '../components/AdminLayout';
 
 interface InventoryRow {
   id: string;
   product: string;
-  category: string;
+  sku: string;
+  warehouse: string;
+  unit: string;
   stock: number;
   minStock: number;
-  cost: number;
-  active: boolean;
+  avgCost: number;
 }
 
 function stockStatus(stock: number, min: number) {
@@ -23,32 +25,31 @@ function stockStatus(stock: number, min: number) {
 }
 
 export function InventorySection() {
+  const { selectedWarehouse } = useWarehouse();
   const [rows, setRows] = useState<InventoryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [stockFilter, setStockFilter] = useState('all');
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [selectedWarehouse?.id]);
 
   async function load() {
     setLoading(true);
     try {
-      const [prodRes, catRes] = await Promise.all([
-        luminiApi.get('/inventory/products'),
-        luminiApi.get('/inventory/categories'),
-      ]);
-      const products = Array.isArray(prodRes.data) ? prodRes.data : [];
-      const cats = Array.isArray(catRes.data) ? catRes.data : [];
-      const catMap = Object.fromEntries(cats.map((c: any) => [c.id, c.name]));
+      const params: any = {};
+      if (selectedWarehouse) params.warehouseId = selectedWarehouse.id;
+      const { data } = await luminiApi.get('/inventory/stock', { params });
+      const stocks = Array.isArray(data) ? data : [];
 
-      setRows(products.map((p: any) => ({
-        id: p.id,
-        product: p.name,
-        category: catMap[p.categoryId] ?? '',
-        stock: Number(p.stock ?? p.currentStock ?? 0),
-        minStock: Number(p.minStock ?? 5),
-        cost: Number(p.cost ?? 0),
-        active: p.active !== false,
+      setRows(stocks.map((s: any) => ({
+        id: s.id,
+        product: s.product?.name ?? '',
+        sku: s.product?.sku ?? '',
+        warehouse: s.warehouse?.name ?? '',
+        unit: s.unit?.abbreviation ?? s.unit?.name ?? '',
+        stock: Number(s.quantity ?? 0),
+        minStock: Number(s.product?.minimumStock ?? 5),
+        avgCost: Number(s.averageCost ?? 0),
       })));
     } catch {
       setRows([]);
@@ -58,7 +59,9 @@ export function InventorySection() {
   }
 
   const filtered = rows.filter((i) => {
-    const matchSearch = i.product.toLowerCase().includes(search.toLowerCase());
+    const matchSearch =
+      i.product.toLowerCase().includes(search.toLowerCase()) ||
+      i.sku.toLowerCase().includes(search.toLowerCase());
     if (stockFilter === 'low') return matchSearch && i.stock > 0 && i.stock <= i.minStock;
     if (stockFilter === 'out') return matchSearch && i.stock === 0;
     if (stockFilter === 'ok') return matchSearch && i.stock > i.minStock;
@@ -107,19 +110,21 @@ export function InventorySection() {
           <TableHeader>
             <TableRow className="bg-gray-50 hover:bg-gray-50">
               <TableHead className="text-xs font-semibold text-gray-500">Producto</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500">Categoría</TableHead>
+              <TableHead className="text-xs font-semibold text-gray-500">Almacén</TableHead>
+              <TableHead className="text-xs font-semibold text-gray-500 text-center">Unidad</TableHead>
               <TableHead className="text-xs font-semibold text-gray-500 text-center">Stock</TableHead>
               <TableHead className="text-xs font-semibold text-gray-500 text-center">Mínimo</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500 text-right">Costo</TableHead>
+              <TableHead className="text-xs font-semibold text-gray-500 text-right">Costo Prom.</TableHead>
               <TableHead className="text-xs font-semibold text-gray-500 text-center">Estado</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-12 text-gray-400 text-sm">
+                <TableCell colSpan={7} className="text-center py-12 text-gray-400 text-sm">
                   <Boxes className="w-8 h-8 mx-auto mb-2 text-gray-200" />
-                  Sin productos en inventario
+                  Sin stock registrado
+                  <p className="text-xs mt-1 text-gray-300">Crea una compra y confírmala para ver stock aquí</p>
                 </TableCell>
               </TableRow>
             ) : filtered.map((i) => {
@@ -128,8 +133,10 @@ export function InventorySection() {
                 <TableRow key={i.id} className="hover:bg-gray-50">
                   <TableCell>
                     <p className="text-sm font-medium text-gray-800">{i.product}</p>
+                    <p className="text-[10px] text-gray-400">{i.sku}</p>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">{i.category || '—'}</TableCell>
+                  <TableCell className="text-sm text-gray-500">{i.warehouse}</TableCell>
+                  <TableCell className="text-center text-sm text-gray-500">{i.unit}</TableCell>
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center gap-1">
                       {i.stock > 0 && i.stock <= i.minStock && <AlertTriangle className="w-3 h-3 text-amber-400" />}
@@ -139,7 +146,7 @@ export function InventorySection() {
                     </div>
                   </TableCell>
                   <TableCell className="text-center text-sm text-gray-500">{i.minStock}</TableCell>
-                  <TableCell className="text-right text-sm font-medium text-gray-700">Bs {i.cost.toLocaleString()}</TableCell>
+                  <TableCell className="text-right text-sm font-medium text-gray-700">Bs {i.avgCost.toFixed(2)}</TableCell>
                   <TableCell className="text-center">
                     <Badge className={`${s.cls} text-[10px]`}>{s.label}</Badge>
                   </TableCell>

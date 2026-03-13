@@ -138,4 +138,92 @@ export class InventoryService {
   removeProductUnit(productUnitId: string, productId: string, businessId: string, updatedBy: string) {
     return this.send('store.products.units.remove', { productUnitId, productId, businessId, updatedBy });
   }
+
+  // ─── Warehouses ────────────────────────────────────────────────────────────────
+
+  createWarehouse(businessId: string, data: any, createdBy: string) {
+    return this.send('store.warehouses.create', { data: { ...data, businessId }, createdBy });
+  }
+
+  listWarehouses(businessId: string) {
+    return this.send('store.warehouses.list', { businessId });
+  }
+
+  updateWarehouse(id: string, businessId: string, data: any, updatedBy: string) {
+    return this.send('store.warehouses.update', { id, businessId, data, updatedBy });
+  }
+
+  removeWarehouse(id: string, businessId: string, updatedBy: string) {
+    return this.send('store.warehouses.remove', { id, businessId, updatedBy });
+  }
+
+  // ─── Inputs ────────────────────────────────────────────────────────────────────
+
+  createInput(businessId: string, data: any, createdBy: string) {
+    return this.send('store.inputs.create', { data: { ...data, businessId }, createdBy });
+  }
+
+  listInputs(businessId: string, filters: any) {
+    return this.send('store.inputs.list', { businessId, filters });
+  }
+
+  findInput(id: string, businessId: string) {
+    return this.send('store.inputs.findOne', { id, businessId });
+  }
+
+  confirmInput(id: string, businessId: string, updatedBy: string) {
+    return this.send('store.inputs.confirm', { id, businessId, updatedBy });
+  }
+
+  cancelInput(id: string, businessId: string, updatedBy: string) {
+    return this.send('store.inputs.cancel', { id, businessId, updatedBy });
+  }
+
+  // ─── Customers ──────────────────────────────────────────────────────────────────
+
+  createCustomer(businessId: string, data: any, createdBy: string) {
+    return this.send('store.customers.create', { data: { ...data, businessId }, createdBy });
+  }
+
+  listCustomers(businessId: string) {
+    return this.send('store.customers.list', { businessId });
+  }
+
+  updateCustomer(id: string, businessId: string, data: any, updatedBy: string) {
+    return this.send('store.customers.update', { id, businessId, data, updatedBy });
+  }
+
+  removeCustomer(id: string, businessId: string, updatedBy: string) {
+    return this.send('store.customers.remove', { id, businessId, updatedBy });
+  }
+
+  // ─── Outputs ───────────────────────────────────────────────────────────────────
+
+  createOutput(businessId: string, data: any, createdBy: string) {
+    return this.send('store.outputs.create', { data: { ...data, businessId }, createdBy });
+  }
+
+  listOutputs(businessId: string, filters: any) {
+    return this.send('store.outputs.list', { businessId, filters });
+  }
+
+  confirmOutput(id: string, businessId: string, updatedBy: string) {
+    return this.send('store.outputs.confirm', { id, businessId, updatedBy });
+  }
+
+  cancelOutput(id: string, businessId: string, updatedBy: string) {
+    return this.send('store.outputs.cancel', { id, businessId, updatedBy });
+  }
+
+  // ─── Stock ─────────────────────────────────────────────────────────────────────
+
+  listStock(businessId: string, filters: any) {
+    return this.send('store.stock.list', { businessId, filters });
+  }
+
+  // ─── Kardex ────────────────────────────────────────────────────────────────────
+
+  listKardex(businessId: string, filters: any) {
+    return this.send('store.kardex.list', { businessId, filters });
+  }
 }
