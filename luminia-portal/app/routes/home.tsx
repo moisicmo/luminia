@@ -1,42 +1,59 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import type { Route } from './+types/home';
 import { useMallStore } from '@/hooks/useMallStore';
 import {
   MallTopbar,
   HeroSearch,
   BusinessTypeGrid,
-  CityBar,
-  BusinessGrid,
+  MallProductGrid,
+  MallCartDrawer,
 } from '@/components/mall';
 import { AuthModal } from '@/components/auth';
+import { BusinessType } from '@/models';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: 'Luminia Mall — Descubre negocios en Bolivia' },
-    { name: 'description', content: 'El marketplace de negocios de Bolivia. Encuentra gimnasios, tiendas, restaurantes, servicios de TI y más.' },
+    { title: 'Luminia Mall — El marketplace de Bolivia' },
+    { name: 'description', content: 'Encuentra los mejores productos de todas las tiendas de Bolivia. Ropa, electrónica, alimentos y más.' },
   ];
 }
 
 export default function Home() {
   const {
-    filteredBusinesses,
     selectedType,
-    selectedCity,
     searchQuery,
-    loading,
+    products,
+    productsLoading,
     categories,
-    loadBusinesses,
+    loadProducts,
     filterByType,
-    filterByCity,
     search,
   } = useMallStore();
 
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState<'login' | 'register'>('login');
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
+  // Load products on mount
   useEffect(() => {
-    loadBusinesses();
+    loadProducts({ take: 40 });
   }, []);
+
+  // Debounced search
+  const handleSearch = useCallback((q: string) => {
+    search(q);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      loadProducts({ search: q || undefined, businessType: selectedType || undefined, take: 40 });
+    }, 300);
+  }, [selectedType]);
+
+  // Filter by business type
+  const handleFilterType = useCallback((type: BusinessType | null) => {
+    const newType = type === selectedType ? null : type;
+    filterByType(newType);
+    loadProducts({ search: searchQuery || undefined, businessType: newType || undefined, take: 40 });
+  }, [selectedType, searchQuery]);
 
   const openAuth = (tab: 'login' | 'register' = 'login') => {
     setAuthTab(tab);
@@ -44,30 +61,27 @@ export default function Home() {
   };
 
   const sectionTitle = selectedType
-    ? (categories.find((c) => c.type === selectedType)?.label ?? 'Negocios')
-    : selectedCity
-    ? `Negocios en ${selectedCity}`
+    ? (categories.find((c) => c.type === selectedType)?.label ?? 'Productos')
     : searchQuery
     ? `Resultados para "${searchQuery}"`
-    : 'Todos los negocios';
+    : 'Todos los productos';
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Sticky topbar with inline search */}
-      <MallTopbar searchQuery={searchQuery} onSearch={search} onAuthOpen={openAuth} />
+      <MallTopbar searchQuery={searchQuery} onSearch={handleSearch} onAuthOpen={openAuth} />
 
-      {/* Hero with big search + quick category pills */}
-      <HeroSearch categories={categories} onSelectType={filterByType} />
-
-      {/* City filter bar */}
-      <CityBar selected={selectedCity} onSelect={filterByCity} />
+      <HeroSearch
+        categories={categories}
+        onSelectType={handleFilterType}
+        searchQuery={searchQuery}
+        onSearch={handleSearch}
+      />
 
       <main>
-        {/* Business type icon grid */}
         <BusinessTypeGrid
           categories={categories}
           selected={selectedType}
-          onSelect={filterByType}
+          onSelect={handleFilterType}
         />
 
         {/* Divider */}
@@ -75,14 +89,14 @@ export default function Home() {
           <div className="h-px bg-gray-100" />
         </div>
 
-        {/* Business results */}
-        <BusinessGrid
-          businesses={filteredBusinesses}
-          loading={loading}
+        <MallProductGrid
+          products={products}
+          loading={productsLoading}
           title={sectionTitle}
         />
       </main>
 
+      <MallCartDrawer />
       <AuthModal open={authOpen} onOpenChange={setAuthOpen} defaultTab={authTab} />
     </div>
   );

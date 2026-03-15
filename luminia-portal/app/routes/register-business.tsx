@@ -209,7 +209,29 @@ export default function RegisterBusiness() {
             <Button variant="outline" className="flex-1 rounded-xl" onClick={() => navigate('/')}>Ir al Mall</Button>
             <Button
               className="flex-1 bg-violet-600 hover:bg-violet-700 text-white rounded-xl"
-              onClick={() => window.location.href = `/?subdomain=${created.slug}`}
+              onClick={() => {
+                const { protocol, port } = window.location;
+                const host = window.location.hostname;
+                const parts = host.split('.');
+                // lvh.me → test.lvh.me:port
+                // luminia.local → test.luminia.local:port
+                // luminia.com → test.luminia.com
+                let base: string;
+                if (parts.length >= 2 && parts[parts.length - 2] === 'lvh') {
+                  base = `${created.slug}.lvh.me`;
+                } else if (parts.length >= 2 && parts[parts.length - 1] === 'local') {
+                  base = `${created.slug}.${parts.slice(-2).join('.')}`;
+                } else if (parts.includes('luminia')) {
+                  base = `${created.slug}.luminia.com`;
+                } else {
+                  base = `${created.slug}.${host}`;
+                }
+                const portSuffix = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                // Pass token to the new subdomain so it can store it in its own localStorage
+                const token = localStorage.getItem('luminia_token');
+                const tokenParam = token ? `?_token=${encodeURIComponent(token)}` : '';
+                window.location.href = `${protocol}//${base}${portSuffix}/${tokenParam}`;
+              }}
             >
               Ver mi tienda
             </Button>

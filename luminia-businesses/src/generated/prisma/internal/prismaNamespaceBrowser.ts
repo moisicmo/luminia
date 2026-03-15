@@ -55,6 +55,8 @@ export const ModelName = {
   Business: 'Business',
   BusinessRole: 'BusinessRole',
   BusinessMember: 'BusinessMember',
+  BusinessCustomer: 'BusinessCustomer',
+  BusinessInvitation: 'BusinessInvitation',
   Branch: 'Branch',
   PointOfSale: 'PointOfSale',
   CashRegisterSession: 'CashRegisterSession'
@@ -129,6 +131,8 @@ export const BusinessMemberScalarFieldEnum = {
   userId: 'userId',
   role: 'role',
   roleId: 'roleId',
+  branchIds: 'branchIds',
+  pointOfSaleId: 'pointOfSaleId',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -137,6 +141,44 @@ export const BusinessMemberScalarFieldEnum = {
 } as const
 
 export type BusinessMemberScalarFieldEnum = (typeof BusinessMemberScalarFieldEnum)[keyof typeof BusinessMemberScalarFieldEnum]
+
+
+export const BusinessCustomerScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  personId: 'personId',
+  name: 'name',
+  lastName: 'lastName',
+  taxId: 'taxId',
+  phone: 'phone',
+  email: 'email',
+  address: 'address',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  updatedBy: 'updatedBy'
+} as const
+
+export type BusinessCustomerScalarFieldEnum = (typeof BusinessCustomerScalarFieldEnum)[keyof typeof BusinessCustomerScalarFieldEnum]
+
+
+export const BusinessInvitationScalarFieldEnum = {
+  id: 'id',
+  businessId: 'businessId',
+  email: 'email',
+  phone: 'phone',
+  roleId: 'roleId',
+  branchIds: 'branchIds',
+  status: 'status',
+  token: 'token',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy'
+} as const
+
+export type BusinessInvitationScalarFieldEnum = (typeof BusinessInvitationScalarFieldEnum)[keyof typeof BusinessInvitationScalarFieldEnum]
 
 
 export const BranchScalarFieldEnum = {
@@ -166,6 +208,7 @@ export const PointOfSaleScalarFieldEnum = {
   branchId: 'branchId',
   code: 'code',
   name: 'name',
+  paperSize: 'paperSize',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

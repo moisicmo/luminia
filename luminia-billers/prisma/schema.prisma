@@ -26,6 +26,7 @@ model SiatConfig {
   nit              String          @db.VarChar(20)       // tax ID of the issuer
   socialReason     String          @map("social_reason") @db.VarChar(500)
   mainActivityCode Int             @map("main_activity_code") // main SIAT economic activity code
+  isOnline         Boolean         @default(true) @map("is_online")  // true=online, false=contingencia
   active           Boolean         @default(true)
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @default(now()) @updatedAt @map("updated_at")

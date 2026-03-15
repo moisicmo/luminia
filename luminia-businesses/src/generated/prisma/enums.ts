@@ -17,12 +17,31 @@ export const CashSessionStatus = {
 export type CashSessionStatus = (typeof CashSessionStatus)[keyof typeof CashSessionStatus]
 
 
+export const PaperSize = {
+  LETTER: 'LETTER',
+  ROLL_80: 'ROLL_80',
+  ROLL_58: 'ROLL_58'
+} as const
+
+export type PaperSize = (typeof PaperSize)[keyof typeof PaperSize]
+
+
 export const MemberRole = {
   OWNER: 'OWNER',
   MEMBER: 'MEMBER'
 } as const
 
 export type MemberRole = (typeof MemberRole)[keyof typeof MemberRole]
+
+
+export const InvitationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type InvitationStatus = (typeof InvitationStatus)[keyof typeof InvitationStatus]
 
 
 export const BusinessType = {

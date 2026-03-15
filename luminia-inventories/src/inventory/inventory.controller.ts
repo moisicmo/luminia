@@ -55,28 +55,6 @@ export class InventoryController {
     return this.inventoryService.cancelInput(d.id, d.businessId, d.updatedBy);
   }
 
-  // ─── Customers ────────────────────────────────────────────────────────────────
-
-  @MessagePattern('store.customers.create')
-  createCustomer(@Payload() d: { data: any; createdBy: string }) {
-    return this.inventoryService.createCustomer(d.data, d.createdBy);
-  }
-
-  @MessagePattern('store.customers.list')
-  listCustomers(@Payload() d: { businessId: string }) {
-    return this.inventoryService.listCustomers(d.businessId);
-  }
-
-  @MessagePattern('store.customers.update')
-  updateCustomer(@Payload() d: { id: string; businessId: string; data: any; updatedBy: string }) {
-    return this.inventoryService.updateCustomer(d.id, d.businessId, d.data, d.updatedBy);
-  }
-
-  @MessagePattern('store.customers.remove')
-  removeCustomer(@Payload() d: { id: string; businessId: string; updatedBy: string }) {
-    return this.inventoryService.removeCustomer(d.id, d.businessId, d.updatedBy);
-  }
-
   // ─── Outputs ─────────────────────────────────────────────────────────────────
 
   @MessagePattern('store.outputs.create')
@@ -87,6 +65,11 @@ export class InventoryController {
   @MessagePattern('store.outputs.list')
   listOutputs(@Payload() d: { businessId: string; filters: any }) {
     return this.inventoryService.listOutputs(d.businessId, d.filters ?? {});
+  }
+
+  @MessagePattern('store.outputs.findOne')
+  findOutput(@Payload() d: { id: string; businessId: string }) {
+    return this.inventoryService.findOutput(d.id, d.businessId);
   }
 
   @MessagePattern('store.outputs.confirm')
@@ -104,6 +87,33 @@ export class InventoryController {
   @MessagePattern('store.stock.list')
   listStock(@Payload() d: { businessId: string; filters: any }) {
     return this.inventoryService.listStock(d.businessId, d.filters ?? {});
+  }
+
+  // ─── Transfers ──────────────────────────────────────────────────────────────
+
+  @MessagePattern('store.transfers.create')
+  createTransfer(@Payload() d: { data: any; createdBy: string }) {
+    return this.inventoryService.createTransfer(d.data, d.createdBy);
+  }
+
+  @MessagePattern('store.transfers.list')
+  listTransfers(@Payload() d: { businessId: string; filters: any }) {
+    return this.inventoryService.listTransfers(d.businessId, d.filters ?? {});
+  }
+
+  @MessagePattern('store.transfers.findOne')
+  findTransfer(@Payload() d: { id: string; businessId: string }) {
+    return this.inventoryService.findTransfer(d.id, d.businessId);
+  }
+
+  @MessagePattern('store.transfers.confirm')
+  confirmTransfer(@Payload() d: { id: string; businessId: string; updatedBy: string }) {
+    return this.inventoryService.confirmTransfer(d.id, d.businessId, d.updatedBy);
+  }
+
+  @MessagePattern('store.transfers.cancel')
+  cancelTransfer(@Payload() d: { id: string; businessId: string; updatedBy: string }) {
+    return this.inventoryService.cancelTransfer(d.id, d.businessId, d.updatedBy);
   }
 
   // ─── Kardex ──────────────────────────────────────────────────────────────────

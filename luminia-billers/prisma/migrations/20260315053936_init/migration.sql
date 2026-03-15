@@ -36,6 +36,7 @@ CREATE TABLE "siat_configs" (
     "nit" VARCHAR(20) NOT NULL,
     "social_reason" VARCHAR(500) NOT NULL,
     "main_activity_code" INTEGER NOT NULL,
+    "is_online" BOOLEAN NOT NULL DEFAULT true,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

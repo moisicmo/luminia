@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Search, Loader2, ShoppingCart, Trash2, Check, XCircle } from 'lucide-react';
+import { Plus, Search, Loader2, ShoppingCart, Trash2, Check, XCircle, FileText, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,10 +11,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { luminiApi } from '@/services/luminiApi';
 import { useWarehouse } from '../components/AdminLayout';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
+
+interface InputDetail {
+  id: string;
+  quantity: number;
+  unitCost: number;
+  totalCost: number;
+  product: { id: string; name: string; sku: string };
+  unit: { id: string; name: string; abbreviation: string };
+}
 
 interface InputRecord {
   id: string;
@@ -27,6 +44,7 @@ interface InputRecord {
   supplier?: { id: string; name: string };
   warehouse?: { id: string; name: string };
   _count?: { details: number };
+  details?: InputDetail[];
   createdAt: string;
   updatedAt: string;
 }
@@ -78,6 +96,91 @@ function formatDate(d: string) {
   catch { return d; }
 }
 
+// ─── PDF Generator ──────────────────────────────────────────────────────────
+
+function generatePurchasePdf(input: InputRecord) {
+  const doc = new jsPDF();
+
+  // Header
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('ORDEN DE COMPRA', 105, 20, { align: 'center' });
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100);
+  doc.text(`N° ${input.documentNumber || input.id.slice(0, 8).toUpperCase()}`, 105, 28, { align: 'center' });
+
+  // Info section
+  doc.setTextColor(0);
+  doc.setFontSize(10);
+  const infoY = 40;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Proveedor:', 14, infoY);
+  doc.setFont('helvetica', 'normal');
+  doc.text(input.supplier?.name ?? 'Sin proveedor', 50, infoY);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Almacén:', 14, infoY + 7);
+  doc.setFont('helvetica', 'normal');
+  doc.text(input.warehouse?.name ?? '-', 50, infoY + 7);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Fecha:', 120, infoY);
+  doc.setFont('helvetica', 'normal');
+  doc.text(formatDate(input.date || input.createdAt), 145, infoY);
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Estado:', 120, infoY + 7);
+  doc.setFont('helvetica', 'normal');
+  doc.text(STATUS_LABEL[input.status] ?? input.status, 145, infoY + 7);
+
+  if (input.notes) {
+    doc.setFont('helvetica', 'bold');
+    doc.text('Notas:', 14, infoY + 14);
+    doc.setFont('helvetica', 'normal');
+    doc.text(input.notes, 50, infoY + 14);
+  }
+
+  // Details table
+  const details = input.details ?? [];
+  autoTable(doc, {
+    startY: infoY + (input.notes ? 22 : 16),
+    head: [['#', 'SKU', 'Producto', 'Unidad', 'Cantidad', 'P. Unit.', 'Subtotal']],
+    body: details.map((d, i) => [
+      i + 1,
+      d.product.sku,
+      d.product.name,
+      d.unit.abbreviation || d.unit.name,
+      d.quantity,
+      `Bs ${Number(d.unitCost).toFixed(2)}`,
+      `Bs ${Number(d.totalCost).toFixed(2)}`,
+    ]),
+    styles: { fontSize: 9 },
+    headStyles: { fillColor: [109, 40, 217] },
+    columnStyles: {
+      0: { cellWidth: 10 },
+      4: { halign: 'center' },
+      5: { halign: 'right' },
+      6: { halign: 'right' },
+    },
+  });
+
+  // Total
+  const finalY = (doc as any).lastAutoTable.finalY + 8;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text(`Total: Bs ${Number(input.total).toFixed(2)}`, 196, finalY, { align: 'right' });
+
+  // Footer
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(150);
+  doc.text(`Generado el ${new Date().toLocaleDateString('es-BO')} - Luminia`, 105, 285, { align: 'center' });
+
+  doc.save(`compra-${input.documentNumber || input.id.slice(0, 8)}.pdf`);
+}
+
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function PurchasesSection() {
@@ -88,6 +191,7 @@ export function PurchasesSection() {
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [loadingDetails, setLoadingDetails] = useState<Record<string, boolean>>({});
 
   // Form state for new purchase
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -118,6 +222,39 @@ export function PurchasesSection() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function loadInputDetails(id: string) {
+    const existing = inputs.find((i) => i.id === id);
+    if (existing?.details) return;
+
+    setLoadingDetails((prev) => ({ ...prev, [id]: true }));
+    try {
+      const { data } = await luminiApi.get(`/inventory/inputs/${id}`);
+      setInputs((prev) => prev.map((i) => (i.id === id ? { ...i, details: data.details } : i)));
+    } catch {
+      // silenciar
+    } finally {
+      setLoadingDetails((prev) => ({ ...prev, [id]: false }));
+    }
+  }
+
+  async function handleDownloadPdf(id: string) {
+    let input = inputs.find((i) => i.id === id);
+    if (!input?.details) {
+      setLoadingDetails((prev) => ({ ...prev, [id]: true }));
+      try {
+        const { data } = await luminiApi.get(`/inventory/inputs/${id}`);
+        input = { ...input!, details: data.details };
+        setInputs((prev) => prev.map((i) => (i.id === id ? input! : i)));
+      } catch {
+        alert('Error al cargar detalles para el PDF');
+        return;
+      } finally {
+        setLoadingDetails((prev) => ({ ...prev, [id]: false }));
+      }
+    }
+    generatePurchasePdf(input!);
   }
 
   async function openNewPurchase() {
@@ -257,66 +394,105 @@ export function PurchasesSection() {
         </Button>
       </div>
 
-      {/* Purchases table */}
+      {/* Purchases list with accordion */}
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-50 hover:bg-gray-50">
-              <TableHead className="text-xs font-semibold text-gray-500">Proveedor</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500">Nro. Comprobante</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500">Sucursal</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500">Fecha Compra</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500">Recepción</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500 text-center">Items</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500 text-right">Total</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500 text-center">Estado</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500">Obs.</TableHead>
-              <TableHead className="text-xs font-semibold text-gray-500 text-center">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={10} className="text-center py-12 text-gray-400 text-sm">
-                  <ShoppingCart className="w-8 h-8 mx-auto mb-2 text-gray-200" />
-                  Sin compras registradas
-                </TableCell>
-              </TableRow>
-            ) : filtered.map((o) => (
-              <TableRow key={o.id} className="hover:bg-gray-50">
-                <TableCell className="text-sm text-gray-700 font-medium">{o.supplier?.name ?? '-'}</TableCell>
-                <TableCell className="text-sm text-gray-600 font-mono">{o.documentNumber ?? '-'}</TableCell>
-                <TableCell className="text-sm text-gray-500">{o.warehouse?.name ?? '-'}</TableCell>
-                <TableCell className="text-sm text-gray-500">{formatDate(o.date || o.createdAt)}</TableCell>
-                <TableCell className="text-sm text-gray-500">
-                  {o.status === 'CONFIRMED' ? formatDate(o.updatedAt) : '-'}
-                </TableCell>
-                <TableCell className="text-center text-sm text-gray-700">{o._count?.details ?? 0}</TableCell>
-                <TableCell className="text-right font-semibold text-sm text-gray-800">Bs {Number(o.total).toLocaleString()}</TableCell>
-                <TableCell className="text-center">
-                  <Badge className={`${STATUS_CLS[o.status] ?? 'bg-gray-100 text-gray-600'} text-[10px]`}>
-                    {STATUS_LABEL[o.status] ?? o.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-xs text-gray-400 max-w-[120px] truncate" title={o.notes ?? ''}>
-                  {o.notes ?? '-'}
-                </TableCell>
-                <TableCell className="text-center">
-                  {o.status === 'DRAFT' && (
-                    <div className="flex gap-1 justify-center">
-                      <button onClick={() => confirmInput(o.id)} title="Confirmar" className="text-green-600 hover:text-green-800">
-                        <Check className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => cancelInput(o.id)} title="Cancelar" className="text-red-500 hover:text-red-700">
-                        <XCircle className="w-4 h-4" />
-                      </button>
+        {filtered.length === 0 ? (
+          <div className="text-center py-12 text-gray-400 text-sm">
+            <ShoppingCart className="w-8 h-8 mx-auto mb-2 text-gray-200" />
+            Sin compras registradas
+          </div>
+        ) : (
+          <Accordion type="single" collapsible className="w-full">
+            {filtered.map((o) => (
+              <AccordionItem key={o.id} value={o.id} className="border-b border-gray-100">
+                <AccordionTrigger
+                  className="px-4 py-3 hover:no-underline hover:bg-gray-50 gap-3"
+                  onClick={() => loadInputDetails(o.id)}
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0 text-left">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-medium text-gray-700">{o.supplier?.name ?? 'Sin proveedor'}</span>
+                        {o.documentNumber && (
+                          <span className="text-xs text-gray-400 font-mono">{o.documentNumber}</span>
+                        )}
+                        <Badge className={`${STATUS_CLS[o.status] ?? 'bg-gray-100 text-gray-600'} text-[10px]`}>
+                          {STATUS_LABEL[o.status] ?? o.status}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                        <span>{o.warehouse?.name ?? '-'}</span>
+                        <span>{formatDate(o.date || o.createdAt)}</span>
+                        <span>{o._count?.details ?? 0} items</span>
+                        {o.notes && <span className="truncate max-w-[150px]" title={o.notes}>{o.notes}</span>}
+                      </div>
                     </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="font-semibold text-sm text-gray-800">Bs {Number(o.total).toLocaleString()}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDownloadPdf(o.id); }}
+                        title="Descargar PDF"
+                        className="text-violet-500 hover:text-violet-700 p-1"
+                      >
+                        <FileText className="w-4 h-4" />
+                      </button>
+                      {o.status === 'DRAFT' && (
+                        <>
+                          <button onClick={(e) => { e.stopPropagation(); confirmInput(o.id); }} title="Confirmar" className="text-green-600 hover:text-green-800 p-1">
+                            <Check className="w-4 h-4" />
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); cancelInput(o.id); }} title="Cancelar" className="text-red-500 hover:text-red-700 p-1">
+                            <XCircle className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  {loadingDetails[o.id] ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="w-4 h-4 animate-spin text-violet-400" />
+                      <span className="ml-2 text-xs text-gray-400">Cargando detalles...</span>
+                    </div>
+                  ) : o.details && o.details.length > 0 ? (
+                    <div className="border border-gray-100 rounded-lg overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-gray-50 hover:bg-gray-50">
+                            <TableHead className="text-xs font-semibold text-gray-500">SKU</TableHead>
+                            <TableHead className="text-xs font-semibold text-gray-500">Producto</TableHead>
+                            <TableHead className="text-xs font-semibold text-gray-500 text-center">Unidad</TableHead>
+                            <TableHead className="text-xs font-semibold text-gray-500 text-center">Cantidad</TableHead>
+                            <TableHead className="text-xs font-semibold text-gray-500 text-right">P. Unit.</TableHead>
+                            <TableHead className="text-xs font-semibold text-gray-500 text-right">Subtotal</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {o.details.map((d) => (
+                            <TableRow key={d.id}>
+                              <TableCell className="text-xs text-gray-500 font-mono">{d.product.sku}</TableCell>
+                              <TableCell className="text-xs text-gray-700">{d.product.name}</TableCell>
+                              <TableCell className="text-xs text-center text-gray-500">{d.unit.abbreviation || d.unit.name}</TableCell>
+                              <TableCell className="text-xs text-center">{d.quantity}</TableCell>
+                              <TableCell className="text-xs text-right">Bs {Number(d.unitCost).toFixed(2)}</TableCell>
+                              <TableCell className="text-xs text-right font-medium">Bs {Number(d.totalCost).toFixed(2)}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                      <div className="flex justify-end px-4 py-2 bg-gray-50 border-t border-gray-100">
+                        <span className="text-sm font-semibold text-gray-800">Total: Bs {Number(o.total).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-400 py-2">Sin detalles disponibles</p>
                   )}
-                </TableCell>
-              </TableRow>
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </TableBody>
-        </Table>
+          </Accordion>
+        )}
       </div>
 
       {/* ─── New Purchase Dialog ─────────────────────────────────────────── */}

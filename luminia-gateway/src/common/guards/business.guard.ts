@@ -39,7 +39,7 @@ export class BusinessGuard implements CanActivate {
     }
 
     // Call luminia-business to check membership
-    let result: { hasAccess: boolean; role: string | null; isOwner: boolean };
+    let result: { hasAccess: boolean; role: string | null; isOwner: boolean; branchIds?: string[]; pointOfSaleId?: string | null };
     try {
       result = await firstValueFrom(
         this.businessClient
@@ -74,6 +74,8 @@ export class BusinessGuard implements CanActivate {
     // Inject into request for downstream use
     req['businessId'] = businessId;
     req['memberRole'] = result.role;
+    req['branchIds'] = result.branchIds ?? [];
+    req['pointOfSaleId'] = result.pointOfSaleId ?? null;
 
     return true;
   }

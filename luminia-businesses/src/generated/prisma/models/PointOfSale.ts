@@ -29,6 +29,7 @@ export type PointOfSaleMinAggregateOutputType = {
   branchId: string | null
   code: string | null
   name: string | null
+  paperSize: $Enums.PaperSize | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -41,6 +42,7 @@ export type PointOfSaleMaxAggregateOutputType = {
   branchId: string | null
   code: string | null
   name: string | null
+  paperSize: $Enums.PaperSize | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -53,6 +55,7 @@ export type PointOfSaleCountAggregateOutputType = {
   branchId: number
   code: number
   name: number
+  paperSize: number
   active: number
   createdAt: number
   updatedAt: number
@@ -67,6 +70,7 @@ export type PointOfSaleMinAggregateInputType = {
   branchId?: true
   code?: true
   name?: true
+  paperSize?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -79,6 +83,7 @@ export type PointOfSaleMaxAggregateInputType = {
   branchId?: true
   code?: true
   name?: true
+  paperSize?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -91,6 +96,7 @@ export type PointOfSaleCountAggregateInputType = {
   branchId?: true
   code?: true
   name?: true
+  paperSize?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -176,6 +182,7 @@ export type PointOfSaleGroupByOutputType = {
   branchId: string
   code: string | null
   name: string
+  paperSize: $Enums.PaperSize
   active: boolean
   createdAt: Date
   updatedAt: Date
@@ -209,6 +216,7 @@ export type PointOfSaleWhereInput = {
   branchId?: Prisma.UuidFilter<"PointOfSale"> | string
   code?: Prisma.StringNullableFilter<"PointOfSale"> | string | null
   name?: Prisma.StringFilter<"PointOfSale"> | string
+  paperSize?: Prisma.EnumPaperSizeFilter<"PointOfSale"> | $Enums.PaperSize
   active?: Prisma.BoolFilter<"PointOfSale"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PointOfSale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PointOfSale"> | Date | string
@@ -223,6 +231,7 @@ export type PointOfSaleOrderByWithRelationInput = {
   branchId?: Prisma.SortOrder
   code?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
+  paperSize?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -240,6 +249,7 @@ export type PointOfSaleWhereUniqueInput = Prisma.AtLeast<{
   branchId?: Prisma.UuidFilter<"PointOfSale"> | string
   code?: Prisma.StringNullableFilter<"PointOfSale"> | string | null
   name?: Prisma.StringFilter<"PointOfSale"> | string
+  paperSize?: Prisma.EnumPaperSizeFilter<"PointOfSale"> | $Enums.PaperSize
   active?: Prisma.BoolFilter<"PointOfSale"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PointOfSale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PointOfSale"> | Date | string
@@ -254,6 +264,7 @@ export type PointOfSaleOrderByWithAggregationInput = {
   branchId?: Prisma.SortOrder
   code?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
+  paperSize?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -272,6 +283,7 @@ export type PointOfSaleScalarWhereWithAggregatesInput = {
   branchId?: Prisma.UuidWithAggregatesFilter<"PointOfSale"> | string
   code?: Prisma.StringNullableWithAggregatesFilter<"PointOfSale"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"PointOfSale"> | string
+  paperSize?: Prisma.EnumPaperSizeWithAggregatesFilter<"PointOfSale"> | $Enums.PaperSize
   active?: Prisma.BoolWithAggregatesFilter<"PointOfSale"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PointOfSale"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"PointOfSale"> | Date | string
@@ -283,6 +295,7 @@ export type PointOfSaleCreateInput = {
   id?: string
   code?: string | null
   name: string
+  paperSize?: $Enums.PaperSize
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -297,6 +310,7 @@ export type PointOfSaleUncheckedCreateInput = {
   branchId: string
   code?: string | null
   name: string
+  paperSize?: $Enums.PaperSize
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -309,6 +323,7 @@ export type PointOfSaleUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -323,6 +338,7 @@ export type PointOfSaleUncheckedUpdateInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -336,6 +352,7 @@ export type PointOfSaleCreateManyInput = {
   branchId: string
   code?: string | null
   name: string
+  paperSize?: $Enums.PaperSize
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -347,6 +364,7 @@ export type PointOfSaleUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -359,6 +377,7 @@ export type PointOfSaleUncheckedUpdateManyInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,6 +400,7 @@ export type PointOfSaleCountOrderByAggregateInput = {
   branchId?: Prisma.SortOrder
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  paperSize?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -393,6 +413,7 @@ export type PointOfSaleMaxOrderByAggregateInput = {
   branchId?: Prisma.SortOrder
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  paperSize?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -405,6 +426,7 @@ export type PointOfSaleMinOrderByAggregateInput = {
   branchId?: Prisma.SortOrder
   code?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  paperSize?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -459,6 +481,10 @@ export type PointOfSaleUncheckedUpdateManyWithoutBranchNestedInput = {
   deleteMany?: Prisma.PointOfSaleScalarWhereInput | Prisma.PointOfSaleScalarWhereInput[]
 }
 
+export type EnumPaperSizeFieldUpdateOperationsInput = {
+  set?: $Enums.PaperSize
+}
+
 export type PointOfSaleCreateNestedOneWithoutSessionsInput = {
   create?: Prisma.XOR<Prisma.PointOfSaleCreateWithoutSessionsInput, Prisma.PointOfSaleUncheckedCreateWithoutSessionsInput>
   connectOrCreate?: Prisma.PointOfSaleCreateOrConnectWithoutSessionsInput
@@ -477,6 +503,7 @@ export type PointOfSaleCreateWithoutBranchInput = {
   id?: string
   code?: string | null
   name: string
+  paperSize?: $Enums.PaperSize
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -489,6 +516,7 @@ export type PointOfSaleUncheckedCreateWithoutBranchInput = {
   id?: string
   code?: string | null
   name: string
+  paperSize?: $Enums.PaperSize
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -531,6 +559,7 @@ export type PointOfSaleScalarWhereInput = {
   branchId?: Prisma.UuidFilter<"PointOfSale"> | string
   code?: Prisma.StringNullableFilter<"PointOfSale"> | string | null
   name?: Prisma.StringFilter<"PointOfSale"> | string
+  paperSize?: Prisma.EnumPaperSizeFilter<"PointOfSale"> | $Enums.PaperSize
   active?: Prisma.BoolFilter<"PointOfSale"> | boolean
   createdAt?: Prisma.DateTimeFilter<"PointOfSale"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"PointOfSale"> | Date | string
@@ -542,6 +571,7 @@ export type PointOfSaleCreateWithoutSessionsInput = {
   id?: string
   code?: string | null
   name: string
+  paperSize?: $Enums.PaperSize
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -555,6 +585,7 @@ export type PointOfSaleUncheckedCreateWithoutSessionsInput = {
   branchId: string
   code?: string | null
   name: string
+  paperSize?: $Enums.PaperSize
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -582,6 +613,7 @@ export type PointOfSaleUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -595,6 +627,7 @@ export type PointOfSaleUncheckedUpdateWithoutSessionsInput = {
   branchId?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -606,6 +639,7 @@ export type PointOfSaleCreateManyBranchInput = {
   id?: string
   code?: string | null
   name: string
+  paperSize?: $Enums.PaperSize
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -617,6 +651,7 @@ export type PointOfSaleUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -629,6 +664,7 @@ export type PointOfSaleUncheckedUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -641,6 +677,7 @@ export type PointOfSaleUncheckedUpdateManyWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  paperSize?: Prisma.EnumPaperSizeFieldUpdateOperationsInput | $Enums.PaperSize
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -684,6 +721,7 @@ export type PointOfSaleSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   branchId?: boolean
   code?: boolean
   name?: boolean
+  paperSize?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -699,6 +737,7 @@ export type PointOfSaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   branchId?: boolean
   code?: boolean
   name?: boolean
+  paperSize?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -712,6 +751,7 @@ export type PointOfSaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   branchId?: boolean
   code?: boolean
   name?: boolean
+  paperSize?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -725,6 +765,7 @@ export type PointOfSaleSelectScalar = {
   branchId?: boolean
   code?: boolean
   name?: boolean
+  paperSize?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -732,7 +773,7 @@ export type PointOfSaleSelectScalar = {
   updatedBy?: boolean
 }
 
-export type PointOfSaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "code" | "name" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["pointOfSale"]>
+export type PointOfSaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "branchId" | "code" | "name" | "paperSize" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["pointOfSale"]>
 export type PointOfSaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branch?: boolean | Prisma.BranchDefaultArgs<ExtArgs>
   sessions?: boolean | Prisma.PointOfSale$sessionsArgs<ExtArgs>
@@ -756,6 +797,7 @@ export type $PointOfSalePayload<ExtArgs extends runtime.Types.Extensions.Interna
     branchId: string
     code: string | null
     name: string
+    paperSize: $Enums.PaperSize
     active: boolean
     createdAt: Date
     updatedAt: Date
@@ -1190,6 +1232,7 @@ export interface PointOfSaleFieldRefs {
   readonly branchId: Prisma.FieldRef<"PointOfSale", 'String'>
   readonly code: Prisma.FieldRef<"PointOfSale", 'String'>
   readonly name: Prisma.FieldRef<"PointOfSale", 'String'>
+  readonly paperSize: Prisma.FieldRef<"PointOfSale", 'PaperSize'>
   readonly active: Prisma.FieldRef<"PointOfSale", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"PointOfSale", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"PointOfSale", 'DateTime'>

@@ -1,6 +1,20 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type BusinessModel, type BusinessCategory, BusinessType } from '@/models';
 
+export interface MallProduct {
+  id: string;
+  businessId: string;
+  name: string;
+  description?: string;
+  salePrice: number;
+  imageUrl?: string;
+  category?: { id: string; name: string };
+  brand?: { id: string; name: string };
+  businessName: string;
+  businessLogo?: string;
+  businessSlug?: string;
+}
+
 interface MallState {
   businesses: BusinessModel[];
   filteredBusinesses: BusinessModel[];
@@ -9,6 +23,9 @@ interface MallState {
   selectedCity: string | null;
   searchQuery: string;
   loading: boolean;
+  products: MallProduct[];
+  productsTotal: number;
+  productsLoading: boolean;
 }
 
 const initialState: MallState = {
@@ -19,6 +36,9 @@ const initialState: MallState = {
   selectedCity: null,
   searchQuery: '',
   loading: false,
+  products: [],
+  productsTotal: 0,
+  productsLoading: false,
 };
 
 export const mallSlice = createSlice({
@@ -47,6 +67,15 @@ export const mallSlice = createSlice({
     setLoading: (state, { payload }: PayloadAction<boolean>) => {
       state.loading = payload;
     },
+    setProducts: (state, { payload }: PayloadAction<MallProduct[]>) => {
+      state.products = payload;
+    },
+    setProductsTotal: (state, { payload }: PayloadAction<number>) => {
+      state.productsTotal = payload;
+    },
+    setProductsLoading: (state, { payload }: PayloadAction<boolean>) => {
+      state.productsLoading = payload;
+    },
   },
 });
 
@@ -66,5 +95,5 @@ function applyFilters(
   });
 }
 
-export const { setBusinesses, setCategories, setSelectedType, setSelectedCity, setSearchQuery, setLoading } =
+export const { setBusinesses, setCategories, setSelectedType, setSelectedCity, setSearchQuery, setLoading, setProducts, setProductsTotal, setProductsLoading } =
   mallSlice.actions;

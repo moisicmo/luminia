@@ -7,9 +7,13 @@ import { BusinessModule } from './business/business.module';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { BillingModule } from './billing/billing.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
+import { MallModule } from './mall/mall.module';
+import { FilesModule } from './files/files.module';
+import { ConversationsModule } from './conversations/conversations.module';
 import { AuthGuard } from './common/guards/auth.guard';
 
 @Module({
@@ -20,9 +24,13 @@ import { AuthGuard } from './common/guards/auth.guard';
     BusinessModule,
     UsersModule,
     InventoryModule,
+    BillingModule,
     SubscriptionsModule,
     OrdersModule,
     PaymentsModule,
+    MallModule,
+    FilesModule,
+    ConversationsModule,
   ],
   providers: [
     {

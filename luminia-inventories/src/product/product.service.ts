@@ -28,6 +28,9 @@ export class ProductService {
       cost?: number;
       isTaxable?: boolean;
       taxRate?: number;
+      siatActivityCode?: number;
+      siatProductServiceCode?: number;
+      siatMeasurementUnitId?: number;
       active?: boolean;
     },
     createdBy: string,
@@ -173,6 +176,53 @@ export class ProductService {
     } catch (err) {
       if (err instanceof RpcException) throw err;
       throw new RpcException({ status: 500, message: 'Error al eliminar producto' });
+    }
+  }
+
+  // ─── Mall (public) ────────────────────────────────────────────────────────
+
+  async listMallProducts(filters: { businessIds?: string[]; search?: string; take?: number; skip?: number }) {
+    try {
+      const take = Math.min(filters.take ?? 40, 100);
+      const skip = filters.skip ?? 0;
+
+      const where: any = { active: true, salePrice: { not: null } };
+
+      if (filters.businessIds?.length) {
+        where.businessId = { in: filters.businessIds };
+      }
+
+      if (filters.search) {
+        where.OR = [
+          { name: { contains: filters.search, mode: 'insensitive' } },
+          { description: { contains: filters.search, mode: 'insensitive' } },
+        ];
+      }
+
+      const [items, total] = await Promise.all([
+        prisma.product.findMany({
+          where,
+          select: {
+            id: true,
+            businessId: true,
+            name: true,
+            description: true,
+            salePrice: true,
+            imageUrl: true,
+            category: { select: { id: true, name: true } },
+            brand: { select: { id: true, name: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+          take,
+          skip,
+        }),
+        prisma.product.count({ where }),
+      ]);
+
+      return { items, total };
+    } catch (err) {
+      this.logger.error(`[product.listMall] ${(err as Error).message}`);
+      throw new RpcException({ status: 500, message: 'Error al listar productos del mall' });
     }
   }
 

@@ -139,6 +139,34 @@ export class MemberService {
     }
   }
 
+  async updateAssignment(businessId: string, memberId: string, data: { roleId?: string; branchIds?: string[]; pointOfSaleId?: string | null }, requesterId: string) {
+    this.logger.log(`[members.updateAssignment] member=${memberId}`);
+    try {
+      await this.assertAdminAccess(businessId, requesterId);
+
+      const member = await prisma.businessMember.findFirst({
+        where: { id: memberId, businessId, active: true },
+      });
+      if (!member) throw new RpcException({ status: 404, message: 'Miembro no encontrado' });
+      if (member.role === 'OWNER') throw new RpcException({ status: 403, message: 'No se puede modificar al dueño' });
+
+      const updateData: any = { updatedBy: requesterId };
+      if (data.roleId !== undefined) updateData.roleId = data.roleId;
+      if (data.branchIds !== undefined) updateData.branchIds = data.branchIds;
+      if (data.pointOfSaleId !== undefined) updateData.pointOfSaleId = data.pointOfSaleId;
+
+      return prisma.businessMember.update({
+        where: { id: memberId },
+        data: updateData,
+        include: { businessRole: { select: { id: true, name: true } } },
+      });
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+      this.logger.error(`[members.updateAssignment] error: ${(err as Error).message}`);
+      throw new RpcException({ status: 500, message: 'Error al actualizar asignación' });
+    }
+  }
+
   // ─── Access check (called by gateway guard) ───────────────────────────────
 
   async checkAccess(businessId: string, userId: string) {
@@ -148,11 +176,11 @@ export class MemberService {
         select: { ownerId: true },
       });
 
-      if (!business) return { hasAccess: false, role: null, isOwner: false, permissions: [] };
+      if (!business) return { hasAccess: false, role: null, isOwner: false, permissions: [], branchIds: [], pointOfSaleId: null };
 
       if (business.ownerId === userId) {
-        // Owner has all permissions implicitly
-        return { hasAccess: true, role: 'OWNER', isOwner: true, permissions: ['*'] };
+        // Owner has all permissions implicitly — access to all branches
+        return { hasAccess: true, role: 'OWNER', isOwner: true, permissions: ['*'], branchIds: [], pointOfSaleId: null };
       }
 
       const member = await prisma.businessMember.findUnique({
@@ -160,7 +188,7 @@ export class MemberService {
         include: { businessRole: true },
       });
 
-      if (!member?.active) return { hasAccess: false, role: null, isOwner: false, permissions: [] };
+      if (!member?.active) return { hasAccess: false, role: null, isOwner: false, permissions: [], branchIds: [], pointOfSaleId: null };
 
       const permissions = member.businessRole?.permissions ?? [];
       return {
@@ -169,6 +197,8 @@ export class MemberService {
         roleId: member.roleId,
         isOwner: false,
         permissions,
+        branchIds: member.branchIds ?? [],
+        pointOfSaleId: member.pointOfSaleId ?? null,
       };
     } catch (err) {
       this.logger.error(`[members.checkAccess] error: ${(err as Error).message}`);

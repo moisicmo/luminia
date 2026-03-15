@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { authSlice, cartSlice, mallSlice, mallAuthSlice } from '.';
+import { authSlice, cartSlice, mallSlice, mallAuthSlice, salesCartSlice, mallCartSlice } from '.';
 
 export const store = configureStore({
   reducer: {
@@ -7,6 +7,8 @@ export const store = configureStore({
     carts: cartSlice.reducer,
     mall: mallSlice.reducer,
     mallAuth: mallAuthSlice.reducer,
+    salesCart: salesCartSlice.reducer,
+    mallCart: mallCartSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),

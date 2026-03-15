@@ -6,6 +6,9 @@ import {
   setSelectedType,
   setSelectedCity,
   setSearchQuery,
+  setProducts,
+  setProductsTotal,
+  setProductsLoading,
 } from '@/store';
 import { mallApi } from '@/services/mallApi';
 import { BusinessType, type BusinessCategory, type BusinessModel } from '@/models';
@@ -26,7 +29,7 @@ export const BUSINESS_CATEGORIES: BusinessCategory[] = [
 
 export const useMallStore = () => {
   const dispatch = useDispatch();
-  const { businesses, filteredBusinesses, selectedType, selectedCity, searchQuery, loading } =
+  const { businesses, filteredBusinesses, selectedType, selectedCity, searchQuery, loading, products, productsTotal, productsLoading } =
     useSelector((state: RootState) => state.mall);
 
   const loadBusinesses = async () => {
@@ -62,6 +65,20 @@ export const useMallStore = () => {
     }
   };
 
+  const loadProducts = async (params?: { search?: string; businessType?: string; take?: number; skip?: number }) => {
+    dispatch(setProductsLoading(true));
+    try {
+      const { data } = await mallApi.get<{ items: any[]; total: number }>('/mall/products', { params });
+      dispatch(setProducts(data.items));
+      dispatch(setProductsTotal(data.total));
+    } catch {
+      dispatch(setProducts([]));
+      dispatch(setProductsTotal(0));
+    } finally {
+      dispatch(setProductsLoading(false));
+    }
+  };
+
   const filterByType = (type: BusinessType | null) => dispatch(setSelectedType(type));
   const filterByCity = (city: string | null) => dispatch(setSelectedCity(city));
   const search = (q: string) => dispatch(setSearchQuery(q));
@@ -73,8 +90,12 @@ export const useMallStore = () => {
     selectedCity,
     searchQuery,
     loading,
+    products,
+    productsTotal,
+    productsLoading,
     categories: BUSINESS_CATEGORIES,
     loadBusinesses,
+    loadProducts,
     filterByType,
     filterByCity,
     search,

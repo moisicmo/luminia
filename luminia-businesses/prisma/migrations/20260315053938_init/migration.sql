@@ -2,7 +2,13 @@
 CREATE TYPE "CashSessionStatus" AS ENUM ('OPEN', 'CLOSED');
 
 -- CreateEnum
+CREATE TYPE "PaperSize" AS ENUM ('LETTER', 'ROLL_80', 'ROLL_58');
+
+-- CreateEnum
 CREATE TYPE "MemberRole" AS ENUM ('OWNER', 'MEMBER');
+
+-- CreateEnum
+CREATE TYPE "InvitationStatus" AS ENUM ('PENDING', 'ACCEPTED', 'EXPIRED', 'CANCELLED');
 
 -- CreateEnum
 CREATE TYPE "BusinessType" AS ENUM ('ADMINISTRACION', 'SERVICIO', 'TIENDA', 'RESTAURANT', 'HOTEL', 'CAPACITACION', 'INSTITUTO', 'COLEGIO', 'TRANSPORTE', 'SALUD', 'ENTRETENIMIENTO', 'ECOMMERCE', 'CONSULTORIA', 'GIMNASIO', 'VETERINARIA', 'BARBERIA', 'SPA', 'DENTISTA', 'PSICOLOGO', 'AGENCIA_TURISTICA', 'INMOBILIARIA', 'SEGURO', 'FREELANCER', 'LIBRERIA');
@@ -61,6 +67,8 @@ CREATE TABLE "business_members" (
     "user_id" UUID NOT NULL,
     "role" "MemberRole" NOT NULL DEFAULT 'MEMBER',
     "role_id" UUID,
+    "branch_ids" UUID[],
+    "point_of_sale_id" UUID,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -68,6 +76,44 @@ CREATE TABLE "business_members" (
     "updated_by" UUID,
 
     CONSTRAINT "business_members_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "business_customers" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "business_id" UUID NOT NULL,
+    "person_id" UUID,
+    "name" VARCHAR(200) NOT NULL,
+    "last_name" VARCHAR(200),
+    "tax_id" VARCHAR(20),
+    "phone" VARCHAR(20),
+    "email" VARCHAR(100),
+    "address" VARCHAR,
+    "active" BOOLEAN NOT NULL DEFAULT true,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_by" UUID NOT NULL,
+    "updated_by" UUID,
+
+    CONSTRAINT "business_customers_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "business_invitations" (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "business_id" UUID NOT NULL,
+    "email" VARCHAR(100),
+    "phone" VARCHAR(20),
+    "role_id" UUID NOT NULL,
+    "branch_ids" UUID[],
+    "status" "InvitationStatus" NOT NULL DEFAULT 'PENDING',
+    "token" VARCHAR(255) NOT NULL,
+    "expires_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_by" UUID NOT NULL,
+
+    CONSTRAINT "business_invitations_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -98,6 +144,7 @@ CREATE TABLE "points_of_sale" (
     "branch_id" UUID NOT NULL,
     "code" VARCHAR,
     "name" VARCHAR NOT NULL,
+    "paper_size" "PaperSize" NOT NULL DEFAULT 'LETTER',
     "active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -138,6 +185,24 @@ CREATE INDEX "business_members_user_id_idx" ON "business_members"("user_id");
 CREATE UNIQUE INDEX "business_members_business_id_user_id_key" ON "business_members"("business_id", "user_id");
 
 -- CreateIndex
+CREATE INDEX "business_customers_business_id_active_idx" ON "business_customers"("business_id", "active");
+
+-- CreateIndex
+CREATE INDEX "business_customers_person_id_idx" ON "business_customers"("person_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "business_invitations_token_key" ON "business_invitations"("token");
+
+-- CreateIndex
+CREATE INDEX "business_invitations_email_idx" ON "business_invitations"("email");
+
+-- CreateIndex
+CREATE INDEX "business_invitations_phone_idx" ON "business_invitations"("phone");
+
+-- CreateIndex
+CREATE INDEX "business_invitations_token_idx" ON "business_invitations"("token");
+
+-- CreateIndex
 CREATE INDEX "cash_register_sessions_business_id_status_idx" ON "cash_register_sessions"("business_id", "status");
 
 -- CreateIndex
@@ -154,6 +219,15 @@ ALTER TABLE "business_members" ADD CONSTRAINT "business_members_business_id_fkey
 
 -- AddForeignKey
 ALTER TABLE "business_members" ADD CONSTRAINT "business_members_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "business_roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "business_customers" ADD CONSTRAINT "business_customers_business_id_fkey" FOREIGN KEY ("business_id") REFERENCES "businesses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "business_invitations" ADD CONSTRAINT "business_invitations_business_id_fkey" FOREIGN KEY ("business_id") REFERENCES "businesses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "business_invitations" ADD CONSTRAINT "business_invitations_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "business_roles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "branches" ADD CONSTRAINT "branches_business_id_fkey" FOREIGN KEY ("business_id") REFERENCES "businesses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

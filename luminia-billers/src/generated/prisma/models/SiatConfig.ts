@@ -41,6 +41,7 @@ export type SiatConfigMinAggregateOutputType = {
   nit: string | null
   socialReason: string | null
   mainActivityCode: number | null
+  isOnline: boolean | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -55,6 +56,7 @@ export type SiatConfigMaxAggregateOutputType = {
   nit: string | null
   socialReason: string | null
   mainActivityCode: number | null
+  isOnline: boolean | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -69,6 +71,7 @@ export type SiatConfigCountAggregateOutputType = {
   nit: number
   socialReason: number
   mainActivityCode: number
+  isOnline: number
   active: number
   createdAt: number
   updatedAt: number
@@ -93,6 +96,7 @@ export type SiatConfigMinAggregateInputType = {
   nit?: true
   socialReason?: true
   mainActivityCode?: true
+  isOnline?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -107,6 +111,7 @@ export type SiatConfigMaxAggregateInputType = {
   nit?: true
   socialReason?: true
   mainActivityCode?: true
+  isOnline?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -121,6 +126,7 @@ export type SiatConfigCountAggregateInputType = {
   nit?: true
   socialReason?: true
   mainActivityCode?: true
+  isOnline?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -222,6 +228,7 @@ export type SiatConfigGroupByOutputType = {
   nit: string
   socialReason: string
   mainActivityCode: number
+  isOnline: boolean
   active: boolean
   createdAt: Date
   updatedAt: Date
@@ -259,6 +266,7 @@ export type SiatConfigWhereInput = {
   nit?: Prisma.StringFilter<"SiatConfig"> | string
   socialReason?: Prisma.StringFilter<"SiatConfig"> | string
   mainActivityCode?: Prisma.IntFilter<"SiatConfig"> | number
+  isOnline?: Prisma.BoolFilter<"SiatConfig"> | boolean
   active?: Prisma.BoolFilter<"SiatConfig"> | boolean
   createdAt?: Prisma.DateTimeFilter<"SiatConfig"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SiatConfig"> | Date | string
@@ -273,6 +281,7 @@ export type SiatConfigOrderByWithRelationInput = {
   nit?: Prisma.SortOrder
   socialReason?: Prisma.SortOrder
   mainActivityCode?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -290,6 +299,7 @@ export type SiatConfigWhereUniqueInput = Prisma.AtLeast<{
   nit?: Prisma.StringFilter<"SiatConfig"> | string
   socialReason?: Prisma.StringFilter<"SiatConfig"> | string
   mainActivityCode?: Prisma.IntFilter<"SiatConfig"> | number
+  isOnline?: Prisma.BoolFilter<"SiatConfig"> | boolean
   active?: Prisma.BoolFilter<"SiatConfig"> | boolean
   createdAt?: Prisma.DateTimeFilter<"SiatConfig"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SiatConfig"> | Date | string
@@ -304,6 +314,7 @@ export type SiatConfigOrderByWithAggregationInput = {
   nit?: Prisma.SortOrder
   socialReason?: Prisma.SortOrder
   mainActivityCode?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -326,6 +337,7 @@ export type SiatConfigScalarWhereWithAggregatesInput = {
   nit?: Prisma.StringWithAggregatesFilter<"SiatConfig"> | string
   socialReason?: Prisma.StringWithAggregatesFilter<"SiatConfig"> | string
   mainActivityCode?: Prisma.IntWithAggregatesFilter<"SiatConfig"> | number
+  isOnline?: Prisma.BoolWithAggregatesFilter<"SiatConfig"> | boolean
   active?: Prisma.BoolWithAggregatesFilter<"SiatConfig"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SiatConfig"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SiatConfig"> | Date | string
@@ -340,6 +352,7 @@ export type SiatConfigCreateInput = {
   nit: string
   socialReason: string
   mainActivityCode: number
+  isOnline?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -354,6 +367,7 @@ export type SiatConfigUncheckedCreateInput = {
   nit: string
   socialReason: string
   mainActivityCode: number
+  isOnline?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -368,6 +382,7 @@ export type SiatConfigUpdateInput = {
   nit?: Prisma.StringFieldUpdateOperationsInput | string
   socialReason?: Prisma.StringFieldUpdateOperationsInput | string
   mainActivityCode?: Prisma.IntFieldUpdateOperationsInput | number
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -382,6 +397,7 @@ export type SiatConfigUncheckedUpdateInput = {
   nit?: Prisma.StringFieldUpdateOperationsInput | string
   socialReason?: Prisma.StringFieldUpdateOperationsInput | string
   mainActivityCode?: Prisma.IntFieldUpdateOperationsInput | number
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -396,6 +412,7 @@ export type SiatConfigCreateManyInput = {
   nit: string
   socialReason: string
   mainActivityCode: number
+  isOnline?: boolean
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -410,6 +427,7 @@ export type SiatConfigUpdateManyMutationInput = {
   nit?: Prisma.StringFieldUpdateOperationsInput | string
   socialReason?: Prisma.StringFieldUpdateOperationsInput | string
   mainActivityCode?: Prisma.IntFieldUpdateOperationsInput | number
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -424,6 +442,7 @@ export type SiatConfigUncheckedUpdateManyInput = {
   nit?: Prisma.StringFieldUpdateOperationsInput | string
   socialReason?: Prisma.StringFieldUpdateOperationsInput | string
   mainActivityCode?: Prisma.IntFieldUpdateOperationsInput | number
+  isOnline?: Prisma.BoolFieldUpdateOperationsInput | boolean
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -438,6 +457,7 @@ export type SiatConfigCountOrderByAggregateInput = {
   nit?: Prisma.SortOrder
   socialReason?: Prisma.SortOrder
   mainActivityCode?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -456,6 +476,7 @@ export type SiatConfigMaxOrderByAggregateInput = {
   nit?: Prisma.SortOrder
   socialReason?: Prisma.SortOrder
   mainActivityCode?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -470,6 +491,7 @@ export type SiatConfigMinOrderByAggregateInput = {
   nit?: Prisma.SortOrder
   socialReason?: Prisma.SortOrder
   mainActivityCode?: Prisma.SortOrder
+  isOnline?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -518,6 +540,7 @@ export type SiatConfigSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   nit?: boolean
   socialReason?: boolean
   mainActivityCode?: boolean
+  isOnline?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -532,6 +555,7 @@ export type SiatConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   nit?: boolean
   socialReason?: boolean
   mainActivityCode?: boolean
+  isOnline?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -546,6 +570,7 @@ export type SiatConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   nit?: boolean
   socialReason?: boolean
   mainActivityCode?: boolean
+  isOnline?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -560,6 +585,7 @@ export type SiatConfigSelectScalar = {
   nit?: boolean
   socialReason?: boolean
   mainActivityCode?: boolean
+  isOnline?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -567,7 +593,7 @@ export type SiatConfigSelectScalar = {
   updatedBy?: boolean
 }
 
-export type SiatConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessId" | "environment" | "nit" | "socialReason" | "mainActivityCode" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["siatConfig"]>
+export type SiatConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessId" | "environment" | "nit" | "socialReason" | "mainActivityCode" | "isOnline" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["siatConfig"]>
 
 export type $SiatConfigPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SiatConfig"
@@ -579,6 +605,7 @@ export type $SiatConfigPayload<ExtArgs extends runtime.Types.Extensions.Internal
     nit: string
     socialReason: string
     mainActivityCode: number
+    isOnline: boolean
     active: boolean
     createdAt: Date
     updatedAt: Date
@@ -1013,6 +1040,7 @@ export interface SiatConfigFieldRefs {
   readonly nit: Prisma.FieldRef<"SiatConfig", 'String'>
   readonly socialReason: Prisma.FieldRef<"SiatConfig", 'String'>
   readonly mainActivityCode: Prisma.FieldRef<"SiatConfig", 'Int'>
+  readonly isOnline: Prisma.FieldRef<"SiatConfig", 'Boolean'>
   readonly active: Prisma.FieldRef<"SiatConfig", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"SiatConfig", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"SiatConfig", 'DateTime'>

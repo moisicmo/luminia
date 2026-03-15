@@ -8,6 +8,8 @@ import { BranchOfficeModule } from './modules/branch-office/branch-office.module
 import { PointSaleModule } from './modules/point-sale/point-sale.module';
 import { WrapperModule } from './modules/wrapper/wrapper.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
+import { SiatConfigModule } from './modules/siat-config/siat-config.module';
+import { CatalogModule } from './modules/catalog/catalog.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { SchedulerModule } from './modules/scheduler/scheduler.module';
     InvoiceModule,
     SyncModule,
     WrapperModule,
+    SiatConfigModule,
+    CatalogModule,
 
     // Scheduled tasks
     SchedulerModule,

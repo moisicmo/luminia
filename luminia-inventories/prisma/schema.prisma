@@ -121,25 +121,8 @@ model Supplier {
   @@map("suppliers")
 }
 
-model Customer {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  businessId  String   @map("business_id") @db.Uuid
-  name        String   @db.VarChar(200)
-  lastName    String?  @map("last_name") @db.VarChar(200)
-  taxId       String?  @map("tax_id") @db.VarChar(20)
-  phone       String?  @db.VarChar(20)
-  email       String?  @db.VarChar(100)
-  address     String?  @db.VarChar
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
-  createdBy   String   @map("created_by")
-  updatedBy   String?  @map("updated_by")
-
-  outputs Output[]
-
-  @@map("customers")
-}
+// Customer model moved to luminia-businesses (BusinessCustomer).
+// Output.customerId now references business_customers.id externally (no FK).
 
 // ─── Productos ────────────────────────────────────────────────────────────────
 
@@ -161,6 +144,10 @@ model Product {
   purchasePrice Decimal? @map("purchase_price") @db.Decimal(15, 4)
   isTaxable     Boolean  @default(false) @map("is_taxable")
   taxRate       Decimal? @map("tax_rate") @db.Decimal(5, 2)
+  // SIAT fields (optional, for invoicing)
+  siatActivityCode       Int? @map("siat_activity_code")
+  siatProductServiceCode Int? @map("siat_product_service_code")
+  siatMeasurementUnitId  Int? @map("siat_measurement_unit_id")
   active        Boolean  @default(true)
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
@@ -341,7 +328,8 @@ model Output {
   id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   businessId     String       @map("business_id") @db.Uuid
   warehouseId    String       @map("warehouse_id") @db.Uuid
-  customerId     String?      @map("customer_id") @db.Uuid
+  customerId     String?      @map("customer_id") @db.Uuid // external ref to business_customers (no FK)
+  customerName   String?      @map("customer_name") @db.VarChar(200) // denormalized for display
   type           OutputType
   documentNumber String?      @map("document_number") @db.VarChar(50)
   referenceId    String?      @map("reference_id") @db.Uuid
@@ -357,7 +345,6 @@ model Output {
   updatedBy      String?      @map("updated_by")
 
   warehouse Warehouse      @relation(fields: [warehouseId], references: [id])
-  customer  Customer?      @relation(fields: [customerId], references: [id])
   details   OutputDetail[]
 
   @@map("outputs")

@@ -332,44 +332,6 @@ export class InventoryController {
     return this.inventoryService.cancelInput(id, businessId, user.sub);
   }
 
-  // ─── Customers ──────────────────────────────────────────────────────────────
-
-  @Post('customers')
-  @MinRole(MemberRole.INVENTORY)
-  @ApiOperation({ summary: 'Crear cliente' })
-  createCustomer(@Body() body: any, @BusinessId() businessId: string, @User() user: CurrentUser) {
-    return this.inventoryService.createCustomer(businessId, body, user.sub);
-  }
-
-  @Get('customers')
-  @ApiOperation({ summary: 'Listar clientes del negocio' })
-  listCustomers(@BusinessId() businessId: string) {
-    return this.inventoryService.listCustomers(businessId);
-  }
-
-  @Patch('customers/:id')
-  @MinRole(MemberRole.INVENTORY)
-  @ApiOperation({ summary: 'Actualizar cliente' })
-  updateCustomer(
-    @Param('id') id: string,
-    @Body() body: any,
-    @BusinessId() businessId: string,
-    @User() user: CurrentUser,
-  ) {
-    return this.inventoryService.updateCustomer(id, businessId, body, user.sub);
-  }
-
-  @Delete('customers/:id')
-  @MinRole(MemberRole.MANAGER)
-  @ApiOperation({ summary: 'Eliminar cliente' })
-  removeCustomer(
-    @Param('id') id: string,
-    @BusinessId() businessId: string,
-    @User() user: CurrentUser,
-  ) {
-    return this.inventoryService.removeCustomer(id, businessId, user.sub);
-  }
-
   // ─── Outputs (Salidas de inventario / Ventas) ─────────────────────────────────
 
   @Post('outputs')
@@ -390,6 +352,12 @@ export class InventoryController {
     return this.inventoryService.listOutputs(businessId, { warehouseId, type, status });
   }
 
+  @Get('outputs/:id')
+  @ApiOperation({ summary: 'Obtener salida por ID' })
+  findOutput(@Param('id') id: string, @BusinessId() businessId: string) {
+    return this.inventoryService.findOutput(id, businessId);
+  }
+
   @Post('outputs/:id/confirm')
   @MinRole(MemberRole.INVENTORY)
   @ApiOperation({ summary: 'Confirmar salida (descuenta stock)' })
@@ -402,6 +370,46 @@ export class InventoryController {
   @ApiOperation({ summary: 'Cancelar salida' })
   cancelOutput(@Param('id') id: string, @BusinessId() businessId: string, @User() user: CurrentUser) {
     return this.inventoryService.cancelOutput(id, businessId, user.sub);
+  }
+
+  // ─── Transfers (Traspasos) ──────────────────────────────────────────────────
+
+  @Post('transfers')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Crear traspaso entre almacenes' })
+  createTransfer(@Body() body: any, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.createTransfer(businessId, body, user.sub);
+  }
+
+  @Get('transfers')
+  @ApiOperation({ summary: 'Listar traspasos' })
+  listTransfers(
+    @BusinessId() businessId: string,
+    @Query('fromWarehouseId') fromWarehouseId?: string,
+    @Query('toWarehouseId') toWarehouseId?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.inventoryService.listTransfers(businessId, { fromWarehouseId, toWarehouseId, status });
+  }
+
+  @Get('transfers/:id')
+  @ApiOperation({ summary: 'Obtener traspaso por ID' })
+  findTransfer(@Param('id') id: string, @BusinessId() businessId: string) {
+    return this.inventoryService.findTransfer(id, businessId);
+  }
+
+  @Post('transfers/:id/confirm')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Confirmar traspaso (mueve stock)' })
+  confirmTransfer(@Param('id') id: string, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.confirmTransfer(id, businessId, user.sub);
+  }
+
+  @Post('transfers/:id/cancel')
+  @MinRole(MemberRole.INVENTORY)
+  @ApiOperation({ summary: 'Cancelar traspaso' })
+  cancelTransfer(@Param('id') id: string, @BusinessId() businessId: string, @User() user: CurrentUser) {
+    return this.inventoryService.cancelTransfer(id, businessId, user.sub);
   }
 
   // ─── Stock ────────────────────────────────────────────────────────────────────

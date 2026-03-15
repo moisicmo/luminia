@@ -220,6 +220,7 @@ export type BusinessRoleWhereInput = {
   updatedBy?: Prisma.UuidNullableFilter<"BusinessRole"> | string | null
   business?: Prisma.XOR<Prisma.BusinessScalarRelationFilter, Prisma.BusinessWhereInput>
   members?: Prisma.BusinessMemberListRelationFilter
+  invitations?: Prisma.BusinessInvitationListRelationFilter
 }
 
 export type BusinessRoleOrderByWithRelationInput = {
@@ -235,6 +236,7 @@ export type BusinessRoleOrderByWithRelationInput = {
   updatedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   business?: Prisma.BusinessOrderByWithRelationInput
   members?: Prisma.BusinessMemberOrderByRelationAggregateInput
+  invitations?: Prisma.BusinessInvitationOrderByRelationAggregateInput
 }
 
 export type BusinessRoleWhereUniqueInput = Prisma.AtLeast<{
@@ -253,6 +255,7 @@ export type BusinessRoleWhereUniqueInput = Prisma.AtLeast<{
   updatedBy?: Prisma.UuidNullableFilter<"BusinessRole"> | string | null
   business?: Prisma.XOR<Prisma.BusinessScalarRelationFilter, Prisma.BusinessWhereInput>
   members?: Prisma.BusinessMemberListRelationFilter
+  invitations?: Prisma.BusinessInvitationListRelationFilter
 }, "id">
 
 export type BusinessRoleOrderByWithAggregationInput = {
@@ -299,6 +302,7 @@ export type BusinessRoleCreateInput = {
   updatedBy?: string | null
   business: Prisma.BusinessCreateNestedOneWithoutRolesInput
   members?: Prisma.BusinessMemberCreateNestedManyWithoutBusinessRoleInput
+  invitations?: Prisma.BusinessInvitationCreateNestedManyWithoutBusinessRoleInput
 }
 
 export type BusinessRoleUncheckedCreateInput = {
@@ -313,6 +317,7 @@ export type BusinessRoleUncheckedCreateInput = {
   createdBy: string
   updatedBy?: string | null
   members?: Prisma.BusinessMemberUncheckedCreateNestedManyWithoutBusinessRoleInput
+  invitations?: Prisma.BusinessInvitationUncheckedCreateNestedManyWithoutBusinessRoleInput
 }
 
 export type BusinessRoleUpdateInput = {
@@ -327,6 +332,7 @@ export type BusinessRoleUpdateInput = {
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business?: Prisma.BusinessUpdateOneRequiredWithoutRolesNestedInput
   members?: Prisma.BusinessMemberUpdateManyWithoutBusinessRoleNestedInput
+  invitations?: Prisma.BusinessInvitationUpdateManyWithoutBusinessRoleNestedInput
 }
 
 export type BusinessRoleUncheckedUpdateInput = {
@@ -341,6 +347,7 @@ export type BusinessRoleUncheckedUpdateInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.BusinessMemberUncheckedUpdateManyWithoutBusinessRoleNestedInput
+  invitations?: Prisma.BusinessInvitationUncheckedUpdateManyWithoutBusinessRoleNestedInput
 }
 
 export type BusinessRoleCreateManyInput = {
@@ -441,6 +448,11 @@ export type BusinessRoleNullableScalarRelationFilter = {
   isNot?: Prisma.BusinessRoleWhereInput | null
 }
 
+export type BusinessRoleScalarRelationFilter = {
+  is?: Prisma.BusinessRoleWhereInput
+  isNot?: Prisma.BusinessRoleWhereInput
+}
+
 export type BusinessRoleCreateNestedManyWithoutBusinessInput = {
   create?: Prisma.XOR<Prisma.BusinessRoleCreateWithoutBusinessInput, Prisma.BusinessRoleUncheckedCreateWithoutBusinessInput> | Prisma.BusinessRoleCreateWithoutBusinessInput[] | Prisma.BusinessRoleUncheckedCreateWithoutBusinessInput[]
   connectOrCreate?: Prisma.BusinessRoleCreateOrConnectWithoutBusinessInput | Prisma.BusinessRoleCreateOrConnectWithoutBusinessInput[]
@@ -508,6 +520,20 @@ export type BusinessRoleUpdateOneWithoutMembersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BusinessRoleUpdateToOneWithWhereWithoutMembersInput, Prisma.BusinessRoleUpdateWithoutMembersInput>, Prisma.BusinessRoleUncheckedUpdateWithoutMembersInput>
 }
 
+export type BusinessRoleCreateNestedOneWithoutInvitationsInput = {
+  create?: Prisma.XOR<Prisma.BusinessRoleCreateWithoutInvitationsInput, Prisma.BusinessRoleUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.BusinessRoleCreateOrConnectWithoutInvitationsInput
+  connect?: Prisma.BusinessRoleWhereUniqueInput
+}
+
+export type BusinessRoleUpdateOneRequiredWithoutInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.BusinessRoleCreateWithoutInvitationsInput, Prisma.BusinessRoleUncheckedCreateWithoutInvitationsInput>
+  connectOrCreate?: Prisma.BusinessRoleCreateOrConnectWithoutInvitationsInput
+  upsert?: Prisma.BusinessRoleUpsertWithoutInvitationsInput
+  connect?: Prisma.BusinessRoleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BusinessRoleUpdateToOneWithWhereWithoutInvitationsInput, Prisma.BusinessRoleUpdateWithoutInvitationsInput>, Prisma.BusinessRoleUncheckedUpdateWithoutInvitationsInput>
+}
+
 export type BusinessRoleCreateWithoutBusinessInput = {
   id?: string
   name: string
@@ -519,6 +545,7 @@ export type BusinessRoleCreateWithoutBusinessInput = {
   createdBy: string
   updatedBy?: string | null
   members?: Prisma.BusinessMemberCreateNestedManyWithoutBusinessRoleInput
+  invitations?: Prisma.BusinessInvitationCreateNestedManyWithoutBusinessRoleInput
 }
 
 export type BusinessRoleUncheckedCreateWithoutBusinessInput = {
@@ -532,6 +559,7 @@ export type BusinessRoleUncheckedCreateWithoutBusinessInput = {
   createdBy: string
   updatedBy?: string | null
   members?: Prisma.BusinessMemberUncheckedCreateNestedManyWithoutBusinessRoleInput
+  invitations?: Prisma.BusinessInvitationUncheckedCreateNestedManyWithoutBusinessRoleInput
 }
 
 export type BusinessRoleCreateOrConnectWithoutBusinessInput = {
@@ -587,6 +615,7 @@ export type BusinessRoleCreateWithoutMembersInput = {
   createdBy: string
   updatedBy?: string | null
   business: Prisma.BusinessCreateNestedOneWithoutRolesInput
+  invitations?: Prisma.BusinessInvitationCreateNestedManyWithoutBusinessRoleInput
 }
 
 export type BusinessRoleUncheckedCreateWithoutMembersInput = {
@@ -600,6 +629,7 @@ export type BusinessRoleUncheckedCreateWithoutMembersInput = {
   updatedAt?: Date | string
   createdBy: string
   updatedBy?: string | null
+  invitations?: Prisma.BusinessInvitationUncheckedCreateNestedManyWithoutBusinessRoleInput
 }
 
 export type BusinessRoleCreateOrConnectWithoutMembersInput = {
@@ -629,6 +659,7 @@ export type BusinessRoleUpdateWithoutMembersInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   business?: Prisma.BusinessUpdateOneRequiredWithoutRolesNestedInput
+  invitations?: Prisma.BusinessInvitationUpdateManyWithoutBusinessRoleNestedInput
 }
 
 export type BusinessRoleUncheckedUpdateWithoutMembersInput = {
@@ -642,6 +673,79 @@ export type BusinessRoleUncheckedUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invitations?: Prisma.BusinessInvitationUncheckedUpdateManyWithoutBusinessRoleNestedInput
+}
+
+export type BusinessRoleCreateWithoutInvitationsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  isSystem?: boolean
+  permissions?: Prisma.BusinessRoleCreatepermissionsInput | string[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: string
+  updatedBy?: string | null
+  business: Prisma.BusinessCreateNestedOneWithoutRolesInput
+  members?: Prisma.BusinessMemberCreateNestedManyWithoutBusinessRoleInput
+}
+
+export type BusinessRoleUncheckedCreateWithoutInvitationsInput = {
+  id?: string
+  businessId: string
+  name: string
+  description?: string | null
+  isSystem?: boolean
+  permissions?: Prisma.BusinessRoleCreatepermissionsInput | string[]
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  createdBy: string
+  updatedBy?: string | null
+  members?: Prisma.BusinessMemberUncheckedCreateNestedManyWithoutBusinessRoleInput
+}
+
+export type BusinessRoleCreateOrConnectWithoutInvitationsInput = {
+  where: Prisma.BusinessRoleWhereUniqueInput
+  create: Prisma.XOR<Prisma.BusinessRoleCreateWithoutInvitationsInput, Prisma.BusinessRoleUncheckedCreateWithoutInvitationsInput>
+}
+
+export type BusinessRoleUpsertWithoutInvitationsInput = {
+  update: Prisma.XOR<Prisma.BusinessRoleUpdateWithoutInvitationsInput, Prisma.BusinessRoleUncheckedUpdateWithoutInvitationsInput>
+  create: Prisma.XOR<Prisma.BusinessRoleCreateWithoutInvitationsInput, Prisma.BusinessRoleUncheckedCreateWithoutInvitationsInput>
+  where?: Prisma.BusinessRoleWhereInput
+}
+
+export type BusinessRoleUpdateToOneWithWhereWithoutInvitationsInput = {
+  where?: Prisma.BusinessRoleWhereInput
+  data: Prisma.XOR<Prisma.BusinessRoleUpdateWithoutInvitationsInput, Prisma.BusinessRoleUncheckedUpdateWithoutInvitationsInput>
+}
+
+export type BusinessRoleUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  permissions?: Prisma.BusinessRoleUpdatepermissionsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  business?: Prisma.BusinessUpdateOneRequiredWithoutRolesNestedInput
+  members?: Prisma.BusinessMemberUpdateManyWithoutBusinessRoleNestedInput
+}
+
+export type BusinessRoleUncheckedUpdateWithoutInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  permissions?: Prisma.BusinessRoleUpdatepermissionsInput | string[]
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  members?: Prisma.BusinessMemberUncheckedUpdateManyWithoutBusinessRoleNestedInput
 }
 
 export type BusinessRoleCreateManyBusinessInput = {
@@ -667,6 +771,7 @@ export type BusinessRoleUpdateWithoutBusinessInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.BusinessMemberUpdateManyWithoutBusinessRoleNestedInput
+  invitations?: Prisma.BusinessInvitationUpdateManyWithoutBusinessRoleNestedInput
 }
 
 export type BusinessRoleUncheckedUpdateWithoutBusinessInput = {
@@ -680,6 +785,7 @@ export type BusinessRoleUncheckedUpdateWithoutBusinessInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   members?: Prisma.BusinessMemberUncheckedUpdateManyWithoutBusinessRoleNestedInput
+  invitations?: Prisma.BusinessInvitationUncheckedUpdateManyWithoutBusinessRoleNestedInput
 }
 
 export type BusinessRoleUncheckedUpdateManyWithoutBusinessInput = {
@@ -701,10 +807,12 @@ export type BusinessRoleUncheckedUpdateManyWithoutBusinessInput = {
 
 export type BusinessRoleCountOutputType = {
   members: number
+  invitations: number
 }
 
 export type BusinessRoleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | BusinessRoleCountOutputTypeCountMembersArgs
+  invitations?: boolean | BusinessRoleCountOutputTypeCountInvitationsArgs
 }
 
 /**
@@ -724,6 +832,13 @@ export type BusinessRoleCountOutputTypeCountMembersArgs<ExtArgs extends runtime.
   where?: Prisma.BusinessMemberWhereInput
 }
 
+/**
+ * BusinessRoleCountOutputType without action
+ */
+export type BusinessRoleCountOutputTypeCountInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BusinessInvitationWhereInput
+}
+
 
 export type BusinessRoleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -738,6 +853,7 @@ export type BusinessRoleSelect<ExtArgs extends runtime.Types.Extensions.Internal
   updatedBy?: boolean
   business?: boolean | Prisma.BusinessDefaultArgs<ExtArgs>
   members?: boolean | Prisma.BusinessRole$membersArgs<ExtArgs>
+  invitations?: boolean | Prisma.BusinessRole$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.BusinessRoleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["businessRole"]>
 
@@ -786,6 +902,7 @@ export type BusinessRoleOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type BusinessRoleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   business?: boolean | Prisma.BusinessDefaultArgs<ExtArgs>
   members?: boolean | Prisma.BusinessRole$membersArgs<ExtArgs>
+  invitations?: boolean | Prisma.BusinessRole$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.BusinessRoleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BusinessRoleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -800,6 +917,7 @@ export type $BusinessRolePayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     business: Prisma.$BusinessPayload<ExtArgs>
     members: Prisma.$BusinessMemberPayload<ExtArgs>[]
+    invitations: Prisma.$BusinessInvitationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1208,6 +1326,7 @@ export interface Prisma__BusinessRoleClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   business<T extends Prisma.BusinessDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessDefaultArgs<ExtArgs>>): Prisma.Prisma__BusinessClient<runtime.Types.Result.GetResult<Prisma.$BusinessPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   members<T extends Prisma.BusinessRole$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessRole$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BusinessMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invitations<T extends Prisma.BusinessRole$invitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BusinessRole$invitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BusinessInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1664,6 +1783,30 @@ export type BusinessRole$membersArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.BusinessMemberScalarFieldEnum | Prisma.BusinessMemberScalarFieldEnum[]
+}
+
+/**
+ * BusinessRole.invitations
+ */
+export type BusinessRole$invitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BusinessInvitation
+   */
+  select?: Prisma.BusinessInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BusinessInvitation
+   */
+  omit?: Prisma.BusinessInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BusinessInvitationInclude<ExtArgs> | null
+  where?: Prisma.BusinessInvitationWhereInput
+  orderBy?: Prisma.BusinessInvitationOrderByWithRelationInput | Prisma.BusinessInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.BusinessInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BusinessInvitationScalarFieldEnum | Prisma.BusinessInvitationScalarFieldEnum[]
 }
 
 /**

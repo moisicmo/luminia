@@ -197,6 +197,117 @@ export class InvoiceService {
     };
   }
 
+  // ─── Issue Simple (from portal POS) ──────────────────────────────────────
+
+  async issueSimple(
+    data: {
+      businessId: string;
+      buyerNit: string;
+      buyerName?: string;
+      buyerDocumentType?: number;
+      paymentMethod?: number;
+      details: {
+        productId: string;
+        productName: string;
+        quantity: number;
+        unitPrice: number;
+        subtotal: number;
+        siatActivityCode?: number;
+        siatProductServiceCode?: number;
+        siatMeasurementUnitId?: number;
+      }[];
+      total: number;
+      outputId?: string;
+    },
+  ) {
+    // 1. Load SIAT config for the business
+    const config = await this.prisma.siatConfig.findFirst({
+      where: { businessId: data.businessId, active: true },
+    });
+    if (!config) {
+      throw new BadRequestException(
+        'No hay configuración SIAT para este negocio. Configure SIAT primero en Facturación → Configuración.',
+      );
+    }
+
+    // 2. Find first active branch + POS with valid CUFD
+    const cufd = await this.prisma.cufd.findFirst({
+      where: {
+        active: true,
+        endDate: { gt: new Date() },
+        cuis: {
+          active: true,
+          pointSale: {
+            active: true,
+            branchOffice: { businessId: data.businessId, active: true },
+          },
+        },
+      },
+      include: {
+        cuis: {
+          include: {
+            pointSale: {
+              include: { branchOffice: true },
+            },
+          },
+        },
+      },
+      orderBy: { startDate: 'desc' },
+    });
+    if (!cufd) {
+      throw new BadRequestException(
+        'No hay CUFD activo. Sincronice códigos SIAT primero.',
+      );
+    }
+
+    const branch = cufd.cuis.pointSale.branchOffice;
+    const pointSale = cufd.cuis.pointSale;
+
+    // 3. Build header
+    const header: Record<string, any> = {
+      nitEmisor: config.nit,
+      razonSocialEmisor: config.socialReason,
+      municipio: branch.city ?? 'Sin Municipio',
+      telefono: branch.phone,
+      nombreRazonSocial: data.buyerName || 'SIN NOMBRE',
+      codigoTipoDocumentoIdentidad: data.buyerDocumentType ?? 5,
+      numeroDocumento: data.buyerNit,
+      codigoCliente: data.buyerNit,
+      codigoMetodoPago: data.paymentMethod ?? 1,
+      montoTotal: data.total,
+      montoTotalSujetoIva: data.total,
+      codigoMoneda: 1,
+      tipoCambio: 1,
+      montoTotalMoneda: data.total,
+      direccion: branch.description ?? 'Sin Dirección',
+      usuario: 'PORTAL',
+    };
+
+    // 4. Build detail lines
+    const detail = data.details.map((d) => ({
+      actividadEconomica: String(d.siatActivityCode ?? config.mainActivityCode),
+      codigoProductoSin: d.siatProductServiceCode ?? 99100,
+      codigoProducto: d.productId,
+      descripcion: d.productName,
+      cantidad: d.quantity,
+      unidadMedida: d.siatMeasurementUnitId ?? 57,
+      precioUnitario: d.unitPrice,
+      subTotal: d.subtotal,
+    }));
+
+    // 5. Build the full DTO and delegate to existing issue()
+    const dto: IssueInvoiceDto = {
+      businessCode: data.businessId,
+      branchOfficeSiat: branch.branchOfficeSiatId,
+      pointSaleSiat: pointSale.pointSaleSiatId,
+      documentSectorType: 1,
+      header,
+      detail,
+    };
+
+    return this.issue(dto, data.businessId);
+  }
+
   // ─── Cancel ───────────────────────────────────────────────────────────────
 
   async cancel(dto: CancelInvoiceDto, businessId: string) {
@@ -204,6 +315,7 @@ export class InvoiceService {
       where: { cuf: dto.cuf },
     });
     if (!invoice) throw new NotFoundException(`Invoice not found: ${dto.cuf}`);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     if (invoice.status === InvoiceStatus.CANCELLED) {
       throw new BadRequestException('Invoice already cancelled');
     }
@@ -365,6 +477,50 @@ export class InvoiceService {
       siatStatus: siatRes?.RespuestaServicioFacturacion,
       localStatus: invoice.status,
     };
+  }
+
+  // ─── List ────────────────────────────────────────────────────────────────
+
+  async list(
+    businessId: string,
+    filters?: { status?: string; dateFrom?: string; dateTo?: string; take?: number; skip?: number },
+  ) {
+    const where: any = { businessId };
+    if (filters?.status) where.status = filters.status;
+    if (filters?.dateFrom || filters?.dateTo) {
+      where.broadcastDate = {};
+      if (filters.dateFrom) where.broadcastDate.gte = new Date(filters.dateFrom);
+      if (filters.dateTo) where.broadcastDate.lte = new Date(filters.dateTo);
+    }
+
+    const take = Math.min(filters?.take ?? 50, 100);
+    const skip = filters?.skip ?? 0;
+
+    const [items, total] = await Promise.all([
+      this.prisma.invoice.findMany({
+        where,
+        select: {
+          id: true,
+          invoiceNumber: true,
+          cuf: true,
+          broadcastDate: true,
+          status: true,
+          issuerNit: true,
+          issuerName: true,
+          buyerNit: true,
+          buyerName: true,
+          totalAmount: true,
+          receptionCode: true,
+          createdAt: true,
+        },
+        orderBy: { broadcastDate: 'desc' },
+        take,
+        skip,
+      }),
+      this.prisma.invoice.count({ where }),
+    ]);
+
+    return { items, total };
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────

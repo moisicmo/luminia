@@ -33,6 +33,9 @@ export type ProductAvgAggregateOutputType = {
   salePrice: runtime.Decimal | null
   purchasePrice: runtime.Decimal | null
   taxRate: runtime.Decimal | null
+  siatActivityCode: number | null
+  siatProductServiceCode: number | null
+  siatMeasurementUnitId: number | null
 }
 
 export type ProductSumAggregateOutputType = {
@@ -42,6 +45,9 @@ export type ProductSumAggregateOutputType = {
   salePrice: runtime.Decimal | null
   purchasePrice: runtime.Decimal | null
   taxRate: runtime.Decimal | null
+  siatActivityCode: number | null
+  siatProductServiceCode: number | null
+  siatMeasurementUnitId: number | null
 }
 
 export type ProductMinAggregateOutputType = {
@@ -62,6 +68,9 @@ export type ProductMinAggregateOutputType = {
   purchasePrice: runtime.Decimal | null
   isTaxable: boolean | null
   taxRate: runtime.Decimal | null
+  siatActivityCode: number | null
+  siatProductServiceCode: number | null
+  siatMeasurementUnitId: number | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -87,6 +96,9 @@ export type ProductMaxAggregateOutputType = {
   purchasePrice: runtime.Decimal | null
   isTaxable: boolean | null
   taxRate: runtime.Decimal | null
+  siatActivityCode: number | null
+  siatProductServiceCode: number | null
+  siatMeasurementUnitId: number | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -112,6 +124,9 @@ export type ProductCountAggregateOutputType = {
   purchasePrice: number
   isTaxable: number
   taxRate: number
+  siatActivityCode: number
+  siatProductServiceCode: number
+  siatMeasurementUnitId: number
   active: number
   createdAt: number
   updatedAt: number
@@ -128,6 +143,9 @@ export type ProductAvgAggregateInputType = {
   salePrice?: true
   purchasePrice?: true
   taxRate?: true
+  siatActivityCode?: true
+  siatProductServiceCode?: true
+  siatMeasurementUnitId?: true
 }
 
 export type ProductSumAggregateInputType = {
@@ -137,6 +155,9 @@ export type ProductSumAggregateInputType = {
   salePrice?: true
   purchasePrice?: true
   taxRate?: true
+  siatActivityCode?: true
+  siatProductServiceCode?: true
+  siatMeasurementUnitId?: true
 }
 
 export type ProductMinAggregateInputType = {
@@ -157,6 +178,9 @@ export type ProductMinAggregateInputType = {
   purchasePrice?: true
   isTaxable?: true
   taxRate?: true
+  siatActivityCode?: true
+  siatProductServiceCode?: true
+  siatMeasurementUnitId?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -182,6 +206,9 @@ export type ProductMaxAggregateInputType = {
   purchasePrice?: true
   isTaxable?: true
   taxRate?: true
+  siatActivityCode?: true
+  siatProductServiceCode?: true
+  siatMeasurementUnitId?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -207,6 +234,9 @@ export type ProductCountAggregateInputType = {
   purchasePrice?: true
   isTaxable?: true
   taxRate?: true
+  siatActivityCode?: true
+  siatProductServiceCode?: true
+  siatMeasurementUnitId?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -319,6 +349,9 @@ export type ProductGroupByOutputType = {
   purchasePrice: runtime.Decimal | null
   isTaxable: boolean
   taxRate: runtime.Decimal | null
+  siatActivityCode: number | null
+  siatProductServiceCode: number | null
+  siatMeasurementUnitId: number | null
   active: boolean
   createdAt: Date
   updatedAt: Date
@@ -367,6 +400,9 @@ export type ProductWhereInput = {
   purchasePrice?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFilter<"Product"> | boolean
   taxRate?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.IntNullableFilter<"Product"> | number | null
+  siatProductServiceCode?: Prisma.IntNullableFilter<"Product"> | number | null
+  siatMeasurementUnitId?: Prisma.IntNullableFilter<"Product"> | number | null
   active?: Prisma.BoolFilter<"Product"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
@@ -401,6 +437,9 @@ export type ProductOrderByWithRelationInput = {
   purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   isTaxable?: Prisma.SortOrder
   taxRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  siatActivityCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  siatProductServiceCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  siatMeasurementUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -439,6 +478,9 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   purchasePrice?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFilter<"Product"> | boolean
   taxRate?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.IntNullableFilter<"Product"> | number | null
+  siatProductServiceCode?: Prisma.IntNullableFilter<"Product"> | number | null
+  siatMeasurementUnitId?: Prisma.IntNullableFilter<"Product"> | number | null
   active?: Prisma.BoolFilter<"Product"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
@@ -473,6 +515,9 @@ export type ProductOrderByWithAggregationInput = {
   purchasePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   isTaxable?: Prisma.SortOrder
   taxRate?: Prisma.SortOrderInput | Prisma.SortOrder
+  siatActivityCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  siatProductServiceCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  siatMeasurementUnitId?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -506,6 +551,9 @@ export type ProductScalarWhereWithAggregatesInput = {
   purchasePrice?: Prisma.DecimalNullableWithAggregatesFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
   taxRate?: Prisma.DecimalNullableWithAggregatesFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
+  siatProductServiceCode?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
+  siatMeasurementUnitId?: Prisma.IntNullableWithAggregatesFilter<"Product"> | number | null
   active?: Prisma.BoolWithAggregatesFilter<"Product"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Product"> | Date | string
@@ -528,6 +576,9 @@ export type ProductCreateInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -562,6 +613,9 @@ export type ProductUncheckedCreateInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -590,6 +644,9 @@ export type ProductUpdateInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -624,6 +681,9 @@ export type ProductUncheckedUpdateInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -655,6 +715,9 @@ export type ProductCreateManyInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -677,6 +740,9 @@ export type ProductUpdateManyMutationInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -702,6 +768,9 @@ export type ProductUncheckedUpdateManyInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -742,6 +811,9 @@ export type ProductCountOrderByAggregateInput = {
   purchasePrice?: Prisma.SortOrder
   isTaxable?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
+  siatActivityCode?: Prisma.SortOrder
+  siatProductServiceCode?: Prisma.SortOrder
+  siatMeasurementUnitId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -756,6 +828,9 @@ export type ProductAvgOrderByAggregateInput = {
   salePrice?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
+  siatActivityCode?: Prisma.SortOrder
+  siatProductServiceCode?: Prisma.SortOrder
+  siatMeasurementUnitId?: Prisma.SortOrder
 }
 
 export type ProductMaxOrderByAggregateInput = {
@@ -776,6 +851,9 @@ export type ProductMaxOrderByAggregateInput = {
   purchasePrice?: Prisma.SortOrder
   isTaxable?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
+  siatActivityCode?: Prisma.SortOrder
+  siatProductServiceCode?: Prisma.SortOrder
+  siatMeasurementUnitId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -801,6 +879,9 @@ export type ProductMinOrderByAggregateInput = {
   purchasePrice?: Prisma.SortOrder
   isTaxable?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
+  siatActivityCode?: Prisma.SortOrder
+  siatProductServiceCode?: Prisma.SortOrder
+  siatMeasurementUnitId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -815,6 +896,9 @@ export type ProductSumOrderByAggregateInput = {
   salePrice?: Prisma.SortOrder
   purchasePrice?: Prisma.SortOrder
   taxRate?: Prisma.SortOrder
+  siatActivityCode?: Prisma.SortOrder
+  siatProductServiceCode?: Prisma.SortOrder
+  siatMeasurementUnitId?: Prisma.SortOrder
 }
 
 export type ProductScalarRelationFilter = {
@@ -956,6 +1040,14 @@ export type NullableDecimalFieldUpdateOperationsInput = {
   divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type ProductCreateNestedOneWithoutProductUnitsInput = {
   create?: Prisma.XOR<Prisma.ProductCreateWithoutProductUnitsInput, Prisma.ProductUncheckedCreateWithoutProductUnitsInput>
   connectOrCreate?: Prisma.ProductCreateOrConnectWithoutProductUnitsInput
@@ -1055,6 +1147,9 @@ export type ProductCreateWithoutBaseUnitInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1087,6 +1182,9 @@ export type ProductUncheckedCreateWithoutBaseUnitInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1147,6 +1245,9 @@ export type ProductScalarWhereInput = {
   purchasePrice?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFilter<"Product"> | boolean
   taxRate?: Prisma.DecimalNullableFilter<"Product"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.IntNullableFilter<"Product"> | number | null
+  siatProductServiceCode?: Prisma.IntNullableFilter<"Product"> | number | null
+  siatMeasurementUnitId?: Prisma.IntNullableFilter<"Product"> | number | null
   active?: Prisma.BoolFilter<"Product"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Product"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Product"> | Date | string
@@ -1169,6 +1270,9 @@ export type ProductCreateWithoutCategoryInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1201,6 +1305,9 @@ export type ProductUncheckedCreateWithoutCategoryInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1255,6 +1362,9 @@ export type ProductCreateWithoutBrandInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1287,6 +1397,9 @@ export type ProductUncheckedCreateWithoutBrandInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1341,6 +1454,9 @@ export type ProductCreateWithoutProductUnitsInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1374,6 +1490,9 @@ export type ProductUncheckedCreateWithoutProductUnitsInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1417,6 +1536,9 @@ export type ProductUpdateWithoutProductUnitsInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1450,6 +1572,9 @@ export type ProductUncheckedUpdateWithoutProductUnitsInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1477,6 +1602,9 @@ export type ProductCreateWithoutStocksInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1510,6 +1638,9 @@ export type ProductUncheckedCreateWithoutStocksInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1553,6 +1684,9 @@ export type ProductUpdateWithoutStocksInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1586,6 +1720,9 @@ export type ProductUncheckedUpdateWithoutStocksInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1613,6 +1750,9 @@ export type ProductCreateWithoutInputDetailsInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1646,6 +1786,9 @@ export type ProductUncheckedCreateWithoutInputDetailsInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1689,6 +1832,9 @@ export type ProductUpdateWithoutInputDetailsInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1722,6 +1868,9 @@ export type ProductUncheckedUpdateWithoutInputDetailsInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1749,6 +1898,9 @@ export type ProductCreateWithoutOutputDetailsInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1782,6 +1934,9 @@ export type ProductUncheckedCreateWithoutOutputDetailsInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1825,6 +1980,9 @@ export type ProductUpdateWithoutOutputDetailsInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1858,6 +2016,9 @@ export type ProductUncheckedUpdateWithoutOutputDetailsInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1885,6 +2046,9 @@ export type ProductCreateWithoutTransferDetailsInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1918,6 +2082,9 @@ export type ProductUncheckedCreateWithoutTransferDetailsInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1961,6 +2128,9 @@ export type ProductUpdateWithoutTransferDetailsInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1994,6 +2164,9 @@ export type ProductUncheckedUpdateWithoutTransferDetailsInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2021,6 +2194,9 @@ export type ProductCreateWithoutKardexesInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2054,6 +2230,9 @@ export type ProductUncheckedCreateWithoutKardexesInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2097,6 +2276,9 @@ export type ProductUpdateWithoutKardexesInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2130,6 +2312,9 @@ export type ProductUncheckedUpdateWithoutKardexesInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2159,6 +2344,9 @@ export type ProductCreateManyBaseUnitInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2181,6 +2369,9 @@ export type ProductUpdateWithoutBaseUnitInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2213,6 +2404,9 @@ export type ProductUncheckedUpdateWithoutBaseUnitInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2243,6 +2437,9 @@ export type ProductUncheckedUpdateManyWithoutBaseUnitInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2267,6 +2464,9 @@ export type ProductCreateManyCategoryInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2289,6 +2489,9 @@ export type ProductUpdateWithoutCategoryInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2321,6 +2524,9 @@ export type ProductUncheckedUpdateWithoutCategoryInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2351,6 +2557,9 @@ export type ProductUncheckedUpdateManyWithoutCategoryInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2375,6 +2584,9 @@ export type ProductCreateManyBrandInput = {
   purchasePrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: boolean
   taxRate?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: number | null
+  siatProductServiceCode?: number | null
+  siatMeasurementUnitId?: number | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2397,6 +2609,9 @@ export type ProductUpdateWithoutBrandInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2429,6 +2644,9 @@ export type ProductUncheckedUpdateWithoutBrandInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2459,6 +2677,9 @@ export type ProductUncheckedUpdateManyWithoutBrandInput = {
   purchasePrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   isTaxable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   taxRate?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  siatActivityCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatProductServiceCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  siatMeasurementUnitId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2560,6 +2781,9 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   purchasePrice?: boolean
   isTaxable?: boolean
   taxRate?: boolean
+  siatActivityCode?: boolean
+  siatProductServiceCode?: boolean
+  siatMeasurementUnitId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2595,6 +2819,9 @@ export type ProductSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   purchasePrice?: boolean
   isTaxable?: boolean
   taxRate?: boolean
+  siatActivityCode?: boolean
+  siatProductServiceCode?: boolean
+  siatMeasurementUnitId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2623,6 +2850,9 @@ export type ProductSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   purchasePrice?: boolean
   isTaxable?: boolean
   taxRate?: boolean
+  siatActivityCode?: boolean
+  siatProductServiceCode?: boolean
+  siatMeasurementUnitId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2651,6 +2881,9 @@ export type ProductSelectScalar = {
   purchasePrice?: boolean
   isTaxable?: boolean
   taxRate?: boolean
+  siatActivityCode?: boolean
+  siatProductServiceCode?: boolean
+  siatMeasurementUnitId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2658,7 +2891,7 @@ export type ProductSelectScalar = {
   updatedBy?: boolean
 }
 
-export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessId" | "categoryId" | "brandId" | "baseUnitId" | "sku" | "barcode" | "name" | "description" | "imageUrl" | "minimumStock" | "maximumStock" | "reorderPoint" | "salePrice" | "purchasePrice" | "isTaxable" | "taxRate" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["product"]>
+export type ProductOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessId" | "categoryId" | "brandId" | "baseUnitId" | "sku" | "barcode" | "name" | "description" | "imageUrl" | "minimumStock" | "maximumStock" | "reorderPoint" | "salePrice" | "purchasePrice" | "isTaxable" | "taxRate" | "siatActivityCode" | "siatProductServiceCode" | "siatMeasurementUnitId" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["product"]>
 export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.Product$categoryArgs<ExtArgs>
   brand?: boolean | Prisma.Product$brandArgs<ExtArgs>
@@ -2713,6 +2946,9 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     purchasePrice: runtime.Decimal | null
     isTaxable: boolean
     taxRate: runtime.Decimal | null
+    siatActivityCode: number | null
+    siatProductServiceCode: number | null
+    siatMeasurementUnitId: number | null
     active: boolean
     createdAt: Date
     updatedAt: Date
@@ -3167,6 +3403,9 @@ export interface ProductFieldRefs {
   readonly purchasePrice: Prisma.FieldRef<"Product", 'Decimal'>
   readonly isTaxable: Prisma.FieldRef<"Product", 'Boolean'>
   readonly taxRate: Prisma.FieldRef<"Product", 'Decimal'>
+  readonly siatActivityCode: Prisma.FieldRef<"Product", 'Int'>
+  readonly siatProductServiceCode: Prisma.FieldRef<"Product", 'Int'>
+  readonly siatMeasurementUnitId: Prisma.FieldRef<"Product", 'Int'>
   readonly active: Prisma.FieldRef<"Product", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Product", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Product", 'DateTime'>

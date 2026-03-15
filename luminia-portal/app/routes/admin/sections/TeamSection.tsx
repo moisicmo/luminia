@@ -1,5 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Users, ShieldCheck, Plus, Trash2, Loader2, ChevronDown, ChevronUp, UserMinus } from 'lucide-react';
+import {
+  Users, ShieldCheck, Plus, Trash2, Loader2, ChevronDown, ChevronUp,
+  UserMinus, Mail, Phone, Send, X, MapPin, Building2,
+} from 'lucide-react';
 import { luminiApi } from '@/services/luminiApi';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +19,8 @@ interface Member {
   role: 'OWNER' | 'MEMBER';
   roleId?: string | null;
   businessRole?: { id: string; name: string } | null;
+  branchIds?: string[];
+  pointOfSaleId?: string | null;
   active: boolean;
 }
 
@@ -28,7 +33,28 @@ interface BusinessRole {
   memberCount: number;
 }
 
-type Tab = 'members' | 'roles';
+interface Branch {
+  id: string;
+  name: string;
+}
+
+interface PointOfSale {
+  id: string;
+  name: string;
+}
+
+interface Invitation {
+  id: string;
+  email?: string;
+  phone?: string;
+  status: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED';
+  businessRole?: { id: string; name: string } | null;
+  branchIds: string[];
+  expiresAt: string;
+  createdAt: string;
+}
+
+type Tab = 'members' | 'roles' | 'invitations';
 
 // ─── Permission matrix ────────────────────────────────────────────────────────
 
@@ -52,23 +78,48 @@ function permLabel(p: string) {
   return map[action] ?? action;
 }
 
-// ─── Assign Role Dialog ───────────────────────────────────────────────────────
+// ─── Assign Role & Branches Dialog ───────────────────────────────────────────
 
-function AssignRoleDialog({ member, roles, businessId, onClose, onDone }: {
+function AssignmentDialog({ member, roles, branches, businessId, onClose, onDone }: {
   member: Member;
   roles: BusinessRole[];
+  branches: Branch[];
   businessId: string;
   onClose: () => void;
   onDone: () => void;
 }) {
   const [selectedRoleId, setSelectedRoleId] = useState(member.roleId ?? '');
+  const [selectedBranches, setSelectedBranches] = useState<string[]>(member.branchIds ?? []);
+  const [selectedPOS, setSelectedPOS] = useState(member.pointOfSaleId ?? '');
+  const [posList, setPosList] = useState<PointOfSale[]>([]);
   const [saving, setSaving] = useState(false);
 
+  // Load POS for selected branches (if only one branch selected)
+  useEffect(() => {
+    if (selectedBranches.length === 1) {
+      luminiApi.get(`/business/${businessId}/branches/${selectedBranches[0]}/pos`)
+        .then(({ data }) => setPosList(Array.isArray(data) ? data : []))
+        .catch(() => setPosList([]));
+    } else {
+      setPosList([]);
+      setSelectedPOS('');
+    }
+  }, [selectedBranches, businessId]);
+
+  const toggleBranch = (id: string) => {
+    setSelectedBranches((prev) =>
+      prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]
+    );
+  };
+
   const save = async () => {
-    if (!selectedRoleId) return;
     setSaving(true);
     try {
-      await luminiApi.patch(`/business/${businessId}/members/${member.id}/role`, { roleId: selectedRoleId });
+      await luminiApi.patch(`/business/${businessId}/members/${member.id}/assignment`, {
+        roleId: selectedRoleId || undefined,
+        branchIds: selectedBranches,
+        pointOfSaleId: selectedPOS || null,
+      });
       onDone();
     } finally {
       setSaving(false);
@@ -76,32 +127,85 @@ function AssignRoleDialog({ member, roles, businessId, onClose, onDone }: {
   };
 
   return (
-    <DialogContent className="max-w-sm">
+    <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
       <DialogHeader>
-        <DialogTitle>Asignar rol</DialogTitle>
+        <DialogTitle>Configurar miembro</DialogTitle>
       </DialogHeader>
-      <div className="space-y-2 mt-2">
-        {roles.map((r) => (
-          <button
-            key={r.id}
-            onClick={() => setSelectedRoleId(r.id)}
-            className={cn(
-              'w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-all',
-              selectedRoleId === r.id
-                ? 'border-violet-400 bg-violet-50 text-violet-700'
-                : 'border-gray-200 hover:border-gray-300',
-            )}
-          >
-            <p className="font-medium">{r.name}</p>
-            <p className="text-xs text-gray-400">{r.permissions.length} permisos</p>
-          </button>
-        ))}
+      <div className="space-y-4 mt-2">
+        {/* Role selection */}
+        <div className="space-y-1.5">
+          <Label>Rol</Label>
+          <div className="space-y-1.5">
+            {roles.map((r) => (
+              <button
+                key={r.id}
+                onClick={() => setSelectedRoleId(r.id)}
+                className={cn(
+                  'w-full text-left px-3 py-2.5 rounded-lg border text-sm transition-all',
+                  selectedRoleId === r.id
+                    ? 'border-violet-400 bg-violet-50 text-violet-700'
+                    : 'border-gray-200 hover:border-gray-300',
+                )}
+              >
+                <p className="font-medium">{r.name}</p>
+                <p className="text-xs text-gray-400">{r.permissions.length} permisos</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Branch selection */}
+        {branches.length > 0 && (
+          <div className="space-y-1.5">
+            <Label>Sucursales asignadas</Label>
+            <p className="text-xs text-gray-400">Sin seleccionar = acceso a todas</p>
+            <div className="space-y-1">
+              {branches.map((b) => (
+                <label
+                  key={b.id}
+                  className={cn(
+                    'flex items-center gap-2.5 px-3 py-2 rounded-lg border cursor-pointer transition-all text-sm',
+                    selectedBranches.includes(b.id)
+                      ? 'border-violet-400 bg-violet-50'
+                      : 'border-gray-200 hover:border-gray-300',
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedBranches.includes(b.id)}
+                    onChange={() => toggleBranch(b.id)}
+                    className="accent-violet-600"
+                  />
+                  <Building2 className="w-3.5 h-3.5 text-gray-400" />
+                  {b.name}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* POS selection (only if one branch) */}
+        {posList.length > 0 && (
+          <div className="space-y-1.5">
+            <Label>Punto de venta</Label>
+            <select
+              value={selectedPOS}
+              onChange={(e) => setSelectedPOS(e.target.value)}
+              className="w-full text-sm bg-white border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-violet-500"
+            >
+              <option value="">Sin asignar</option>
+              {posList.map((pos) => (
+                <option key={pos.id} value={pos.id}>{pos.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
       <div className="flex gap-2 justify-end mt-4">
         <Button variant="outline" size="sm" onClick={onClose}>Cancelar</Button>
         <Button size="sm" disabled={!selectedRoleId || saving} onClick={save}>
           {saving && <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />}
-          Asignar
+          Guardar
         </Button>
       </div>
     </DialogContent>
@@ -213,6 +317,138 @@ function RoleDialog({ businessId, role, onClose, onDone }: {
   );
 }
 
+// ─── Invite Dialog ───────────────────────────────────────────────────────────
+
+function InviteDialog({ businessId, roles, branches, onClose, onDone }: {
+  businessId: string;
+  roles: BusinessRole[];
+  branches: Branch[];
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [roleId, setRoleId] = useState('');
+  const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const toggleBranch = (id: string) => {
+    setSelectedBranches((prev) =>
+      prev.includes(id) ? prev.filter((b) => b !== id) : [...prev, id]
+    );
+  };
+
+  const save = async () => {
+    if (!email && !phone) { setError('Indica email o teléfono'); return; }
+    if (!roleId) { setError('Selecciona un rol'); return; }
+    setSaving(true);
+    setError('');
+    try {
+      await luminiApi.post(`/business/${businessId}/invitations`, {
+        email: email || undefined,
+        phone: phone || undefined,
+        roleId,
+        branchIds: selectedBranches,
+      });
+      onDone();
+    } catch (e: any) {
+      setError(e.response?.data?.message || 'Error al enviar invitación');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle>Invitar miembro</DialogTitle>
+      </DialogHeader>
+      <div className="space-y-4 mt-2">
+        <div className="space-y-1.5">
+          <Label>Email</Label>
+          <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="correo@ejemplo.com" />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Teléfono (alternativo)</Label>
+          <Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+591 7XXXXXXX" />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label>Rol *</Label>
+          <div className="space-y-1.5">
+            {roles.map((r) => (
+              <button
+                key={r.id}
+                onClick={() => setRoleId(r.id)}
+                className={cn(
+                  'w-full text-left px-3 py-2 rounded-lg border text-sm transition-all',
+                  roleId === r.id
+                    ? 'border-violet-400 bg-violet-50 text-violet-700'
+                    : 'border-gray-200 hover:border-gray-300',
+                )}
+              >
+                <p className="font-medium">{r.name}</p>
+                <p className="text-xs text-gray-400">{r.permissions.length} permisos</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {branches.length > 0 && (
+          <div className="space-y-1.5">
+            <Label>Sucursales</Label>
+            <p className="text-xs text-gray-400">Sin seleccionar = acceso a todas</p>
+            <div className="space-y-1">
+              {branches.map((b) => (
+                <label
+                  key={b.id}
+                  className={cn(
+                    'flex items-center gap-2.5 px-3 py-2 rounded-lg border cursor-pointer transition-all text-sm',
+                    selectedBranches.includes(b.id)
+                      ? 'border-violet-400 bg-violet-50'
+                      : 'border-gray-200 hover:border-gray-300',
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedBranches.includes(b.id)}
+                    onChange={() => toggleBranch(b.id)}
+                    className="accent-violet-600"
+                  />
+                  <Building2 className="w-3.5 h-3.5 text-gray-400" />
+                  {b.name}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {error && <p className="text-xs text-red-500">{error}</p>}
+      </div>
+      <div className="flex gap-2 justify-end mt-4">
+        <Button variant="outline" size="sm" onClick={onClose}>Cancelar</Button>
+        <Button size="sm" disabled={saving} onClick={save}>
+          {saving ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Send className="w-3.5 h-3.5 mr-1.5" />}
+          Enviar invitación
+        </Button>
+      </div>
+    </DialogContent>
+  );
+}
+
+// ─── Status badge ────────────────────────────────────────────────────────────
+
+const STATUS_COLORS: Record<string, string> = {
+  PENDING: 'bg-amber-50 text-amber-600 border-amber-200',
+  ACCEPTED: 'bg-green-50 text-green-600 border-green-200',
+  EXPIRED: 'bg-gray-50 text-gray-400 border-gray-200',
+  CANCELLED: 'bg-red-50 text-red-400 border-red-200',
+};
+const STATUS_LABELS: Record<string, string> = {
+  PENDING: 'Pendiente', ACCEPTED: 'Aceptada', EXPIRED: 'Expirada', CANCELLED: 'Cancelada',
+};
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 export function TeamSection() {
@@ -221,21 +457,28 @@ export function TeamSection() {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [roles, setRoles] = useState<BusinessRole[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [assignTarget, setAssignTarget] = useState<Member | null>(null);
   const [roleDialog, setRoleDialog] = useState<{ open: boolean; role?: BusinessRole }>({ open: false });
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [expandedRole, setExpandedRole] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [membersRes, rolesRes] = await Promise.all([
+      const [membersRes, rolesRes, branchesRes, invRes] = await Promise.all([
         luminiApi.get(`/business/${businessId}/members`),
         luminiApi.get(`/business/${businessId}/roles`),
+        luminiApi.get(`/business/${businessId}/branches`),
+        luminiApi.get(`/business/${businessId}/invitations`),
       ]);
       setMembers(membersRes.data.members ?? membersRes.data ?? []);
       setRoles(rolesRes.data);
+      setBranches(Array.isArray(branchesRes.data) ? branchesRes.data : []);
+      setInvitations(Array.isArray(invRes.data) ? invRes.data : []);
     } finally {
       setLoading(false);
     }
@@ -255,6 +498,14 @@ export function TeamSection() {
     load();
   };
 
+  const cancelInvitation = async (invId: string) => {
+    if (!confirm('¿Cancelar esta invitación?')) return;
+    await luminiApi.delete(`/business/${businessId}/invitations/${invId}`);
+    load();
+  };
+
+  const branchMap = Object.fromEntries(branches.map((b) => [b.id, b.name]));
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-48">
@@ -267,7 +518,7 @@ export function TeamSection() {
     <div className="space-y-4">
       {/* Tabs */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
-        {([['members', Users, 'Miembros'], ['roles', ShieldCheck, 'Roles']] as const).map(([id, Icon, label]) => (
+        {([['members', Users, 'Miembros'], ['roles', ShieldCheck, 'Roles'], ['invitations', Send, 'Invitaciones']] as const).map(([id, Icon, label]) => (
           <button
             key={id}
             onClick={() => setTab(id)}
@@ -278,6 +529,11 @@ export function TeamSection() {
           >
             <Icon className="w-3.5 h-3.5" />
             {label}
+            {id === 'invitations' && invitations.filter((i) => i.status === 'PENDING').length > 0 && (
+              <span className="w-4 h-4 rounded-full bg-amber-400 text-white text-[9px] flex items-center justify-center font-bold">
+                {invitations.filter((i) => i.status === 'PENDING').length}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -287,6 +543,10 @@ export function TeamSection() {
         <div className="bg-white rounded-2xl shadow-sm">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
             <h2 className="font-semibold text-gray-800">Miembros del equipo</h2>
+            <Button size="sm" onClick={() => setInviteOpen(true)}>
+              <Plus className="w-3.5 h-3.5 mr-1.5" />
+              Invitar
+            </Button>
           </div>
           <div className="divide-y divide-gray-50">
             {members.length === 0 && (
@@ -302,6 +562,16 @@ export function TeamSection() {
                   <p className="text-xs text-gray-400">
                     {m.role === 'OWNER' ? 'Dueño' : (m.businessRole?.name ?? 'Sin rol asignado')}
                   </p>
+                  {m.role !== 'OWNER' && m.branchIds && m.branchIds.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {m.branchIds.map((bId) => (
+                        <span key={bId} className="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
+                          <MapPin className="w-2.5 h-2.5" />
+                          {branchMap[bId] ?? bId.slice(0, 8)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {m.role === 'OWNER' ? (
                   <Badge variant="outline" className="text-violet-600 border-violet-200 bg-violet-50">Dueño</Badge>
@@ -311,7 +581,7 @@ export function TeamSection() {
                       onClick={() => setAssignTarget(m)}
                       className="text-xs text-gray-400 hover:text-violet-600 transition-colors px-2 py-1 rounded-md hover:bg-violet-50"
                     >
-                      {m.businessRole?.name ?? 'Asignar rol'}
+                      Configurar
                     </button>
                     <button onClick={() => removeMember(m.id)} className="text-gray-300 hover:text-red-500 transition-colors">
                       <UserMinus className="w-4 h-4" />
@@ -403,12 +673,73 @@ export function TeamSection() {
         </div>
       )}
 
-      {/* Assign role dialog */}
+      {/* Invitations tab */}
+      {tab === 'invitations' && (
+        <div className="bg-white rounded-2xl shadow-sm">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+            <h2 className="font-semibold text-gray-800">Invitaciones</h2>
+            <Button size="sm" onClick={() => setInviteOpen(true)}>
+              <Plus className="w-3.5 h-3.5 mr-1.5" />
+              Nueva invitación
+            </Button>
+          </div>
+          <div className="divide-y divide-gray-50">
+            {invitations.length === 0 && (
+              <div className="flex flex-col items-center py-12 text-gray-400">
+                <Send className="w-8 h-8 mb-2 text-gray-200" />
+                <p className="text-sm">No hay invitaciones</p>
+                <p className="text-xs mt-1">Invita miembros a tu equipo</p>
+              </div>
+            )}
+            {invitations.map((inv) => (
+              <div key={inv.id} className="flex items-center gap-3 px-5 py-3.5">
+                <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+                  {inv.email ? <Mail className="w-4 h-4 text-gray-400" /> : <Phone className="w-4 h-4 text-gray-400" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-800 truncate">
+                    {inv.email || inv.phone}
+                  </p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {inv.businessRole && (
+                      <span className="text-[10px] text-violet-600 bg-violet-50 px-1.5 py-0.5 rounded">
+                        {inv.businessRole.name}
+                      </span>
+                    )}
+                    {inv.branchIds.length > 0 && (
+                      <span className="text-[10px] text-blue-500">
+                        {inv.branchIds.length} sucursal{inv.branchIds.length > 1 ? 'es' : ''}
+                      </span>
+                    )}
+                    <span className="text-[10px] text-gray-400">
+                      {new Date(inv.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+                <Badge variant="outline" className={cn('text-[10px]', STATUS_COLORS[inv.status])}>
+                  {STATUS_LABELS[inv.status]}
+                </Badge>
+                {inv.status === 'PENDING' && (
+                  <button
+                    onClick={() => cancelInvitation(inv.id)}
+                    className="text-gray-300 hover:text-red-500 transition-colors p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Assignment dialog (role + branches + POS) */}
       <Dialog open={!!assignTarget} onOpenChange={() => setAssignTarget(null)}>
         {assignTarget && (
-          <AssignRoleDialog
+          <AssignmentDialog
             member={assignTarget}
             roles={roles}
+            branches={branches}
             businessId={businessId}
             onClose={() => setAssignTarget(null)}
             onDone={() => { setAssignTarget(null); load(); }}
@@ -424,6 +755,19 @@ export function TeamSection() {
             role={roleDialog.role}
             onClose={() => setRoleDialog({ open: false })}
             onDone={() => { setRoleDialog({ open: false }); load(); }}
+          />
+        )}
+      </Dialog>
+
+      {/* Invite dialog */}
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        {inviteOpen && (
+          <InviteDialog
+            businessId={businessId}
+            roles={roles}
+            branches={branches}
+            onClose={() => setInviteOpen(false)}
+            onDone={() => { setInviteOpen(false); load(); }}
           />
         )}
       </Dialog>

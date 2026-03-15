@@ -2,7 +2,7 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import {
   LayoutDashboard, Package, Tag, Boxes, ShoppingCart, TrendingUp,
   Building2, ArrowLeftRight, ClipboardList, Users, Menu, X, LogOut,
-  ChevronRight, Store, Warehouse, Truck, UserCheck,
+  ChevronRight, Store, Warehouse, Truck, UserCheck, Receipt,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -13,13 +13,14 @@ import { luminiApi } from '@/services/luminiApi';
 
 export type AdminSection =
   | 'dashboard' | 'products' | 'categories' | 'suppliers' | 'customers' | 'inventory'
-  | 'purchases' | 'sales' | 'branches' | 'transfers' | 'kardex' | 'team';
+  | 'purchases' | 'sales' | 'branches' | 'transfers' | 'kardex' | 'team' | 'siat';
 
 // ─── Warehouse context ──────────────────────────────────────────────────────
 
 interface WarehouseInfo {
   id: string;
   name: string;
+  branchId?: string | null;
 }
 
 interface WarehouseCtx {
@@ -60,6 +61,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'transfers',  label: 'Traspasos',   icon: ArrowLeftRight, group: 'Gestión' },
   { id: 'kardex',     label: 'Kardex',      icon: ClipboardList,  group: 'Gestión' },
   { id: 'team',       label: 'Equipo',      icon: Users,          group: 'Gestión' },
+  { id: 'siat',       label: 'Facturación', icon: Receipt,        group: 'Configuración' },
 ];
 
 interface Props {
@@ -70,6 +72,7 @@ interface Props {
   onNavigate: (s: AdminSection) => void;
   onLogout: () => void;
   children: React.ReactNode;
+  userBranchIds?: string[];
 }
 
 function SidebarContent({ businessName, slug, userName, section, onNavigate, onLogout, onClose }: Omit<Props, 'children'> & { onClose?: () => void }) {
@@ -149,7 +152,7 @@ function SidebarContent({ businessName, slug, userName, section, onNavigate, onL
   );
 }
 
-export function AdminLayout({ businessName, slug, userName, section, onNavigate, onLogout, children }: Props) {
+export function AdminLayout({ businessName, slug, userName, section, onNavigate, onLogout, children, userBranchIds = [] }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const sectionLabel = NAV_ITEMS.find((i) => i.id === section)?.label ?? 'Dashboard';
 
@@ -165,6 +168,7 @@ export function AdminLayout({ businessName, slug, userName, section, onNavigate,
       let list: WarehouseInfo[] = (Array.isArray(data) ? data : []).map((w: any) => ({
         id: w.id,
         name: w.name,
+        branchId: w.branchId ?? null,
       }));
 
       // Auto-crear almacén "Principal" si no existe ninguno
@@ -178,6 +182,11 @@ export function AdminLayout({ businessName, slug, userName, section, onNavigate,
         } catch {
           // si falla la creación, seguir sin almacén
         }
+      }
+
+      // Filter by user's branch access (empty = all branches)
+      if (userBranchIds.length > 0) {
+        list = list.filter((w: any) => !w.branchId || userBranchIds.includes(w.branchId));
       }
 
       setWarehouses(list);
@@ -197,7 +206,7 @@ export function AdminLayout({ businessName, slug, userName, section, onNavigate,
     }
   };
 
-  useEffect(() => { loadWarehouses(); }, []);
+  useEffect(() => { loadWarehouses(); }, [userBranchIds]);
 
   const handleWarehouseChange = (id: string) => {
     setSelectedWarehouseId(id);

@@ -38,6 +38,16 @@ export type BusinessRole = Prisma.BusinessRoleModel
  */
 export type BusinessMember = Prisma.BusinessMemberModel
 /**
+ * Model BusinessCustomer
+ * 
+ */
+export type BusinessCustomer = Prisma.BusinessCustomerModel
+/**
+ * Model BusinessInvitation
+ * 
+ */
+export type BusinessInvitation = Prisma.BusinessInvitationModel
+/**
  * Model Branch
  * 
  */

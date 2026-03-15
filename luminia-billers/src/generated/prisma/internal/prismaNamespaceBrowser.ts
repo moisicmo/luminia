@@ -119,6 +119,7 @@ export const SiatConfigScalarFieldEnum = {
   nit: 'nit',
   socialReason: 'socialReason',
   mainActivityCode: 'mainActivityCode',
+  isOnline: 'isOnline',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

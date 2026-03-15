@@ -179,24 +179,6 @@ export class InventoryService {
     return this.send('store.inputs.cancel', { id, businessId, updatedBy });
   }
 
-  // ─── Customers ──────────────────────────────────────────────────────────────────
-
-  createCustomer(businessId: string, data: any, createdBy: string) {
-    return this.send('store.customers.create', { data: { ...data, businessId }, createdBy });
-  }
-
-  listCustomers(businessId: string) {
-    return this.send('store.customers.list', { businessId });
-  }
-
-  updateCustomer(id: string, businessId: string, data: any, updatedBy: string) {
-    return this.send('store.customers.update', { id, businessId, data, updatedBy });
-  }
-
-  removeCustomer(id: string, businessId: string, updatedBy: string) {
-    return this.send('store.customers.remove', { id, businessId, updatedBy });
-  }
-
   // ─── Outputs ───────────────────────────────────────────────────────────────────
 
   createOutput(businessId: string, data: any, createdBy: string) {
@@ -207,12 +189,38 @@ export class InventoryService {
     return this.send('store.outputs.list', { businessId, filters });
   }
 
+  findOutput(id: string, businessId: string) {
+    return this.send('store.outputs.findOne', { id, businessId });
+  }
+
   confirmOutput(id: string, businessId: string, updatedBy: string) {
     return this.send('store.outputs.confirm', { id, businessId, updatedBy });
   }
 
   cancelOutput(id: string, businessId: string, updatedBy: string) {
     return this.send('store.outputs.cancel', { id, businessId, updatedBy });
+  }
+
+  // ─── Transfers ────────────────────────────────────────────────────────────────
+
+  createTransfer(businessId: string, data: any, createdBy: string) {
+    return this.send('store.transfers.create', { data: { ...data, businessId }, createdBy });
+  }
+
+  listTransfers(businessId: string, filters: any) {
+    return this.send('store.transfers.list', { businessId, filters });
+  }
+
+  findTransfer(id: string, businessId: string) {
+    return this.send('store.transfers.findOne', { id, businessId });
+  }
+
+  confirmTransfer(id: string, businessId: string, updatedBy: string) {
+    return this.send('store.transfers.confirm', { id, businessId, updatedBy });
+  }
+
+  cancelTransfer(id: string, businessId: string, updatedBy: string) {
+    return this.send('store.transfers.cancel', { id, businessId, updatedBy });
   }
 
   // ─── Stock ─────────────────────────────────────────────────────────────────────

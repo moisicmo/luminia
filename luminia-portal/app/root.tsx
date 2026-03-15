@@ -6,7 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import type { Route } from './+types/root';
@@ -86,12 +86,33 @@ function isAdminPath(): boolean {
 }
 
 function AppContent() {
-  const subdomain = detectSubdomain();
-  const admin = isAdminPath();
+  const [clientReady, setClientReady] = useState(false);
   const { checkAuth } = useAuth();
 
-  // Restaurar sesión desde localStorage al iniciar
-  useEffect(() => { checkAuth(); }, []);
+  useEffect(() => {
+    // Capture token passed via URL (cross-subdomain transfer)
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlToken = params.get('_token');
+      if (urlToken) {
+        localStorage.setItem('luminia_token', urlToken);
+        // Clean the URL to remove the token param
+        params.delete('_token');
+        const clean = params.toString();
+        const newUrl = window.location.pathname + (clean ? `?${clean}` : '') + window.location.hash;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+    checkAuth();
+    setClientReady(true);
+  }, []);
+
+  // During SSR and initial hydration, render the router outlet
+  // Once mounted on client, detect subdomain and render accordingly
+  if (!clientReady) return <Outlet />;
+
+  const subdomain = detectSubdomain();
+  const admin = isAdminPath();
 
   if (subdomain && admin) return <AdminView slug={subdomain} />;
   if (subdomain) return <StorefrontView slug={subdomain} />;

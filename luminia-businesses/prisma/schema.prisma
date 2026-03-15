@@ -46,6 +46,8 @@ model Business {
   systemAssignments SystemAssignment[]
   members           BusinessMember[]
   roles             BusinessRole[]
+  customers         BusinessCustomer[]
+  invitations       BusinessInvitation[]
 
   @@map("businesses")
 }
@@ -62,19 +64,22 @@ model BusinessRole {
   updatedAt DateTime         @default(now()) @updatedAt @map("updated_at")
   createdBy String           @map("created_by") @db.Uuid
   updatedBy String?          @map("updated_by") @db.Uuid
-  business  Business         @relation(fields: [businessId], references: [id])
-  members   BusinessMember[]
+  business    Business             @relation(fields: [businessId], references: [id])
+  members     BusinessMember[]
+  invitations BusinessInvitation[]
 
   @@map("business_roles")
 }
 
 model BusinessMember {
-  id           String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  businessId   String      @map("business_id") @db.Uuid
-  userId       String      @map("user_id") @db.Uuid   // personId from luminia-users
-  role         MemberRole  @default(MEMBER)
-  roleId       String?     @map("role_id") @db.Uuid   // FK to BusinessRole (null for OWNER)
-  active       Boolean     @default(true)
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String      @map("business_id") @db.Uuid
+  userId        String      @map("user_id") @db.Uuid   // personId from luminia-users
+  role          MemberRole  @default(MEMBER)
+  roleId        String?     @map("role_id") @db.Uuid   // FK to BusinessRole (null for OWNER)
+  branchIds     String[]    @map("branch_ids") @db.Uuid // sucursales asignadas (vacío = todas)
+  pointOfSaleId String?     @map("point_of_sale_id") @db.Uuid // POS asignado (cajeros)
+  active        Boolean     @default(true)
 
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
@@ -86,6 +91,60 @@ model BusinessMember {
   @@unique([businessId, userId])
   @@index([userId])
   @@map("business_members")
+}
+
+// ─── Clientes por negocio (fuente única, no se duplica en cada microservicio) ─
+// personId es opcional: permite clientes walk-in sin cuenta en la plataforma.
+// Cuando un cliente se registra, se vincula retroactivamente por taxId/phone.
+
+model BusinessCustomer {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  personId   String?  @map("person_id") @db.Uuid // null para clientes sin cuenta
+  name       String   @db.VarChar(200)
+  lastName   String?  @map("last_name") @db.VarChar(200)
+  taxId      String?  @map("tax_id") @db.VarChar(20)
+  phone      String?  @db.VarChar(20)
+  email      String?  @db.VarChar(100)
+  address    String?  @db.VarChar
+  active     Boolean  @default(true)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  createdBy String   @map("created_by") @db.Uuid
+  updatedBy String?  @map("updated_by") @db.Uuid
+  business  Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId, active])
+  @@index([personId])
+  @@map("business_customers")
+}
+
+// ─── Invitaciones al equipo (tipo GitHub) ──────────────────────────────────────
+// Se envía invitación por email/teléfono. Si el invitado ya tiene cuenta → se
+// vincula directo. Si no → queda PENDING hasta que se registre y se auto-acepta.
+
+model BusinessInvitation {
+  id         String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String           @map("business_id") @db.Uuid
+  email      String?          @db.VarChar(100)
+  phone      String?          @db.VarChar(20)
+  roleId     String           @map("role_id") @db.Uuid
+  branchIds  String[]         @map("branch_ids") @db.Uuid
+  status     InvitationStatus @default(PENDING)
+  token      String           @unique @db.VarChar(255)
+  expiresAt  DateTime         @map("expires_at")
+
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdBy    String        @map("created_by") @db.Uuid
+  business     Business      @relation(fields: [businessId], references: [id])
+  businessRole BusinessRole  @relation(fields: [roleId], references: [id])
+
+  @@index([email])
+  @@index([phone])
+  @@index([token])
+  @@map("business_invitations")
 }
 
 model Branch {
@@ -113,11 +172,12 @@ model Branch {
 }
 
 model PointOfSale {
-  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  branchId String  @map("branch_id") @db.Uuid
-  code     String? @db.VarChar
-  name     String  @db.VarChar
-  active   Boolean @default(true)
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  branchId  String    @map("branch_id") @db.Uuid
+  code      String?   @db.VarChar
+  name      String    @db.VarChar
+  paperSize PaperSize @default(LETTER) @map("paper_size")
+  active    Boolean   @default(true)
 
   createdAt DateTime             @default(now()) @map("created_at")
   updatedAt DateTime             @default(now()) @updatedAt @map("updated_at")
@@ -164,9 +224,22 @@ enum CashSessionStatus {
   CLOSED
 }
 
+enum PaperSize {
+  LETTER   // Carta 215.9×279.4 mm
+  ROLL_80  // Rollo POS 80 mm
+  ROLL_58  // Rollo POS 58 mm
+}
+
 enum MemberRole {
   OWNER  // Dueño — control total, no necesita BusinessRole
   MEMBER // Todos los demás — sus permisos vienen de BusinessRole
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
 }
 
 enum BusinessType {

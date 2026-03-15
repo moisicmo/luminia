@@ -211,6 +211,23 @@ export type EnumMemberRoleWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumMemberRoleFilter<$PrismaModel>
 }
 
+export type EnumInvitationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvitationStatus | Prisma.EnumInvitationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel> | $Enums.InvitationStatus
+}
+
+export type EnumInvitationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvitationStatus | Prisma.EnumInvitationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvitationStatusWithAggregatesFilter<$PrismaModel> | $Enums.InvitationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel>
+}
+
 export type FloatNullableFilter<$PrismaModel = never> = {
   equals?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
   in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
@@ -236,6 +253,23 @@ export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedFloatNullableFilter<$PrismaModel>
   _min?: Prisma.NestedFloatNullableFilter<$PrismaModel>
   _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+}
+
+export type EnumPaperSizeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PaperSize | Prisma.EnumPaperSizeFieldRefInput<$PrismaModel>
+  in?: $Enums.PaperSize[] | Prisma.ListEnumPaperSizeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PaperSize[] | Prisma.ListEnumPaperSizeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPaperSizeFilter<$PrismaModel> | $Enums.PaperSize
+}
+
+export type EnumPaperSizeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PaperSize | Prisma.EnumPaperSizeFieldRefInput<$PrismaModel>
+  in?: $Enums.PaperSize[] | Prisma.ListEnumPaperSizeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PaperSize[] | Prisma.ListEnumPaperSizeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPaperSizeWithAggregatesFilter<$PrismaModel> | $Enums.PaperSize
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPaperSizeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPaperSizeFilter<$PrismaModel>
 }
 
 export type EnumCashSessionStatusFilter<$PrismaModel = never> = {
@@ -540,6 +574,23 @@ export type NestedEnumMemberRoleWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumMemberRoleFilter<$PrismaModel>
 }
 
+export type NestedEnumInvitationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvitationStatus | Prisma.EnumInvitationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel> | $Enums.InvitationStatus
+}
+
+export type NestedEnumInvitationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvitationStatus | Prisma.EnumInvitationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvitationStatus[] | Prisma.ListEnumInvitationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvitationStatusWithAggregatesFilter<$PrismaModel> | $Enums.InvitationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInvitationStatusFilter<$PrismaModel>
+}
+
 export type NestedFloatNullableFilter<$PrismaModel = never> = {
   equals?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
   in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
@@ -565,6 +616,23 @@ export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedFloatNullableFilter<$PrismaModel>
   _min?: Prisma.NestedFloatNullableFilter<$PrismaModel>
   _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumPaperSizeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PaperSize | Prisma.EnumPaperSizeFieldRefInput<$PrismaModel>
+  in?: $Enums.PaperSize[] | Prisma.ListEnumPaperSizeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PaperSize[] | Prisma.ListEnumPaperSizeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPaperSizeFilter<$PrismaModel> | $Enums.PaperSize
+}
+
+export type NestedEnumPaperSizeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PaperSize | Prisma.EnumPaperSizeFieldRefInput<$PrismaModel>
+  in?: $Enums.PaperSize[] | Prisma.ListEnumPaperSizeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PaperSize[] | Prisma.ListEnumPaperSizeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPaperSizeWithAggregatesFilter<$PrismaModel> | $Enums.PaperSize
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPaperSizeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPaperSizeFilter<$PrismaModel>
 }
 
 export type NestedEnumCashSessionStatusFilter<$PrismaModel = never> = {

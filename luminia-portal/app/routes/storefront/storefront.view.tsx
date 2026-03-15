@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ShoppingBag, MapPin, Star, Phone, Globe, ArrowLeft, Loader2, Settings, User, LogOut } from 'lucide-react';
+import { assetUrl } from '@/lib/assets';
 import { Button } from '@/components/ui/button';
 import { mallApi } from '@/services/mallApi';
-import { luminiApi } from '@/services/luminiApi';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthModal } from '@/components/auth';
 
@@ -70,15 +70,16 @@ export function StorefrontView({ slug }: Props) {
       localStorage.setItem('luminia_business_id', bizId);
 
       try {
-        const prodRes = await luminiApi.get('/inventory/products', {
-          headers: { 'X-Business-Id': bizId },
+        const prodRes = await mallApi.get('/mall/products', {
+          params: { businessId: bizId },
         });
-        const prods = Array.isArray(prodRes.data) ? prodRes.data : [];
-        setProducts(prods.filter((p: any) => p.active !== false).map((p: any) => ({
+        const data = prodRes.data;
+        const prods = Array.isArray(data?.items) ? data.items : (Array.isArray(data) ? data : []);
+        setProducts(prods.map((p: any) => ({
           id: p.id,
           name: p.name,
           description: p.description,
-          price: Number(p.price ?? 0),
+          price: Number(p.salePrice ?? p.price ?? 0),
           imageUrl: p.imageUrl,
         })));
       } catch {
@@ -232,7 +233,7 @@ export function StorefrontView({ slug }: Props) {
                 <div key={product.id} className="group cursor-pointer">
                   <div className="aspect-square bg-gray-100 rounded-xl mb-2 overflow-hidden flex items-center justify-center">
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+                      <img src={assetUrl(product.imageUrl)} alt={product.name} className="w-full h-full object-cover" />
                     ) : (
                       <ShoppingBag className="w-8 h-8 text-gray-300" />
                     )}

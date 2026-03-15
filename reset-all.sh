@@ -21,6 +21,7 @@ PRISMA_SERVICES=(
   "luminia-suscriptions"
   "luminia-transports"
   "luminia-users"
+  "luminia-conversations"
 )
 
 open_tab() {

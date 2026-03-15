@@ -19,6 +19,7 @@ interface Customer {
 const EMPTY = { name: '', lastName: '', taxId: '', phone: '', email: '', address: '' };
 
 export function CustomersSection() {
+  const businessId = localStorage.getItem('luminia_business_id') ?? '';
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -33,7 +34,7 @@ export function CustomersSection() {
   async function load() {
     setLoading(true);
     try {
-      const { data } = await luminiApi.get('/inventory/customers');
+      const { data } = await luminiApi.get(`/business/${businessId}/customers`);
       setCustomers(Array.isArray(data) ? data : []);
     } catch {
       setCustomers([]);
@@ -76,9 +77,9 @@ export function CustomersSection() {
       if (form.address) payload.address = form.address;
 
       if (editingId) {
-        await luminiApi.patch(`/inventory/customers/${editingId}`, payload);
+        await luminiApi.patch(`/business/${businessId}/customers/${editingId}`, payload);
       } else {
-        await luminiApi.post('/inventory/customers', payload);
+        await luminiApi.post(`/business/${businessId}/customers`, payload);
       }
       setOpen(false);
       await load();
@@ -92,7 +93,7 @@ export function CustomersSection() {
   async function handleDelete(id: string) {
     if (!confirm('¿Eliminar este cliente?')) return;
     try {
-      await luminiApi.delete(`/inventory/customers/${id}`);
+      await luminiApi.delete(`/business/${businessId}/customers/${id}`);
       await load();
     } catch (e: any) {
       alert(e.response?.data?.message || 'Error al eliminar');

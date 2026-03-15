@@ -30,6 +30,7 @@ export type BusinessMemberMinAggregateOutputType = {
   userId: string | null
   role: $Enums.MemberRole | null
   roleId: string | null
+  pointOfSaleId: string | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -43,6 +44,7 @@ export type BusinessMemberMaxAggregateOutputType = {
   userId: string | null
   role: $Enums.MemberRole | null
   roleId: string | null
+  pointOfSaleId: string | null
   active: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -56,6 +58,8 @@ export type BusinessMemberCountAggregateOutputType = {
   userId: number
   role: number
   roleId: number
+  branchIds: number
+  pointOfSaleId: number
   active: number
   createdAt: number
   updatedAt: number
@@ -71,6 +75,7 @@ export type BusinessMemberMinAggregateInputType = {
   userId?: true
   role?: true
   roleId?: true
+  pointOfSaleId?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -84,6 +89,7 @@ export type BusinessMemberMaxAggregateInputType = {
   userId?: true
   role?: true
   roleId?: true
+  pointOfSaleId?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -97,6 +103,8 @@ export type BusinessMemberCountAggregateInputType = {
   userId?: true
   role?: true
   roleId?: true
+  branchIds?: true
+  pointOfSaleId?: true
   active?: true
   createdAt?: true
   updatedAt?: true
@@ -183,6 +191,8 @@ export type BusinessMemberGroupByOutputType = {
   userId: string
   role: $Enums.MemberRole
   roleId: string | null
+  branchIds: string[]
+  pointOfSaleId: string | null
   active: boolean
   createdAt: Date
   updatedAt: Date
@@ -217,6 +227,8 @@ export type BusinessMemberWhereInput = {
   userId?: Prisma.UuidFilter<"BusinessMember"> | string
   role?: Prisma.EnumMemberRoleFilter<"BusinessMember"> | $Enums.MemberRole
   roleId?: Prisma.UuidNullableFilter<"BusinessMember"> | string | null
+  branchIds?: Prisma.StringNullableListFilter<"BusinessMember">
+  pointOfSaleId?: Prisma.UuidNullableFilter<"BusinessMember"> | string | null
   active?: Prisma.BoolFilter<"BusinessMember"> | boolean
   createdAt?: Prisma.DateTimeFilter<"BusinessMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BusinessMember"> | Date | string
@@ -232,6 +244,8 @@ export type BusinessMemberOrderByWithRelationInput = {
   userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   roleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  branchIds?: Prisma.SortOrder
+  pointOfSaleId?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -251,6 +265,8 @@ export type BusinessMemberWhereUniqueInput = Prisma.AtLeast<{
   userId?: Prisma.UuidFilter<"BusinessMember"> | string
   role?: Prisma.EnumMemberRoleFilter<"BusinessMember"> | $Enums.MemberRole
   roleId?: Prisma.UuidNullableFilter<"BusinessMember"> | string | null
+  branchIds?: Prisma.StringNullableListFilter<"BusinessMember">
+  pointOfSaleId?: Prisma.UuidNullableFilter<"BusinessMember"> | string | null
   active?: Prisma.BoolFilter<"BusinessMember"> | boolean
   createdAt?: Prisma.DateTimeFilter<"BusinessMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BusinessMember"> | Date | string
@@ -266,6 +282,8 @@ export type BusinessMemberOrderByWithAggregationInput = {
   userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   roleId?: Prisma.SortOrderInput | Prisma.SortOrder
+  branchIds?: Prisma.SortOrder
+  pointOfSaleId?: Prisma.SortOrderInput | Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -285,6 +303,8 @@ export type BusinessMemberScalarWhereWithAggregatesInput = {
   userId?: Prisma.UuidWithAggregatesFilter<"BusinessMember"> | string
   role?: Prisma.EnumMemberRoleWithAggregatesFilter<"BusinessMember"> | $Enums.MemberRole
   roleId?: Prisma.UuidNullableWithAggregatesFilter<"BusinessMember"> | string | null
+  branchIds?: Prisma.StringNullableListFilter<"BusinessMember">
+  pointOfSaleId?: Prisma.UuidNullableWithAggregatesFilter<"BusinessMember"> | string | null
   active?: Prisma.BoolWithAggregatesFilter<"BusinessMember"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BusinessMember"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"BusinessMember"> | Date | string
@@ -296,6 +316,8 @@ export type BusinessMemberCreateInput = {
   id?: string
   userId: string
   role?: $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -311,6 +333,8 @@ export type BusinessMemberUncheckedCreateInput = {
   userId: string
   role?: $Enums.MemberRole
   roleId?: string | null
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -322,6 +346,8 @@ export type BusinessMemberUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -337,6 +363,8 @@ export type BusinessMemberUncheckedUpdateInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -350,6 +378,8 @@ export type BusinessMemberCreateManyInput = {
   userId: string
   role?: $Enums.MemberRole
   roleId?: string | null
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -361,6 +391,8 @@ export type BusinessMemberUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -374,6 +406,8 @@ export type BusinessMemberUncheckedUpdateManyInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -402,6 +436,8 @@ export type BusinessMemberCountOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
+  branchIds?: Prisma.SortOrder
+  pointOfSaleId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -415,6 +451,7 @@ export type BusinessMemberMaxOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
+  pointOfSaleId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -428,6 +465,7 @@ export type BusinessMemberMinOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
+  pointOfSaleId?: Prisma.SortOrder
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -519,14 +557,25 @@ export type BusinessMemberUncheckedUpdateManyWithoutBusinessRoleNestedInput = {
   deleteMany?: Prisma.BusinessMemberScalarWhereInput | Prisma.BusinessMemberScalarWhereInput[]
 }
 
+export type BusinessMemberCreatebranchIdsInput = {
+  set: string[]
+}
+
 export type EnumMemberRoleFieldUpdateOperationsInput = {
   set?: $Enums.MemberRole
+}
+
+export type BusinessMemberUpdatebranchIdsInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type BusinessMemberCreateWithoutBusinessInput = {
   id?: string
   userId: string
   role?: $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -540,6 +589,8 @@ export type BusinessMemberUncheckedCreateWithoutBusinessInput = {
   userId: string
   role?: $Enums.MemberRole
   roleId?: string | null
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -582,6 +633,8 @@ export type BusinessMemberScalarWhereInput = {
   userId?: Prisma.UuidFilter<"BusinessMember"> | string
   role?: Prisma.EnumMemberRoleFilter<"BusinessMember"> | $Enums.MemberRole
   roleId?: Prisma.UuidNullableFilter<"BusinessMember"> | string | null
+  branchIds?: Prisma.StringNullableListFilter<"BusinessMember">
+  pointOfSaleId?: Prisma.UuidNullableFilter<"BusinessMember"> | string | null
   active?: Prisma.BoolFilter<"BusinessMember"> | boolean
   createdAt?: Prisma.DateTimeFilter<"BusinessMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BusinessMember"> | Date | string
@@ -593,6 +646,8 @@ export type BusinessMemberCreateWithoutBusinessRoleInput = {
   id?: string
   userId: string
   role?: $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -606,6 +661,8 @@ export type BusinessMemberUncheckedCreateWithoutBusinessRoleInput = {
   businessId: string
   userId: string
   role?: $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -644,6 +701,8 @@ export type BusinessMemberCreateManyBusinessInput = {
   userId: string
   role?: $Enums.MemberRole
   roleId?: string | null
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -655,6 +714,8 @@ export type BusinessMemberUpdateWithoutBusinessInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -668,6 +729,8 @@ export type BusinessMemberUncheckedUpdateWithoutBusinessInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -680,6 +743,8 @@ export type BusinessMemberUncheckedUpdateManyWithoutBusinessInput = {
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
   roleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -692,6 +757,8 @@ export type BusinessMemberCreateManyBusinessRoleInput = {
   businessId: string
   userId: string
   role?: $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberCreatebranchIdsInput | string[]
+  pointOfSaleId?: string | null
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -703,6 +770,8 @@ export type BusinessMemberUpdateWithoutBusinessRoleInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -716,6 +785,8 @@ export type BusinessMemberUncheckedUpdateWithoutBusinessRoleInput = {
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -728,6 +799,8 @@ export type BusinessMemberUncheckedUpdateManyWithoutBusinessRoleInput = {
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumMemberRoleFieldUpdateOperationsInput | $Enums.MemberRole
+  branchIds?: Prisma.BusinessMemberUpdatebranchIdsInput | string[]
+  pointOfSaleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -743,6 +816,8 @@ export type BusinessMemberSelect<ExtArgs extends runtime.Types.Extensions.Intern
   userId?: boolean
   role?: boolean
   roleId?: boolean
+  branchIds?: boolean
+  pointOfSaleId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -758,6 +833,8 @@ export type BusinessMemberSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   userId?: boolean
   role?: boolean
   roleId?: boolean
+  branchIds?: boolean
+  pointOfSaleId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -773,6 +850,8 @@ export type BusinessMemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   userId?: boolean
   role?: boolean
   roleId?: boolean
+  branchIds?: boolean
+  pointOfSaleId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -788,6 +867,8 @@ export type BusinessMemberSelectScalar = {
   userId?: boolean
   role?: boolean
   roleId?: boolean
+  branchIds?: boolean
+  pointOfSaleId?: boolean
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -795,7 +876,7 @@ export type BusinessMemberSelectScalar = {
   updatedBy?: boolean
 }
 
-export type BusinessMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessId" | "userId" | "role" | "roleId" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["businessMember"]>
+export type BusinessMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessId" | "userId" | "role" | "roleId" | "branchIds" | "pointOfSaleId" | "active" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["businessMember"]>
 export type BusinessMemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   business?: boolean | Prisma.BusinessDefaultArgs<ExtArgs>
   businessRole?: boolean | Prisma.BusinessMember$businessRoleArgs<ExtArgs>
@@ -821,6 +902,8 @@ export type $BusinessMemberPayload<ExtArgs extends runtime.Types.Extensions.Inte
     userId: string
     role: $Enums.MemberRole
     roleId: string | null
+    branchIds: string[]
+    pointOfSaleId: string | null
     active: boolean
     createdAt: Date
     updatedAt: Date
@@ -1256,6 +1339,8 @@ export interface BusinessMemberFieldRefs {
   readonly userId: Prisma.FieldRef<"BusinessMember", 'String'>
   readonly role: Prisma.FieldRef<"BusinessMember", 'MemberRole'>
   readonly roleId: Prisma.FieldRef<"BusinessMember", 'String'>
+  readonly branchIds: Prisma.FieldRef<"BusinessMember", 'String[]'>
+  readonly pointOfSaleId: Prisma.FieldRef<"BusinessMember", 'String'>
   readonly active: Prisma.FieldRef<"BusinessMember", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"BusinessMember", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"BusinessMember", 'DateTime'>

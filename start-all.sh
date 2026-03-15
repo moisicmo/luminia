@@ -22,6 +22,7 @@ NEST_SERVICES=(
   "luminia-suscriptions"
   "luminia-transports"
   "luminia-users"
+  "luminia-conversations"
 )
 
 # React frontend

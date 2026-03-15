@@ -65,6 +65,10 @@ export class BusinessService {
     return this.send('business.members.add', { businessId, userId, role: 'MEMBER', invitedBy, roleId });
   }
 
+  checkAccess(businessId: string, userId: string) {
+    return this.send('business.access.check', { businessId, userId });
+  }
+
   listMembers(businessId: string, requesterId: string) {
     return this.send('business.members.list', { businessId, requesterId });
   }
@@ -101,5 +105,121 @@ export class BusinessService {
 
   assignRole(businessId: string, memberId: string, roleId: string, requesterId: string) {
     return this.send('business.roles.assign', { businessId, memberId, roleId, requesterId });
+  }
+
+  // ─── Branches ──────────────────────────────────────────────────────────────
+
+  listBranches(businessId: string) {
+    return this.send('business.branches.list', { businessId });
+  }
+
+  findOneBranch(id: string, businessId: string) {
+    return this.send('business.branches.findOne', { id, businessId });
+  }
+
+  createBranch(dto: any, businessId: string, createdBy: string) {
+    return this.send('business.branches.create', { dto, businessId, createdBy });
+  }
+
+  updateBranch(id: string, dto: any, businessId: string, updatedBy: string) {
+    return this.send('business.branches.update', { id, dto, businessId, updatedBy });
+  }
+
+  deactivateBranch(id: string, businessId: string, updatedBy: string) {
+    return this.send('business.branches.deactivate', { id, businessId, updatedBy });
+  }
+
+  // ─── Points of Sale ────────────────────────────────────────────────────────
+
+  listPos(branchId: string) {
+    return this.send('business.pos.list', { branchId });
+  }
+
+  createPos(dto: { name: string; paperSize?: string }, branchId: string, createdBy: string) {
+    return this.send('business.pos.create', { dto, branchId, createdBy });
+  }
+
+  updatePos(id: string, dto: { name?: string; paperSize?: string }, updatedBy: string) {
+    return this.send('business.pos.update', { id, dto, updatedBy });
+  }
+
+  deactivatePos(id: string, updatedBy: string) {
+    return this.send('business.pos.deactivate', { id, updatedBy });
+  }
+
+  // ─── Cash Register ─────────────────────────────────────────────────────────
+
+  openCashRegister(dto: any, businessId: string, userId: string) {
+    return this.send('business.cash.open', { dto, businessId, userId });
+  }
+
+  closeCashRegister(sessionId: string, dto: any, userId: string) {
+    return this.send('business.cash.close', { sessionId, dto, userId });
+  }
+
+  getActiveCashRegister(businessId: string, userId: string) {
+    return this.send('business.cash.active', { businessId, userId });
+  }
+
+  listCashRegisterSessions(businessId: string, filters?: any) {
+    return this.send('business.cash.list', { businessId, filters });
+  }
+
+  findOneCashRegisterSession(sessionId: string) {
+    return this.send('business.cash.findOne', { sessionId });
+  }
+
+  addSaleAmount(sessionId: string, amount: number) {
+    return this.send('business.cash.addSaleAmount', { sessionId, amount });
+  }
+
+  // ─── Members assignment (branches/POS) ─────────────────────────────────────
+
+  updateMemberAssignment(businessId: string, memberId: string, dto: any, requesterId: string) {
+    return this.send('business.members.updateAssignment', { businessId, memberId, dto, requesterId });
+  }
+
+  // ─── Customers ────────────────────────────────────────────────────────────
+
+  createCustomer(businessId: string, dto: any, createdBy: string) {
+    return this.send('business.customers.create', { businessId, dto, createdBy });
+  }
+
+  listCustomers(businessId: string, filters?: any) {
+    return this.send('business.customers.list', { businessId, filters });
+  }
+
+  findOneCustomer(id: string, businessId: string) {
+    return this.send('business.customers.findOne', { id, businessId });
+  }
+
+  updateCustomer(id: string, businessId: string, dto: any, updatedBy: string) {
+    return this.send('business.customers.update', { id, businessId, dto, updatedBy });
+  }
+
+  removeCustomer(id: string, businessId: string, updatedBy: string) {
+    return this.send('business.customers.remove', { id, businessId, updatedBy });
+  }
+
+  listCustomersByPerson(personId: string) {
+    return this.send('business.customers.byPerson', { personId });
+  }
+
+  // ─── Invitations ──────────────────────────────────────────────────────────
+
+  createInvitation(businessId: string, dto: any, createdBy: string) {
+    return this.send('business.invitations.create', { businessId, dto, createdBy });
+  }
+
+  listInvitations(businessId: string) {
+    return this.send('business.invitations.list', { businessId });
+  }
+
+  cancelInvitation(id: string, businessId: string) {
+    return this.send('business.invitations.cancel', { id, businessId });
+  }
+
+  acceptInvitation(token: string, userId: string) {
+    return this.send('business.invitations.accept', { token, userId });
   }
 }

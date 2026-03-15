@@ -33,6 +33,13 @@ export class ProductController {
     return this.productService.removeProduct(d.id, d.businessId, d.updatedBy);
   }
 
+  // ─── Mall (public) ────────────────────────────────────────────────────────
+
+  @MessagePattern('store.products.list.mall')
+  listMallProducts(@Payload() d: { businessIds?: string[]; search?: string; take?: number; skip?: number }) {
+    return this.productService.listMallProducts(d);
+  }
+
   // ─── Product Units ─────────────────────────────────────────────────────────
 
   @MessagePattern('store.products.units.add')

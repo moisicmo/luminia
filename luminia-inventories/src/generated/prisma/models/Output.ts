@@ -42,6 +42,8 @@ export type OutputMinAggregateOutputType = {
   id: string | null
   businessId: string | null
   warehouseId: string | null
+  customerId: string | null
+  customerName: string | null
   type: $Enums.OutputType | null
   documentNumber: string | null
   referenceId: string | null
@@ -61,6 +63,8 @@ export type OutputMaxAggregateOutputType = {
   id: string | null
   businessId: string | null
   warehouseId: string | null
+  customerId: string | null
+  customerName: string | null
   type: $Enums.OutputType | null
   documentNumber: string | null
   referenceId: string | null
@@ -80,6 +84,8 @@ export type OutputCountAggregateOutputType = {
   id: number
   businessId: number
   warehouseId: number
+  customerId: number
+  customerName: number
   type: number
   documentNumber: number
   referenceId: number
@@ -113,6 +119,8 @@ export type OutputMinAggregateInputType = {
   id?: true
   businessId?: true
   warehouseId?: true
+  customerId?: true
+  customerName?: true
   type?: true
   documentNumber?: true
   referenceId?: true
@@ -132,6 +140,8 @@ export type OutputMaxAggregateInputType = {
   id?: true
   businessId?: true
   warehouseId?: true
+  customerId?: true
+  customerName?: true
   type?: true
   documentNumber?: true
   referenceId?: true
@@ -151,6 +161,8 @@ export type OutputCountAggregateInputType = {
   id?: true
   businessId?: true
   warehouseId?: true
+  customerId?: true
+  customerName?: true
   type?: true
   documentNumber?: true
   referenceId?: true
@@ -257,6 +269,8 @@ export type OutputGroupByOutputType = {
   id: string
   businessId: string
   warehouseId: string
+  customerId: string | null
+  customerName: string | null
   type: $Enums.OutputType
   documentNumber: string | null
   referenceId: string | null
@@ -299,6 +313,8 @@ export type OutputWhereInput = {
   id?: Prisma.UuidFilter<"Output"> | string
   businessId?: Prisma.UuidFilter<"Output"> | string
   warehouseId?: Prisma.UuidFilter<"Output"> | string
+  customerId?: Prisma.UuidNullableFilter<"Output"> | string | null
+  customerName?: Prisma.StringNullableFilter<"Output"> | string | null
   type?: Prisma.EnumOutputTypeFilter<"Output"> | $Enums.OutputType
   documentNumber?: Prisma.StringNullableFilter<"Output"> | string | null
   referenceId?: Prisma.UuidNullableFilter<"Output"> | string | null
@@ -320,6 +336,8 @@ export type OutputOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   businessId?: Prisma.SortOrder
   warehouseId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  customerName?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   documentNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   referenceId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -344,6 +362,8 @@ export type OutputWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.OutputWhereInput | Prisma.OutputWhereInput[]
   businessId?: Prisma.UuidFilter<"Output"> | string
   warehouseId?: Prisma.UuidFilter<"Output"> | string
+  customerId?: Prisma.UuidNullableFilter<"Output"> | string | null
+  customerName?: Prisma.StringNullableFilter<"Output"> | string | null
   type?: Prisma.EnumOutputTypeFilter<"Output"> | $Enums.OutputType
   documentNumber?: Prisma.StringNullableFilter<"Output"> | string | null
   referenceId?: Prisma.UuidNullableFilter<"Output"> | string | null
@@ -365,6 +385,8 @@ export type OutputOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   businessId?: Prisma.SortOrder
   warehouseId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  customerName?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   documentNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   referenceId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -392,6 +414,8 @@ export type OutputScalarWhereWithAggregatesInput = {
   id?: Prisma.UuidWithAggregatesFilter<"Output"> | string
   businessId?: Prisma.UuidWithAggregatesFilter<"Output"> | string
   warehouseId?: Prisma.UuidWithAggregatesFilter<"Output"> | string
+  customerId?: Prisma.UuidNullableWithAggregatesFilter<"Output"> | string | null
+  customerName?: Prisma.StringNullableWithAggregatesFilter<"Output"> | string | null
   type?: Prisma.EnumOutputTypeWithAggregatesFilter<"Output"> | $Enums.OutputType
   documentNumber?: Prisma.StringNullableWithAggregatesFilter<"Output"> | string | null
   referenceId?: Prisma.UuidNullableWithAggregatesFilter<"Output"> | string | null
@@ -410,6 +434,8 @@ export type OutputScalarWhereWithAggregatesInput = {
 export type OutputCreateInput = {
   id?: string
   businessId: string
+  customerId?: string | null
+  customerName?: string | null
   type: $Enums.OutputType
   documentNumber?: string | null
   referenceId?: string | null
@@ -431,6 +457,8 @@ export type OutputUncheckedCreateInput = {
   id?: string
   businessId: string
   warehouseId: string
+  customerId?: string | null
+  customerName?: string | null
   type: $Enums.OutputType
   documentNumber?: string | null
   referenceId?: string | null
@@ -450,6 +478,8 @@ export type OutputUncheckedCreateInput = {
 export type OutputUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -471,6 +501,8 @@ export type OutputUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
   warehouseId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -491,6 +523,8 @@ export type OutputCreateManyInput = {
   id?: string
   businessId: string
   warehouseId: string
+  customerId?: string | null
+  customerName?: string | null
   type: $Enums.OutputType
   documentNumber?: string | null
   referenceId?: string | null
@@ -509,6 +543,8 @@ export type OutputCreateManyInput = {
 export type OutputUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -528,6 +564,8 @@ export type OutputUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
   warehouseId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -557,6 +595,8 @@ export type OutputCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   businessId?: Prisma.SortOrder
   warehouseId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
+  customerName?: Prisma.SortOrder
   type?: Prisma.SortOrder
   documentNumber?: Prisma.SortOrder
   referenceId?: Prisma.SortOrder
@@ -582,6 +622,8 @@ export type OutputMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   businessId?: Prisma.SortOrder
   warehouseId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
+  customerName?: Prisma.SortOrder
   type?: Prisma.SortOrder
   documentNumber?: Prisma.SortOrder
   referenceId?: Prisma.SortOrder
@@ -601,6 +643,8 @@ export type OutputMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   businessId?: Prisma.SortOrder
   warehouseId?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
+  customerName?: Prisma.SortOrder
   type?: Prisma.SortOrder
   documentNumber?: Prisma.SortOrder
   referenceId?: Prisma.SortOrder
@@ -694,6 +738,8 @@ export type OutputUpdateOneRequiredWithoutDetailsNestedInput = {
 export type OutputCreateWithoutWarehouseInput = {
   id?: string
   businessId: string
+  customerId?: string | null
+  customerName?: string | null
   type: $Enums.OutputType
   documentNumber?: string | null
   referenceId?: string | null
@@ -713,6 +759,8 @@ export type OutputCreateWithoutWarehouseInput = {
 export type OutputUncheckedCreateWithoutWarehouseInput = {
   id?: string
   businessId: string
+  customerId?: string | null
+  customerName?: string | null
   type: $Enums.OutputType
   documentNumber?: string | null
   referenceId?: string | null
@@ -762,6 +810,8 @@ export type OutputScalarWhereInput = {
   id?: Prisma.UuidFilter<"Output"> | string
   businessId?: Prisma.UuidFilter<"Output"> | string
   warehouseId?: Prisma.UuidFilter<"Output"> | string
+  customerId?: Prisma.UuidNullableFilter<"Output"> | string | null
+  customerName?: Prisma.StringNullableFilter<"Output"> | string | null
   type?: Prisma.EnumOutputTypeFilter<"Output"> | $Enums.OutputType
   documentNumber?: Prisma.StringNullableFilter<"Output"> | string | null
   referenceId?: Prisma.UuidNullableFilter<"Output"> | string | null
@@ -780,6 +830,8 @@ export type OutputScalarWhereInput = {
 export type OutputCreateWithoutDetailsInput = {
   id?: string
   businessId: string
+  customerId?: string | null
+  customerName?: string | null
   type: $Enums.OutputType
   documentNumber?: string | null
   referenceId?: string | null
@@ -800,6 +852,8 @@ export type OutputUncheckedCreateWithoutDetailsInput = {
   id?: string
   businessId: string
   warehouseId: string
+  customerId?: string | null
+  customerName?: string | null
   type: $Enums.OutputType
   documentNumber?: string | null
   referenceId?: string | null
@@ -834,6 +888,8 @@ export type OutputUpdateToOneWithWhereWithoutDetailsInput = {
 export type OutputUpdateWithoutDetailsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -854,6 +910,8 @@ export type OutputUncheckedUpdateWithoutDetailsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
   warehouseId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -872,6 +930,8 @@ export type OutputUncheckedUpdateWithoutDetailsInput = {
 export type OutputCreateManyWarehouseInput = {
   id?: string
   businessId: string
+  customerId?: string | null
+  customerName?: string | null
   type: $Enums.OutputType
   documentNumber?: string | null
   referenceId?: string | null
@@ -890,6 +950,8 @@ export type OutputCreateManyWarehouseInput = {
 export type OutputUpdateWithoutWarehouseInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -909,6 +971,8 @@ export type OutputUpdateWithoutWarehouseInput = {
 export type OutputUncheckedUpdateWithoutWarehouseInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -928,6 +992,8 @@ export type OutputUncheckedUpdateWithoutWarehouseInput = {
 export type OutputUncheckedUpdateManyWithoutWarehouseInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   businessId?: Prisma.StringFieldUpdateOperationsInput | string
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.EnumOutputTypeFieldUpdateOperationsInput | $Enums.OutputType
   documentNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -978,6 +1044,8 @@ export type OutputSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   id?: boolean
   businessId?: boolean
   warehouseId?: boolean
+  customerId?: boolean
+  customerName?: boolean
   type?: boolean
   documentNumber?: boolean
   referenceId?: boolean
@@ -1000,6 +1068,8 @@ export type OutputSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   businessId?: boolean
   warehouseId?: boolean
+  customerId?: boolean
+  customerName?: boolean
   type?: boolean
   documentNumber?: boolean
   referenceId?: boolean
@@ -1020,6 +1090,8 @@ export type OutputSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   id?: boolean
   businessId?: boolean
   warehouseId?: boolean
+  customerId?: boolean
+  customerName?: boolean
   type?: boolean
   documentNumber?: boolean
   referenceId?: boolean
@@ -1040,6 +1112,8 @@ export type OutputSelectScalar = {
   id?: boolean
   businessId?: boolean
   warehouseId?: boolean
+  customerId?: boolean
+  customerName?: boolean
   type?: boolean
   documentNumber?: boolean
   referenceId?: boolean
@@ -1055,7 +1129,7 @@ export type OutputSelectScalar = {
   updatedBy?: boolean
 }
 
-export type OutputOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessId" | "warehouseId" | "type" | "documentNumber" | "referenceId" | "date" | "notes" | "subtotal" | "discount" | "total" | "status" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["output"]>
+export type OutputOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "businessId" | "warehouseId" | "customerId" | "customerName" | "type" | "documentNumber" | "referenceId" | "date" | "notes" | "subtotal" | "discount" | "total" | "status" | "createdAt" | "updatedAt" | "createdBy" | "updatedBy", ExtArgs["result"]["output"]>
 export type OutputInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   warehouse?: boolean | Prisma.WarehouseDefaultArgs<ExtArgs>
   details?: boolean | Prisma.Output$detailsArgs<ExtArgs>
@@ -1078,6 +1152,8 @@ export type $OutputPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     id: string
     businessId: string
     warehouseId: string
+    customerId: string | null
+    customerName: string | null
     type: $Enums.OutputType
     documentNumber: string | null
     referenceId: string | null
@@ -1519,6 +1595,8 @@ export interface OutputFieldRefs {
   readonly id: Prisma.FieldRef<"Output", 'String'>
   readonly businessId: Prisma.FieldRef<"Output", 'String'>
   readonly warehouseId: Prisma.FieldRef<"Output", 'String'>
+  readonly customerId: Prisma.FieldRef<"Output", 'String'>
+  readonly customerName: Prisma.FieldRef<"Output", 'String'>
   readonly type: Prisma.FieldRef<"Output", 'OutputType'>
   readonly documentNumber: Prisma.FieldRef<"Output", 'String'>
   readonly referenceId: Prisma.FieldRef<"Output", 'String'>

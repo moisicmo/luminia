@@ -306,55 +306,6 @@ export class InventoryService {
     }
   }
 
-  // ─── Customers ────────────────────────────────────────────────────────────────
-
-  async createCustomer(
-    data: { businessId: string; name: string; lastName?: string; taxId?: string; phone?: string; email?: string; address?: string },
-    createdBy: string,
-  ) {
-    try {
-      return await prisma.customer.create({ data: { ...data, createdBy, active: true } });
-    } catch (err) {
-      this.logger.error(`[customer.create] ${(err as Error).message}`);
-      throw new RpcException({ status: 500, message: 'Error al crear cliente' });
-    }
-  }
-
-  async listCustomers(businessId: string) {
-    try {
-      return await prisma.customer.findMany({
-        where: { businessId, active: true },
-        orderBy: { name: 'asc' },
-      });
-    } catch (err) {
-      this.logger.error(`[customer.list] ${(err as Error).message}`);
-      throw new RpcException({ status: 500, message: 'Error al listar clientes' });
-    }
-  }
-
-  async updateCustomer(id: string, businessId: string, data: Record<string, any>, updatedBy: string) {
-    try {
-      const existing = await prisma.customer.findFirst({ where: { id, businessId, active: true } });
-      if (!existing) throw new RpcException({ status: 404, message: 'Cliente no encontrado' });
-      return await prisma.customer.update({ where: { id }, data: { ...data, updatedBy } });
-    } catch (err) {
-      if (err instanceof RpcException) throw err;
-      throw new RpcException({ status: 500, message: 'Error al actualizar cliente' });
-    }
-  }
-
-  async removeCustomer(id: string, businessId: string, updatedBy: string) {
-    try {
-      const existing = await prisma.customer.findFirst({ where: { id, businessId, active: true } });
-      if (!existing) throw new RpcException({ status: 404, message: 'Cliente no encontrado' });
-      await prisma.customer.update({ where: { id }, data: { active: false, updatedBy } });
-      return { removed: true };
-    } catch (err) {
-      if (err instanceof RpcException) throw err;
-      throw new RpcException({ status: 500, message: 'Error al eliminar cliente' });
-    }
-  }
-
   // ─── Outputs (Salidas / Ventas) ──────────────────────────────────────────────
 
   async createOutput(
@@ -399,7 +350,6 @@ export class InventoryService {
           details: { create: details },
         },
         include: {
-          customer: { select: { id: true, name: true, lastName: true } },
           warehouse: { select: { id: true, name: true } },
           details: {
             include: {
@@ -426,7 +376,6 @@ export class InventoryService {
       return await prisma.output.findMany({
         where,
         include: {
-          customer: { select: { id: true, name: true, lastName: true } },
           warehouse: { select: { id: true, name: true } },
           _count: { select: { details: true } },
         },
@@ -435,6 +384,28 @@ export class InventoryService {
     } catch (err) {
       this.logger.error(`[output.list] ${(err as Error).message}`);
       throw new RpcException({ status: 500, message: 'Error al listar salidas' });
+    }
+  }
+
+  async findOutput(id: string, businessId: string) {
+    try {
+      const output = await prisma.output.findFirst({
+        where: { id, businessId },
+        include: {
+          warehouse: { select: { id: true, name: true } },
+          details: {
+            include: {
+              product: { select: { id: true, name: true, sku: true } },
+              unit: { select: { id: true, name: true, abbreviation: true } },
+            },
+          },
+        },
+      });
+      if (!output) throw new RpcException({ status: 404, message: 'Salida no encontrada' });
+      return output;
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+      throw new RpcException({ status: 500, message: 'Error al obtener salida' });
     }
   }
 
@@ -451,7 +422,6 @@ export class InventoryService {
           where: { id },
           data: { status: 'CONFIRMED', updatedBy },
           include: {
-            customer: { select: { id: true, name: true, lastName: true } },
             warehouse: { select: { id: true, name: true } },
             details: {
               include: {
@@ -573,6 +543,267 @@ export class InventoryService {
     } catch (err) {
       this.logger.error(`[kardex.list] ${(err as Error).message}`);
       throw new RpcException({ status: 500, message: 'Error al listar kardex' });
+    }
+  }
+
+  // ─── Transfers (Traspasos) ──────────────────────────────────────────────────
+
+  async createTransfer(
+    data: {
+      businessId: string;
+      fromWarehouseId: string;
+      toWarehouseId: string;
+      date: string;
+      notes?: string;
+      details: { productId: string; unitId: string; quantity: number; unitCost: number }[];
+    },
+    createdBy: string,
+  ) {
+    try {
+      if (data.fromWarehouseId === data.toWarehouseId) {
+        throw new RpcException({ status: 400, message: 'El almacén origen y destino no pueden ser el mismo' });
+      }
+
+      const [fromW, toW] = await Promise.all([
+        prisma.warehouse.findFirst({ where: { id: data.fromWarehouseId, businessId: data.businessId, active: true } }),
+        prisma.warehouse.findFirst({ where: { id: data.toWarehouseId, businessId: data.businessId, active: true } }),
+      ]);
+      if (!fromW) throw new RpcException({ status: 404, message: 'Almacén origen no encontrado' });
+      if (!toW) throw new RpcException({ status: 404, message: 'Almacén destino no encontrado' });
+
+      const details = data.details.map((d) => ({ ...d, createdBy }));
+
+      return await prisma.transfer.create({
+        data: {
+          businessId: data.businessId,
+          fromWarehouseId: data.fromWarehouseId,
+          toWarehouseId: data.toWarehouseId,
+          date: new Date(data.date),
+          notes: data.notes,
+          status: 'PENDING',
+          createdBy,
+          details: { create: details },
+        },
+        include: {
+          fromWarehouse: { select: { id: true, name: true } },
+          toWarehouse: { select: { id: true, name: true } },
+          details: {
+            include: {
+              product: { select: { id: true, name: true, sku: true } },
+              unit: { select: { id: true, name: true, abbreviation: true } },
+            },
+          },
+        },
+      });
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+      this.logger.error(`[transfer.create] ${(err as Error).message}`);
+      throw new RpcException({ status: 500, message: 'Error al crear traspaso' });
+    }
+  }
+
+  async listTransfers(businessId: string, filters: { fromWarehouseId?: string; toWarehouseId?: string; status?: string }) {
+    try {
+      const where: any = { businessId };
+      if (filters.fromWarehouseId) where.fromWarehouseId = filters.fromWarehouseId;
+      if (filters.toWarehouseId) where.toWarehouseId = filters.toWarehouseId;
+      if (filters.status) where.status = filters.status;
+
+      return await prisma.transfer.findMany({
+        where,
+        include: {
+          fromWarehouse: { select: { id: true, name: true } },
+          toWarehouse: { select: { id: true, name: true } },
+          _count: { select: { details: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+    } catch (err) {
+      this.logger.error(`[transfer.list] ${(err as Error).message}`);
+      throw new RpcException({ status: 500, message: 'Error al listar traspasos' });
+    }
+  }
+
+  async findTransfer(id: string, businessId: string) {
+    try {
+      const transfer = await prisma.transfer.findFirst({
+        where: { id, businessId },
+        include: {
+          fromWarehouse: { select: { id: true, name: true } },
+          toWarehouse: { select: { id: true, name: true } },
+          details: {
+            include: {
+              product: { select: { id: true, name: true, sku: true } },
+              unit: { select: { id: true, name: true, abbreviation: true } },
+            },
+          },
+        },
+      });
+      if (!transfer) throw new RpcException({ status: 404, message: 'Traspaso no encontrado' });
+      return transfer;
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+      throw new RpcException({ status: 500, message: 'Error al obtener traspaso' });
+    }
+  }
+
+  async confirmTransfer(id: string, businessId: string, updatedBy: string) {
+    try {
+      const transfer = await prisma.transfer.findFirst({
+        where: { id, businessId, status: { in: ['PENDING', 'IN_TRANSIT'] } },
+        include: { details: true },
+      });
+      if (!transfer) throw new RpcException({ status: 404, message: 'Traspaso no encontrado o ya completado' });
+
+      return await prisma.$transaction(async (tx) => {
+        // 1. Marcar como COMPLETED
+        const confirmed = await tx.transfer.update({
+          where: { id },
+          data: { status: 'COMPLETED', updatedBy },
+          include: {
+            fromWarehouse: { select: { id: true, name: true } },
+            toWarehouse: { select: { id: true, name: true } },
+            details: {
+              include: {
+                product: { select: { id: true, name: true, sku: true } },
+                unit: { select: { id: true, name: true, abbreviation: true } },
+              },
+            },
+          },
+        });
+
+        for (const detail of transfer.details) {
+          const qty = Number(detail.quantity);
+          const cost = Number(detail.unitCost);
+
+          // 2. Descontar del almacén origen
+          const fromStock = await tx.stock.findUnique({
+            where: {
+              productId_warehouseId_unitId: {
+                productId: detail.productId,
+                warehouseId: transfer.fromWarehouseId,
+                unitId: detail.unitId,
+              },
+            },
+          });
+
+          if (!fromStock || Number(fromStock.quantity) < qty) {
+            throw new RpcException({
+              status: 400,
+              message: `Stock insuficiente en almacén origen para producto ${detail.productId}`,
+            });
+          }
+
+          const newFromQty = Number(fromStock.quantity) - qty;
+          const fromAvgCost = Number(fromStock.averageCost);
+
+          await tx.stock.update({
+            where: { id: fromStock.id },
+            data: { quantity: newFromQty, updatedBy },
+          });
+
+          // Kardex salida del origen
+          await tx.kardex.create({
+            data: {
+              businessId: transfer.businessId,
+              productId: detail.productId,
+              warehouseId: transfer.fromWarehouseId,
+              unitId: detail.unitId,
+              movementDate: new Date(),
+              movementType: 'OUT',
+              documentType: 'TRANSFER',
+              documentId: transfer.id,
+              quantity: qty,
+              unitCost: cost,
+              totalCost: qty * cost,
+              balanceQty: newFromQty,
+              balanceCost: newFromQty * fromAvgCost,
+              createdBy: updatedBy,
+            },
+          });
+
+          // 3. Agregar al almacén destino
+          const toStock = await tx.stock.findUnique({
+            where: {
+              productId_warehouseId_unitId: {
+                productId: detail.productId,
+                warehouseId: transfer.toWarehouseId,
+                unitId: detail.unitId,
+              },
+            },
+          });
+
+          let newToQty: number;
+          let newToAvgCost: number;
+
+          if (toStock) {
+            const oldQty = Number(toStock.quantity);
+            const oldAvgCost = Number(toStock.averageCost);
+            newToQty = oldQty + qty;
+            newToAvgCost = newToQty > 0 ? ((oldQty * oldAvgCost) + (qty * cost)) / newToQty : cost;
+            await tx.stock.update({
+              where: { id: toStock.id },
+              data: { quantity: newToQty, averageCost: newToAvgCost, updatedBy },
+            });
+          } else {
+            newToQty = qty;
+            newToAvgCost = cost;
+            await tx.stock.create({
+              data: {
+                businessId: transfer.businessId,
+                productId: detail.productId,
+                warehouseId: transfer.toWarehouseId,
+                unitId: detail.unitId,
+                quantity: newToQty,
+                averageCost: newToAvgCost,
+                createdBy: updatedBy,
+              },
+            });
+          }
+
+          // Kardex entrada al destino
+          await tx.kardex.create({
+            data: {
+              businessId: transfer.businessId,
+              productId: detail.productId,
+              warehouseId: transfer.toWarehouseId,
+              unitId: detail.unitId,
+              movementDate: new Date(),
+              movementType: 'IN',
+              documentType: 'TRANSFER',
+              documentId: transfer.id,
+              quantity: qty,
+              unitCost: cost,
+              totalCost: qty * cost,
+              balanceQty: newToQty,
+              balanceCost: newToQty * newToAvgCost,
+              createdBy: updatedBy,
+            },
+          });
+        }
+
+        return confirmed;
+      });
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+      this.logger.error(`[transfer.confirm] ${(err as Error).message}`);
+      throw new RpcException({ status: 500, message: 'Error al confirmar traspaso' });
+    }
+  }
+
+  async cancelTransfer(id: string, businessId: string, updatedBy: string) {
+    try {
+      const transfer = await prisma.transfer.findFirst({
+        where: { id, businessId, status: { in: ['PENDING', 'IN_TRANSIT'] } },
+      });
+      if (!transfer) throw new RpcException({ status: 404, message: 'Traspaso no encontrado o ya completado' });
+      return await prisma.transfer.update({
+        where: { id },
+        data: { status: 'CANCELLED', updatedBy },
+      });
+    } catch (err) {
+      if (err instanceof RpcException) throw err;
+      throw new RpcException({ status: 500, message: 'Error al cancelar traspaso' });
     }
   }
 }

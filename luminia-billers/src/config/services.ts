@@ -126,3 +126,11 @@ export class RMQServiceUsers {
     return 'users_queue';
   }
 }
+export class RMQServiceConversations {
+  static getName() {
+    return 'RMQ_SERVICE_CONVERSATIONS';
+  }
+  static getQueueName() {
+    return 'conversations_queue';
+  }
+}

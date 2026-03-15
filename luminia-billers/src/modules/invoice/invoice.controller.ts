@@ -17,6 +17,11 @@ export class InvoiceController {
     return this.invoiceService.issue(data.dto, data.businessId);
   }
 
+  @MessagePattern('invoice.issueSimple')
+  issueSimple(@Payload() data: any) {
+    return this.invoiceService.issueSimple(data);
+  }
+
   @MessagePattern('invoice.cancel')
   cancel(@Payload() data: { dto: CancelInvoiceDto; businessId: string }) {
     return this.invoiceService.cancel(data.dto, data.businessId);
@@ -37,5 +42,16 @@ export class InvoiceController {
   @MessagePattern('invoice.checkStatus')
   checkStatus(@Payload() data: { cuf: string }) {
     return this.invoiceService.checkStatus(data.cuf);
+  }
+
+  @MessagePattern('invoice.list')
+  list(
+    @Payload()
+    data: {
+      businessId: string;
+      filters?: { status?: string; dateFrom?: string; dateTo?: string; take?: number; skip?: number };
+    },
+  ) {
+    return this.invoiceService.list(data.businessId, data.filters);
   }
 }

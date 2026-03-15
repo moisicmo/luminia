@@ -1,6 +1,7 @@
-import { Search, ShoppingBag, User, LogOut } from 'lucide-react';
+import { Search, ShoppingBag, User, LogOut, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { useMallCart } from '@/hooks/useMallCart';
 import { useNavigate } from 'react-router';
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 export const MallTopbar = ({ searchQuery, onSearch, onAuthOpen }: Props) => {
   const { status, user, logout } = useAuth();
+  const { itemCount, show } = useMallCart();
   const navigate = useNavigate();
 
   const handleRegisterBusiness = () => {
@@ -41,7 +43,7 @@ export const MallTopbar = ({ searchQuery, onSearch, onAuthOpen }: Props) => {
             type="text"
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
-            placeholder="Busca tiendas, gimnasios, servicios..."
+            placeholder="Buscar productos en todo el mall..."
             className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-200 bg-gray-50 text-sm
                        focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-transparent
                        placeholder-gray-400 transition-all"
@@ -50,6 +52,19 @@ export const MallTopbar = ({ searchQuery, onSearch, onAuthOpen }: Props) => {
 
         {/* Actions */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* Cart button */}
+          <button
+            onClick={show}
+            className="relative p-2 text-gray-600 hover:text-violet-600 transition-colors"
+          >
+            <ShoppingCart className="w-5 h-5" />
+            {itemCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-violet-600 text-white text-xs font-bold flex items-center justify-center">
+                {itemCount > 99 ? '99+' : itemCount}
+              </span>
+            )}
+          </button>
+
           {status === 'authenticated' && user ? (
             <>
               <span className="text-sm text-gray-600 hidden sm:block">

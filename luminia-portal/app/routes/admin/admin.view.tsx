@@ -14,6 +14,7 @@ import { BranchesSection } from './sections/BranchesSection';
 import { TransfersSection } from './sections/TransfersSection';
 import { KardexSection } from './sections/KardexSection';
 import { TeamSection } from './sections/TeamSection';
+import { SiatSection } from './sections/SiatSection';
 
 interface Props {
   slug: string;
@@ -51,6 +52,7 @@ function getSectionFromPath(): AdminSection {
   if (path.includes('/admin/transfers'))  return 'transfers';
   if (path.includes('/admin/kardex'))     return 'kardex';
   if (path.includes('/admin/team'))       return 'team';
+  if (path.includes('/admin/siat'))       return 'siat';
   return 'dashboard';
 }
 
@@ -59,6 +61,7 @@ export function AdminView({ slug }: Props) {
   const [business, setBusiness] = useState<BusinessInfo | null>(null);
   const [userName, setUserName] = useState('');
   const [section, setSection] = useState<AdminSection>(getSectionFromPath);
+  const [userBranchIds, setUserBranchIds] = useState<string[]>([]);
 
   useEffect(() => {
     const payload = getTokenPayload();
@@ -71,15 +74,15 @@ export function AdminView({ slug }: Props) {
         const bizId = data.businessId;
         setBusiness({ id: bizId, name: data.name });
         localStorage.setItem('luminia_business_id', bizId);
-        return luminiApi.get(`/business/${bizId}/members`);
+        return luminiApi.get(`/business/${bizId}/access`);
       })
       .then(({ data }) => {
-        // data puede ser { ownerId, members: [...] } o un array directo
-        const ownerId = data.ownerId;
-        const members: any[] = Array.isArray(data) ? data : (data.members ?? []);
-        const isOwner = ownerId === payload.sub;
-        const isMember = members.some((m: any) => m.userId === payload.sub || m.personId === payload.sub);
-        setAuthState(isOwner || isMember ? 'authorized' : 'unauthorized');
+        if (data.hasAccess) {
+          setAuthState('authorized');
+          setUserBranchIds(data.branchIds ?? []);
+        } else {
+          setAuthState('unauthorized');
+        }
       })
       .catch(() => setAuthState('unauthorized'));
   }, [slug]);
@@ -137,6 +140,7 @@ export function AdminView({ slug }: Props) {
     transfers:  <TransfersSection />,
     kardex:     <KardexSection />,
     team:       <TeamSection />,
+    siat:       <SiatSection />,
   };
 
   return (
@@ -147,6 +151,7 @@ export function AdminView({ slug }: Props) {
       section={section}
       onNavigate={handleNavigate}
       onLogout={handleLogout}
+      userBranchIds={userBranchIds}
     >
       {SECTIONS[section]}
     </AdminLayout>

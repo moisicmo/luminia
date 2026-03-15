@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Plus, Search, Pencil, Trash2, Package, Loader2 } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { Plus, Search, Pencil, Trash2, Package, Loader2, ChevronDown, ChevronRight, ImagePlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { luminiApi } from '@/services/luminiApi';
+import { assetUrl } from '@/lib/assets';
 
 interface Product {
   id: string;
@@ -21,6 +22,29 @@ interface Product {
   cost?: number;
   stock?: number;
   active: boolean;
+  imageUrl?: string;
+  siatActivityCode?: number;
+  siatProductServiceCode?: number;
+  siatMeasurementUnitId?: number;
+}
+
+interface SiatActivity {
+  id: string;
+  siatId: number;
+  description: string;
+}
+
+interface SiatProductService {
+  id: string;
+  siatId: number;
+  activityCode: number;
+  description: string;
+}
+
+interface SiatMeasurementUnit {
+  id: string;
+  siatId: number;
+  description: string;
 }
 
 interface Category {
@@ -28,7 +52,11 @@ interface Category {
   name: string;
 }
 
-const EMPTY_FORM = { name: '', description: '', categoryId: '', price: 0, cost: 0, active: true };
+const EMPTY_FORM = {
+  name: '', description: '', categoryId: '', price: 0, cost: 0, active: true,
+  imageUrl: '' as string,
+  siatActivityCode: '' as string, siatProductServiceCode: '' as string, siatMeasurementUnitId: '' as string,
+};
 
 export function ProductsSection() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -41,7 +69,18 @@ export function ProductsSection() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState('');
 
-  useEffect(() => { load(); }, []);
+  // Image: local preview until save
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+
+  // SIAT catalogs
+  const [siatActivities, setSiatActivities] = useState<SiatActivity[]>([]);
+  const [siatProductServices, setSiatProductServices] = useState<SiatProductService[]>([]);
+  const [siatUnits, setSiatUnits] = useState<SiatMeasurementUnit[]>([]);
+  const [showSiat, setShowSiat] = useState(false);
+
+  useEffect(() => { load(); loadSiatCatalogs(); }, []);
 
   async function load() {
     setLoading(true);
@@ -63,12 +102,52 @@ export function ProductsSection() {
         cost: Number(p.purchasePrice ?? p.cost ?? 0),
         stock: p.stock ?? p.currentStock ?? 0,
         active: p.active !== false,
+        imageUrl: p.imageUrl ?? undefined,
+        siatActivityCode: p.siatActivityCode ?? undefined,
+        siatProductServiceCode: p.siatProductServiceCode ?? undefined,
+        siatMeasurementUnitId: p.siatMeasurementUnitId ?? undefined,
       })));
     } catch {
       setProducts([]);
     } finally {
       setLoading(false);
     }
+  }
+
+  async function loadSiatCatalogs() {
+    try {
+      const [actRes, psRes, unitRes] = await Promise.all([
+        luminiApi.get('/billing/catalogs/activities').catch(() => ({ data: [] })),
+        luminiApi.get('/billing/catalogs/product-services').catch(() => ({ data: [] })),
+        luminiApi.get('/billing/catalogs/measurement-units').catch(() => ({ data: [] })),
+      ]);
+      setSiatActivities(Array.isArray(actRes.data) ? actRes.data : []);
+      setSiatProductServices(Array.isArray(psRes.data) ? psRes.data : []);
+      setSiatUnits(Array.isArray(unitRes.data) ? unitRes.data : []);
+    } catch { /* SIAT catalogs are optional */ }
+  }
+
+  function handleImageSelect(file: File) {
+    setPendingFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setForm((p) => ({ ...p, imageUrl: '' })); // clear old server URL
+  }
+
+  function clearImage() {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPendingFile(null);
+    setPreviewUrl('');
+    setForm((p) => ({ ...p, imageUrl: '' }));
+  }
+
+  async function uploadImage(): Promise<string | undefined> {
+    if (!pendingFile) return form.imageUrl || undefined;
+    const formData = new FormData();
+    formData.append('file', pendingFile);
+    const res = await luminiApi.post('/files/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data.url;
   }
 
   const filtered = products.filter((p) =>
@@ -80,10 +159,13 @@ export function ProductsSection() {
     setForm({ ...EMPTY_FORM });
     setEditingId(null);
     setError('');
+    setShowSiat(false);
+    clearImage();
     setOpen(true);
   }
 
   function openEdit(p: Product) {
+    const hasSiat = !!(p.siatActivityCode || p.siatProductServiceCode || p.siatMeasurementUnitId);
     setForm({
       name: p.name,
       description: p.description || '',
@@ -91,25 +173,44 @@ export function ProductsSection() {
       price: p.price,
       cost: p.cost || 0,
       active: p.active,
+      imageUrl: p.imageUrl || '',
+      siatActivityCode: p.siatActivityCode ? String(p.siatActivityCode) : '',
+      siatProductServiceCode: p.siatProductServiceCode ? String(p.siatProductServiceCode) : '',
+      siatMeasurementUnitId: p.siatMeasurementUnitId ? String(p.siatMeasurementUnitId) : '',
     });
     setEditingId(p.id);
     setError('');
+    setShowSiat(hasSiat);
+    setPendingFile(null);
+    setPreviewUrl('');
     setOpen(true);
   }
+
+  // Filter product services by selected activity
+  const filteredProductServices = form.siatActivityCode
+    ? siatProductServices.filter((ps) => ps.activityCode === Number(form.siatActivityCode))
+    : siatProductServices;
 
   async function handleSave() {
     if (!form.name.trim()) { setError('El nombre es requerido'); return; }
     setSaving(true);
     setError('');
     try {
+      // Upload image only now (on save), not on select
+      const imageUrl = await uploadImage();
+
       const payload: any = {
         name: form.name,
         description: form.description || undefined,
         salePrice: form.price,
         purchasePrice: form.cost,
         active: form.active,
+        imageUrl: imageUrl || undefined,
       };
       if (form.categoryId) payload.categoryId = form.categoryId;
+      if (form.siatActivityCode) payload.siatActivityCode = Number(form.siatActivityCode);
+      if (form.siatProductServiceCode) payload.siatProductServiceCode = Number(form.siatProductServiceCode);
+      if (form.siatMeasurementUnitId) payload.siatMeasurementUnitId = Number(form.siatMeasurementUnitId);
 
       if (editingId) {
         await luminiApi.patch(`/inventory/products/${editingId}`, payload);
@@ -183,8 +284,19 @@ export function ProductsSection() {
             ) : filtered.map((p) => (
               <TableRow key={p.id} className="hover:bg-gray-50">
                 <TableCell>
-                  <p className="font-medium text-sm text-gray-800">{p.name}</p>
-                  {p.description && <p className="text-xs text-gray-400 truncate max-w-50">{p.description}</p>}
+                  <div className="flex items-center gap-2.5">
+                    {p.imageUrl ? (
+                      <img src={assetUrl(p.imageUrl)} alt="" className="w-8 h-8 rounded-md object-cover border border-gray-100 shrink-0" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-md bg-gray-100 flex items-center justify-center shrink-0">
+                        <Package className="w-4 h-4 text-gray-300" />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium text-sm text-gray-800">{p.name}</p>
+                      {p.description && <p className="text-xs text-gray-400 truncate max-w-50">{p.description}</p>}
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell className="text-sm text-gray-500">{p.categoryName || '—'}</TableCell>
                 <TableCell className="text-sm text-right font-semibold text-gray-800">Bs {p.price.toLocaleString()}</TableCell>
@@ -220,6 +332,47 @@ export function ProductsSection() {
             <DialogTitle>{editingId ? 'Editar producto' : 'Nuevo producto'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
+            {/* Image upload */}
+            <div className="space-y-1.5">
+              <Label>Imagen (opcional)</Label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleImageSelect(file);
+                  e.target.value = '';
+                }}
+              />
+              {(previewUrl || form.imageUrl) ? (
+                <div className="relative w-full h-32 rounded-lg border border-gray-200 overflow-hidden bg-gray-50">
+                  <img
+                    src={previewUrl || assetUrl(form.imageUrl)}
+                    alt="Producto"
+                    className="w-full h-full object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    className="absolute top-1.5 right-1.5 p-1 bg-white/80 rounded-full hover:bg-white shadow-sm"
+                  >
+                    <X className="w-3.5 h-3.5 text-gray-500" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-24 border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-violet-300 hover:text-violet-500 transition"
+                >
+                  <ImagePlus className="w-5 h-5 mb-1" />
+                  <span className="text-xs">Subir imagen</span>
+                </button>
+              )}
+            </div>
+
             <div className="space-y-1.5">
               <Label>Nombre</Label>
               <Input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="Nombre del producto" />
@@ -260,6 +413,65 @@ export function ProductsSection() {
                 </SelectContent>
               </Select>
             </div>
+            {/* SIAT Fields (collapsible) */}
+            {siatActivities.length > 0 && (
+              <div className="border border-gray-100 rounded-lg overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setShowSiat(!showSiat)}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-500 hover:bg-gray-50 transition"
+                >
+                  {showSiat ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                  Configuración SIAT (opcional)
+                </button>
+                {showSiat && (
+                  <div className="px-3 pb-3 space-y-3 border-t border-gray-100">
+                    <div className="space-y-1.5 pt-2">
+                      <Label className="text-xs">Actividad económica</Label>
+                      <select
+                        value={form.siatActivityCode}
+                        onChange={(e) => {
+                          setForm((p) => ({ ...p, siatActivityCode: e.target.value, siatProductServiceCode: '' }));
+                        }}
+                        className="w-full h-8 text-xs border border-gray-200 rounded-md px-2 bg-white focus:outline-none focus:ring-1 focus:ring-violet-500"
+                      >
+                        <option value="">Seleccionar...</option>
+                        {siatActivities.map((a) => (
+                          <option key={a.id} value={String(a.siatId)}>{a.description} ({a.siatId})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Producto/Servicio SIN</Label>
+                      <select
+                        value={form.siatProductServiceCode}
+                        onChange={(e) => setForm((p) => ({ ...p, siatProductServiceCode: e.target.value }))}
+                        className="w-full h-8 text-xs border border-gray-200 rounded-md px-2 bg-white focus:outline-none focus:ring-1 focus:ring-violet-500"
+                      >
+                        <option value="">Seleccionar...</option>
+                        {filteredProductServices.map((ps) => (
+                          <option key={ps.id} value={String(ps.siatId)}>{ps.description} ({ps.siatId})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Unidad de medida SIN</Label>
+                      <select
+                        value={form.siatMeasurementUnitId}
+                        onChange={(e) => setForm((p) => ({ ...p, siatMeasurementUnitId: e.target.value }))}
+                        className="w-full h-8 text-xs border border-gray-200 rounded-md px-2 bg-white focus:outline-none focus:ring-1 focus:ring-violet-500"
+                      >
+                        <option value="">Seleccionar...</option>
+                        {siatUnits.map((u) => (
+                          <option key={u.id} value={String(u.siatId)}>{u.description} ({u.siatId})</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {error && <p className="text-xs text-red-500">{error}</p>}
             <div className="flex gap-2 pt-2">
               <Button variant="outline" className="flex-1" onClick={() => setOpen(false)} disabled={saving}>Cancelar</Button>

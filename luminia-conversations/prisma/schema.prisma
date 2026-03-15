@@ -1,0 +1,134 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Channel connection config per business ─────────────────────────────────
+// Cada negocio puede tener uno o más canales configurados (WhatsApp, Web Chat, etc.)
+// config JSON guarda credenciales específicas del canal:
+//   WhatsApp API: { phoneNumberId, accessToken, verifyToken }
+//   Web Chat:     { allowedOrigins }
+
+model ChannelConnection {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId    String        @map("business_id") @db.Uuid
+  channelType   ChannelType   @map("channel_type")
+  status        ChannelStatus @default(INACTIVE)
+  config        Json          @default("{}")
+  webhookSecret String?       @map("webhook_secret") @db.VarChar(255)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @default(now()) @updatedAt @map("updated_at")
+  createdBy     String        @map("created_by") @db.Uuid
+  updatedBy     String?       @map("updated_by") @db.Uuid
+
+  conversations Conversation[]
+
+  @@unique([businessId, channelType])
+  @@map("channel_connections")
+}
+
+// ─── AI agent config per business ───────────────────────────────────────────
+// Configuración del agente de IA por negocio.
+// tools: JSON array con nombres de herramientas habilitadas: ["searchProducts","checkStock","createOrder"]
+
+model BusinessAgentConfig {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String     @unique @map("business_id") @db.Uuid
+  provider     AiProvider @default(OPENAI)
+  apiKey       String     @map("api_key") @db.VarChar(500)
+  model        String     @default("gpt-4o-mini") @db.VarChar(100)
+  systemPrompt String?    @map("system_prompt") @db.Text
+  temperature  Decimal    @default(0.7) @db.Decimal(3, 2)
+  maxTokens    Int        @default(1024) @map("max_tokens")
+  tools        Json       @default("[\"searchProducts\",\"checkStock\",\"createOrder\"]")
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at")
+  createdBy    String     @map("created_by") @db.Uuid
+  updatedBy    String?    @map("updated_by") @db.Uuid
+
+  @@map("business_agent_configs")
+}
+
+// ─── Conversations ──────────────────────────────────────────────────────────
+// Una conversación por (businessId, channelType, externalId).
+// externalId = número de teléfono (WhatsApp), session id (Web Chat), etc.
+
+model Conversation {
+  id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId          String             @map("business_id") @db.Uuid
+  channelConnectionId String?            @map("channel_connection_id") @db.Uuid
+  channelType         ChannelType        @map("channel_type")
+  externalId          String             @map("external_id") @db.VarChar(255)
+  customerName        String?            @map("customer_name") @db.VarChar(200)
+  customerId          String?            @map("customer_id") @db.Uuid
+  status              ConversationStatus @default(ACTIVE)
+  metadata            Json               @default("{}")
+  lastMessageAt       DateTime?          @map("last_message_at")
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @default(now()) @updatedAt @map("updated_at")
+
+  channelConnection ChannelConnection? @relation(fields: [channelConnectionId], references: [id])
+  messages          Message[]
+
+  @@unique([businessId, channelType, externalId])
+  @@index([businessId, status])
+  @@map("conversations")
+}
+
+// ─── Messages ───────────────────────────────────────────────────────────────
+
+model Message {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  conversationId String      @map("conversation_id") @db.Uuid
+  role           MessageRole
+  content        String?     @db.Text
+  toolCalls      Json?       @map("tool_calls")
+  toolCallId     String?     @map("tool_call_id") @db.VarChar(255)
+  toolName       String?     @map("tool_name") @db.VarChar(100)
+  tokens         Int?
+  createdAt      DateTime    @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum ChannelType {
+  WHATSAPP_API
+  WHATSAPP_WEB
+  WEB_CHAT
+  INSTAGRAM_DM
+}
+
+enum ChannelStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+}
+
+enum AiProvider {
+  OPENAI
+  DEEPSEEK
+}
+
+enum ConversationStatus {
+  ACTIVE
+  CLOSED
+  ARCHIVED
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+  TOOL
+}
